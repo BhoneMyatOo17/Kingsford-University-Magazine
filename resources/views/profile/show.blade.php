@@ -61,12 +61,12 @@
 
             <!-- Profile Header Card -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
-                <div class="h-24"></div>
-                <div class="px-6 lg:px-8 pb-8">
-                    <div class="flex flex-col md:flex-row items-center md:items-end -mt-6 md:-mt-12">
+                <!-- Red Background Banner with Profile Picture and Name -->
+                <div class="bg-[#dc2d3d] px-6 lg:px-8 py-5">
+                    <div class="flex flex-col md:flex-row items-center md:items-center gap-6">
                         <!-- Profile Picture -->
                         <div
-                            class="w-32 h-32 bg-white dark:bg-gray-700 rounded-full border-4 border-gray-300 dark:border-gray-800 flex items-center justify-center mb-4 md:mb-0 md:mr-6">
+                            class="w-32 h-32 bg-white dark:bg-gray-700 rounded-full border-4 border-white flex items-center justify-center shadow-lg flex-shrink-0">
                             @if ($user->profile_picture)
                                 <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}"
                                     class="w-full h-full rounded-full object-cover">
@@ -77,50 +77,59 @@
                             @endif
                         </div>
 
-                        <!-- User Info -->
+                        <!-- User Name in Red Section - Aligned with Profile Picture -->
                         <div class="flex-1 text-center md:text-left">
-                            <h2 class="text-5xl font-bold md:text-black dark:text-">
+                            <h2 class="text-3xl lg:text-4xl font-bold text-white drop-shadow-lg">
                                 {{ $user->name }}
                             </h2>
-                            <p class="text-gray-600 dark:text-gray-600">
-                                {{ $user->email }}
+                            <p class="text-white/90 text-lg mt-1">
+                                {{ $student->program ?? '' }} @if($student->faculty) • {{ $student->faculty->name }}
+                                @endif
                             </p>
-
-
-                            @if ($user->isStudent())
-                                <span
-                                    class="inline-block mt-2 px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
-                                    Student
-                                </span>
-                            @elseif ($user->isMarketingCoordinator())
-                                <span
-                                    class="inline-block mt-2 px-3 py-1 text-sm bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
-                                    Marketing Coordinator
-                                </span>
-                            @elseif ($user->isMarketingManager())
-                                <span
-                                    class="inline-block mt-2 px-3 py-1 text-sm bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full">
-                                    Marketing Manager
-                                </span>
-                            @elseif ($user->isAdmin())
-                                <span
-                                    class="inline-block mt-2 px-3 py-1 text-sm bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full">
-                                    Administrator
-                                </span>
-                            @endif
-
                         </div>
 
                         <!-- Edit Button -->
-                        <div class="mt-4 md:mt-0">
+                        <div class="flex-shrink-0">
                             <a href="{{ route('profile.edit') }}"
-                                class="inline-flex items-center px-4 py-2 bg-[#dc2d3d] text-white rounded-lg hover:bg-[#b82532] transition-colors">
+                                class="inline-flex items-center px-4 py-2 bg-white text-[#dc2d3d] rounded-lg hover:bg-gray-100 transition-colors font-medium shadow-lg">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                                 Edit Profile
                             </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- White Section with User Info -->
+                <div class="px-6 lg:px-8 py-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 text-lg mb-2">{{ $user->email }}</p>
+                            <div class="flex flex-wrap gap-2">
+                                @if ($user->isStudent())
+                                    <span
+                                        class="px-3 py-1 text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+                                        Student
+                                    </span>
+                                @elseif ($user->isMarketingCoordinator())
+                                    <span
+                                        class="px-3 py-1 text-sm bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                                        Marketing Coordinator
+                                    </span>
+                                @elseif ($user->isMarketingManager())
+                                    <span
+                                        class="px-3 py-1 text-sm bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full">
+                                        Marketing Manager
+                                    </span>
+                                @elseif ($user->isAdmin())
+                                    <span
+                                        class="px-3 py-1 text-sm bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full">
+                                        Administrator
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -193,97 +202,147 @@
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Personal Information</h3>
 
                         <div class="space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center">
-                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Full
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Full
                                     Name:</span>
-                                <span class="text-gray-900 dark:text-white">{{ $user->name }}</span>
+                                <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->name }}</span>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:items-center">
-                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Email:</span>
-                                <span class="text-gray-900 dark:text-white">{{ $user->email }}</span>
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Email:</span>
+                                <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->email }}</span>
                             </div>
 
                             @if ($user->isStudent() && isset($student))
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Student
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Student
                                         ID:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $student->student_id }}</span>
-                                </div>
-
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Faculty:</span>
                                     <span
-                                        class="text-gray-900 dark:text-white">{{ $student->faculty->name ?? 'N/A' }}</span>
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->student_id }}</span>
                                 </div>
 
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Program:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $student->program }}</span>
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Faculty:</span>
+                                    <span
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->faculty->name ?? 'N/A' }}</span>
                                 </div>
 
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Enrollment
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Program:</span>
+                                    <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->program }}</span>
+                                </div>
+
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Enrollment
                                         Year:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $student->enrollment_year }}</span>
+                                    <span
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->enrollment_year }}</span>
                                 </div>
 
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Study
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Study
                                         Level:</span>
                                     <span
-                                        class="text-gray-900 dark:text-white capitalize">{{ $student->study_level }}</span>
+                                        class="text-gray-900 dark:text-white capitalize mt-1 sm:mt-0">{{ $student->study_level }}</span>
                                 </div>
+
+                                @if($student->phone)
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Phone:</span>
+                                        <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->phone }}</span>
+                                    </div>
+                                @endif
+
+                                @if($student->address)
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-start py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Address:</span>
+                                        <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $student->address }}</span>
+                                    </div>
+                                @endif
                             @endif
 
                             @if (!$user->isStudent() && isset($staff))
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Staff
-                                        ID:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $staff->staff_id }}</span>
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Staff ID:</span>
+                                    <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->staff_id }}</span>
                                 </div>
 
                                 @if ($staff->faculty)
-                                    <div class="flex flex-col sm:flex-row sm:items-center">
-                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Faculty:</span>
-                                        <span class="text-gray-900 dark:text-white">{{ $staff->faculty->name }}</span>
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Faculty:</span>
+                                        <span
+                                            class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->faculty->name }}</span>
                                     </div>
                                 @endif
 
-                                <div class="flex flex-col sm:flex-row sm:items-center">
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
                                     <span
-                                        class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Department:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $staff->department ?? 'N/A' }}</span>
+                                        class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Department:</span>
+                                    <span
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->department ?? 'N/A' }}</span>
                                 </div>
 
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Position:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $staff->position ?? 'N/A' }}</span>
+                                <div
+                                    class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Position:</span>
+                                    <span
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->position ?? 'N/A' }}</span>
                                 </div>
 
                                 @if ($staff->hire_date)
-                                    <div class="flex flex-col sm:flex-row sm:items-center">
-                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Hire
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Hire
                                             Date:</span>
                                         <span
-                                            class="text-gray-900 dark:text-white">{{ $staff->hire_date->format('F d, Y') }}</span>
+                                            class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->hire_date->format('F d, Y') }}</span>
+                                    </div>
+                                @endif
+
+                                @if($staff->phone)
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Phone:</span>
+                                        <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->phone }}</span>
+                                    </div>
+                                @endif
+
+                                @if($staff->office_location)
+                                    <div
+                                        class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Office:</span>
+                                        <span
+                                            class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $staff->office_location }}</span>
                                     </div>
                                 @endif
                             @endif
 
-                            <div class="flex flex-col sm:flex-row sm:items-center">
-                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Member
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Member
                                     Since:</span>
                                 <span
-                                    class="text-gray-900 dark:text-white">{{ $user->created_at->format('F d, Y') }}</span>
+                                    class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->created_at->format('F d, Y') }}</span>
                             </div>
 
                             @if ($user->last_login_at)
-                                <div class="flex flex-col sm:flex-row sm:items-center">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-32">Last
+                                <div class="flex flex-col sm:flex-row sm:items-center py-3">
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Last
                                         Login:</span>
                                     <span
-                                        class="text-gray-900 dark:text-white">{{ $user->last_login_at->diffForHumans() }}</span>
+                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->last_login_at->diffForHumans() }}</span>
                                 </div>
                             @endif
                         </div>
@@ -330,31 +389,31 @@
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Account Status</h3>
 
                         <div class="space-y-3">
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between py-2">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Account Status</span>
                                 @if ($user->is_active)
                                     <span
-                                        class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                                        class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full font-medium">
                                         Active
                                     </span>
                                 @else
                                     <span
-                                        class="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full">
+                                        class="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full font-medium">
                                         Inactive
                                     </span>
                                 @endif
                             </div>
 
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between py-2">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Email Verified</span>
                                 @if ($user->email_verified_at)
                                     <span
-                                        class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                                        class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full font-medium">
                                         Verified
                                     </span>
                                 @else
                                     <span
-                                        class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full">
+                                        class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full font-medium">
                                         Pending
                                     </span>
                                 @endif

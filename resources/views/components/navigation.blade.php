@@ -51,8 +51,8 @@
 
       <!-- Desktop Menu -->
       <div class="ic-navbar-desktop hidden lg:flex items-center space-x-8">
-        <a href="#about"
-          class="ic-page-scroll nav-link text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 font-medium transition-colors duration-300">About
+        <a href="{{ route('about') }}"
+          class="nav-link text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 font-medium transition-colors duration-300">About
           Us</a>
 
         <!-- Faculties Dropdown -->

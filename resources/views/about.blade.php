@@ -490,7 +490,7 @@
             </svg>
           </a>
           <a href="#"
-            class="inline-flex items-center justify-center space-x-2 border-2 border-white text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-white hover:text-[#dc2d3d] transition-all">
+            class="inline-flex items-center justify-center dark:text-white space-x-2 border-2 border-white text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-white hover:text-[#dc2d3d] transition-all">
             <span>Schedule a Visit</span>
           </a>
         </div>

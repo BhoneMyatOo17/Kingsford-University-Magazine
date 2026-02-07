@@ -83,6 +83,12 @@ class ProfileController extends Controller
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 
+        // Prepare update data
+        $updateData = [
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+        ];
+
         // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
             // Delete old profile picture if exists
@@ -92,15 +98,11 @@ class ProfileController extends Controller
             
             // Store new profile picture
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $validatedData['profile_picture'] = $path;
+            $updateData['profile_picture'] = $path;
         }
 
         // Update user table
-        $user->update([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'profile_picture' => $validatedData['profile_picture'] ?? $user->profile_picture,
-        ]);
+        $user->update($updateData);
 
         // Update role-specific table (Student or Staff)
         if ($user->isStudent()) {

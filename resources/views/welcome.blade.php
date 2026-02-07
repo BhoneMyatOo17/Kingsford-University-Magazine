@@ -568,7 +568,7 @@
             </div>
 
             <div class="text-center mt-12">
-                <a href="#"
+                <a href="{{ route('dashboard') }}"
                     class="inline-flex items-center space-x-2 bg-[#dc2d3d] hover:text-white text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-[#b82532] dark:bg-white dark:text-[#dc2d3d] dark:hover:bg-gray-100 transition-all shadow-lg">
                     <span>Submit Your Article</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

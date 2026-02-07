@@ -3,7 +3,7 @@
   class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 transition-transform duration-300 lg:translate-x-0 -translate-x-full">
   <!-- Sidebar Header -->
   <div class="h-20 flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700">
-    <a href="{{ route('dashboard') }}" class="flex items-center">
+    <a href="{{ route('home') }}" class="flex items-center">
       <img src="{{ asset('assets/logo.png') }}" alt="Kingsford Logo" class="h-10 w-auto">
     </a>
     <button id="sidebar-close"
@@ -14,10 +14,9 @@
     </button>
   </div>
 
-  <!-- User Profile Section -->
   <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-700">
     <a href="{{ route('profile.show') }}"
-      class="flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-lg transition-colors">
+      class="{{ request()->routeIs('profile.*') ? 'bg-gray-100 dark:bg-gray-700' : '' }} flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-lg transition-colors">
       <div
         class="w-12 h-12 bg-[#dc2d3d] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
         @if(auth()->user()->profile_picture)
@@ -45,9 +44,8 @@
       </div>
     </a>
   </div>
-
   <!-- Navigation Menu - Scrollable -->
-  <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto h-[calc(100vh-280px)]">
+  <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto h-[calc(130vh-280px)]">
     <!-- Dashboard -->
     <a href="{{ route('dashboard') }}"
       class="sidebar-link {{ request()->routeIs('dashboard') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -178,9 +176,9 @@
         <span class="font-medium">Settings</span>
       </a>
 
-      <form action="{{ route('logout') }}" method="POST">
+      <form action="{{ route('logout') }}" method="POST" id="logout-form">
         @csrf
-        <button type="submit"
+        <button type="button" onclick="confirmLogout()"
           class="w-full sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -195,3 +193,52 @@
 
 <!-- Sidebar Overlay for Mobile -->
 <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logout-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 transform transition-all">
+    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
+      <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white text-center mb-2">Confirm Logout</h3>
+    <p class="text-gray-600 dark:text-gray-400 text-center mb-6">Are you sure you want to logout? Any unsaved changes
+      will be lost.</p>
+    <div class="flex space-x-3">
+      <button type="button" onclick="closeLogoutModal()"
+        class="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium">
+        Cancel
+      </button>
+      <button type="button" onclick="document.getElementById('logout-form').submit()"
+        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function confirmLogout() {
+    document.getElementById('logout-modal').classList.remove('hidden');
+  }
+
+  function closeLogoutModal() {
+    document.getElementById('logout-modal').classList.add('hidden');
+  }
+
+  // Close modal when clicking outside
+  document.getElementById('logout-modal')?.addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeLogoutModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeLogoutModal();
+    }
+  });
+</script>

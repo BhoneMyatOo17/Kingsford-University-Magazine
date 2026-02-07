@@ -8,3 +8,6 @@ cmds = [
 
 [phases.build]
 cmds = ['npm run build']
+
+[start]
+cmd = 'php -S 0.0.0.0:$PORT -t public'

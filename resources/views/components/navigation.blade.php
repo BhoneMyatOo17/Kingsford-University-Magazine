@@ -142,8 +142,8 @@
 
     <!-- Mobile Menu -->
     <div class="ic-navbar-mobile lg:hidden hidden mt-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 space-y-4">
-      <a href="#about"
-        class="ic-page-scroll block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors duration-300">About
+      <a href="{{ route('about') }}"
+        class="block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors duration-300">About
         Us</a>
 
       <!-- Mobile Faculties Accordion -->

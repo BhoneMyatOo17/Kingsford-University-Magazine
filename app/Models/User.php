@@ -23,9 +23,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
         'is_active',
         'last_login_at',
         'profile_picture',
+        'password_changed_at',
+        'must_change_password',
     ];
 
     /**
@@ -48,8 +51,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'password_changed_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'must_change_password' => 'boolean',
         ];
     }
 
@@ -62,20 +67,45 @@ class User extends Authenticatable implements MustVerifyEmail
 
         // Validate email domain before creating/updating
         static::creating(function ($user) {
-            if (!self::isUniversityEmail($user->email)) {
-                throw new \InvalidArgumentException('Email must be a valid Kingsford University email (@ksf.it.com)');
+            if (!self::isValidEmail($user->email, $user)) {
+                throw new \InvalidArgumentException('Invalid email domain for this user type.');
             }
         });
 
         static::updating(function ($user) {
-            if ($user->isDirty('email') && !self::isUniversityEmail($user->email)) {
-                throw new \InvalidArgumentException('Email must be a valid Kingsford University email (@ksf.it.com)');
+            if ($user->isDirty('email') && !self::isValidEmail($user->email, $user)) {
+                throw new \InvalidArgumentException('Invalid email domain for this user type.');
             }
         });
     }
 
     /**
-     * Validate if email is university email
+     * Validate if email is valid based on user role
+     *
+     * @param string $email
+     * @param User|null $user
+     * @return bool
+     */
+    public static function isValidEmail(string $email, $user = null): bool
+    {
+        $email = strtolower($email);
+        
+        // Exception 1: test@ksf.it.com is always valid
+        if ($email === 'test@ksf.it.com') {
+            return true;
+        }
+
+        // Exception 2: Guest role can use any email domain
+        if ($user && $user->hasRole('guest')) {
+            return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        }
+
+        // All other roles must use @ksf.it.com domain
+        return str_ends_with($email, '@ksf.it.com');
+    }
+
+    /**
+     * Validate if email is university email (for backward compatibility)
      *
      * @param string $email
      * @return bool
@@ -83,6 +113,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function isUniversityEmail(string $email): bool
     {
         return str_ends_with(strtolower($email), '@ksf.it.com');
+    }
+
+    /**
+     * Check if email verification should be skipped
+     *
+     * @return bool
+     */
+    public function shouldSkipEmailVerification(): bool
+    {
+        return strtolower($this->email) === 'test@ksf.it.com';
     }
 
     /**

@@ -157,8 +157,9 @@
             <div>
                 <x-input-label for="password" :value="__('Password')" />
                 <div class="relative">
-                    <x-text-input id="password" type="password" name="password" placeholder="Minimum 8 characters"
-                        required autocomplete="new-password" class="pr-10" />
+                    <x-text-input id="password" type="password" name="password"
+                        placeholder="Must contain upper, lower case, a number, and special character" required
+                        autocomplete="new-password" class="pr-10" />
 
                     <button type="button" onclick="togglePass()"
                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -215,11 +216,102 @@
                     </button>
                 </div>
                 <div id="content" class="px-6 py-4 max-h-96 overflow-y-auto">
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">By using this system, you agree to our
-                        terms.</p>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Content here...</p>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">More content...</p>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">Scroll down...</p>
+                    <!-- Introduction -->
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                        These <strong>User Registration Terms and Conditions</strong> govern your use of the Kingsford
+                        University Magazine System. Please read carefully before proceeding with registration.
+                    </p>
+
+                    <!-- Section 1: Data Collection -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">1. Data Collection</h3>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">The system collects the following personal
+                        information:</p>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>Full Name</li>
+                        <li>University Email Address (@ksf.it.com)</li>
+                        <li>Student ID</li>
+                        <li>Faculty Assignment</li>
+                        <li>Login Credentials (Username and Password)</li>
+                        <li>Magazine Contributions (articles, images, comments)</li>
+                    </ul>
+
+                    <!-- Section 2: Data Usage -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">2. Use of Your Data</h3>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">Your data will be used for:</p>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>Account Management</li>
+                        <li>Magazine Contribution Management</li>
+                        <li>Faculty Coordination</li>
+                        <li>Statistical and Exception Reporting</li>
+                        <li>Annual Magazine Publication</li>
+                    </ul>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                        <strong>Important:</strong> Your data will <strong>NOT</strong> be used for commercial purposes
+                        or shared with external organizations.
+                    </p>
+
+                    <!-- Section 3: Data Storage -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">3. Data Storage &
+                        Security</h3>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>All data is stored securely on university-managed systems</li>
+                        <li>Data is retained only for academic, administrative, and audit purposes</li>
+                        <li>Your submissions are visible to authorized personnel (Marketing Coordinator, Marketing
+                            Manager, and Administrators) based on Faculty alignment</li>
+                        <li>Statistical reports (e.g., contribution counts per Faculty) may be generated for university
+                            reporting</li>
+                    </ul>
+
+                    <!-- Section 4: Your Rights -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">4. Your Rights &
+                        Responsibilities</h3>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Your Rights:</p>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>Privacy and data protection according to applicable laws</li>
+                        <li>Request correction of inaccurate personal information</li>
+                        <li>Report misuse, abuse, or security issues</li>
+                    </ul>
+
+                    <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Your Responsibilities:</p>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>Provide accurate and complete information during registration</li>
+                        <li>Keep account credentials confidential</li>
+                        <li>Do not attempt to access or misuse data belonging to others</li>
+                        <li>No impersonation or misrepresentation of identity</li>
+                        <li>Report unauthorized access immediately</li>
+                    </ul>
+
+                    <!-- Section 5: University Rights -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">5. University Rights
+                    </h3>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">The University reserves the right to:</p>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
+                        <li>Suspend or terminate access for users who violate these Terms</li>
+                        <li>Remove content that violates intellectual property laws or policies</li>
+                        <li>Take disciplinary action for serious breaches under University regulations</li>
+                    </ul>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 italic mb-3">
+                        Note: The University does not guarantee uninterrupted availability and is not liable for data
+                        loss caused by technical failures beyond reasonable control.
+                    </p>
+
+                    <!-- Section 6: Changes to Terms -->
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">6. Changes to These
+                        Terms</h3>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                        The University may update these Terms at any time. Continued use of the system constitutes
+                        acceptance of updated terms.
+                    </p>
+
+                    <!-- Agreement Notice -->
+                    <div
+                        class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p class="text-sm text-blue-900 dark:text-blue-200 font-medium">
+                            By clicking "I have READ and AGREE to the Terms and Conditions" and completing registration,
+                            you confirm that you have read, understood, and agree to all terms. Failure to comply may
+                            result in removal of contributions or loss of system access.
+                        </p>
+                    </div>
                 </div>
                 <div id="hint" class="px-6 py-2 bg-yellow-50 text-center border-t">
                     <p class="text-sm text-yellow-800">⬇️ Scroll to read all terms</p>
@@ -229,7 +321,7 @@
                         class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
                         Decline
                     </button>
-                    <button type="button" id="agree"
+                    <button type="button" id="agree" disabled
                         class="px-6 py-2 bg-[#dc2d3d] text-white rounded hover:bg-[#b82532] disabled:opacity-50">
                         I Agree
                     </button>

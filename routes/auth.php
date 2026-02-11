@@ -20,28 +20,27 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     // Login Routes
-    // NOTE: Rate limiting is handled in LoginRequest.php (3 attempts per 3 minutes)
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
-    // Password Reset Routes
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
-
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
-
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
 });
 
+// Password Reset Routes - accessible by both guest AND authenticated users
+Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->name('password.request');
+
+Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->name('password.email');
+
+Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->name('password.reset');
+
+Route::post('reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store');
+
 Route::middleware('auth')->group(function () {
-    // Temporary Password Change Routes (accessible even with must_change_password flag)
+    // Temporary Password Change Routes
     Route::get('change-password', [PasswordChangeController::class, 'show'])
         ->name('password.change');
 
@@ -51,7 +50,7 @@ Route::middleware('auth')->group(function () {
     // Email Verification Routes
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice')
-        ->middleware('check.temporary.password'); // Can't verify email until password changed
+        ->middleware('check.temporary.password');
 
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1', 'check.temporary.password'])

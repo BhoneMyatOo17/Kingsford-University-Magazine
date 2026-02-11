@@ -1,152 +1,186 @@
-<x-guest-layout>
-  <x-slot name="heading">Change Your Password</x-slot>
-  <x-slot name="subheading">You must change your temporary password</x-slot>
+<!DOCTYPE html>
+<html lang="en">
 
-  <!-- Warning Banner -->
-  <div class="mb-6 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-6 border-2 border-yellow-500 dark:border-yellow-700">
-    <div class="flex items-start space-x-4">
-      <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor"
-        viewBox="0 0 20 20">
-        <path fill-rule="evenodd"
-          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-          clip-rule="evenodd" />
-      </svg>
-      <div>
-        <h3 class="text-lg font-bold text-yellow-800 dark:text-yellow-200 mb-2">
-          ⚠️ Temporary Password Detected
-        </h3>
-        <p class="text-sm text-yellow-700 dark:text-yellow-300">
-          For your security, you must change your temporary password before accessing your account.
-          Please choose a strong, unique password that you haven't used elsewhere.
-        </p>
-      </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password - Kingsford University</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body class="bg-gray-50 dark:bg-[#18181b]">
+    @include('components.navigation')
+    <div class="min-h-screen flex items-center justify-center px-4 py-36">
+        <div class="w-full max-w-md">
+            <!-- Warning Message -->
+            @if(session('warning'))
+                <div
+                    class="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 px-4 py-3 rounded-lg">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
+            <!-- Form Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+                <!-- Card Header -->
+                <div class="bg-[#dc2d3d] px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Password Change Required</h2>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="{{ route('temporary-password.update') }}" class="p-6" id="password-form">
+                    @csrf
+
+                    <!-- Error Messages -->
+                    @if($errors->any())
+                        <div
+                            class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                            <ul class="text-sm text-red-800 dark:text-red-200 space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $error }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- New Password -->
+                    <div class="mb-6">
+                        <label for="new_password"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            New Password
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="new_password" id="new_password" required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                                placeholder="Create a strong password">
+                            <button type="button" onclick="toggleBothPasswords()"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                        @error('new_password')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-6">
+                        <label for="new_password_confirmation"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Confirm New Password
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="new_password_confirmation" id="new_password_confirmation"
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                                placeholder="Confirm your new password">
+                        </div>
+                    </div>
+
+                    <!-- Password Requirements -->
+                    <div
+                        class="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                        <p class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Password Requirements:</p>
+                        <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                At least 8 characters long
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Contains uppercase and lowercase letters
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Contains numbers
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                One special character(!@#$%)
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-[#dc2d3d] to-[#b82532] text-white font-semibold py-3 px-4 rounded-lg hover:shadow-lg transition-all duration-300">
+                        Set Password
+                    </button>
+
+                    <!-- Logout Link -->
+                    <div class="mt-4 text-center">
+                        <button type="button" onclick="handleLogout()"
+                            class="text-sm text-gray-600 dark:text-gray-400 hover:text-[#dc2d3d] dark:hover:text-[#dc2d3d] transition-colors">
+                            Logout Instead
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <form method="POST" action="{{ route('password.update.temporary') }}" class="space-y-4">
-    @csrf
-    @method('PUT')
+    <!-- Hidden Logout Form -->
+    <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+        @csrf
+    </form>
 
-    <!-- Current Password -->
-    <div>
-      <x-input-label for="current_password" :value="__('Current Password')" />
-      <div class="relative">
-        <x-text-input id="current_password" type="password" name="current_password" placeholder="kingsford123" required
-          class="pr-10" />
+    <script>
+        // Toggle both password fields simultaneously
+        function toggleBothPasswords() {
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('new_password_confirmation');
+            const currentType = newPassword.type;
+            const newType = currentType === 'password' ? 'text' : 'password';
 
-        <button type="button" onclick="togglePasswordVisibility('current_password')"
-          class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-          <svg id="current_password-eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg id="current_password-eye-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
-      </div>
-      <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
-    </div>
+            newPassword.type = newType;
+            confirmPassword.type = newType;
+        }
 
-    <!-- New Password -->
-    <div>
-      <x-input-label for="password" :value="__('New Password')" />
-      <div class="relative">
-        <x-text-input id="password" type="password" name="password" placeholder="Enter new strong password" required
-          class="pr-10" />
+        // Handle logout without form validation
+        function handleLogout() {
+            // Remove required attributes temporarily
+            const passwordForm = document.getElementById('password-form');
+            const requiredFields = passwordForm.querySelectorAll('[required]');
+            requiredFields.forEach(field => field.removeAttribute('required'));
 
-        <button type="button" onclick="togglePasswordVisibility('password')"
-          class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-          <svg id="password-eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg id="password-eye-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
-      </div>
-      <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            // Submit the logout form
+            document.getElementById('logout-form').submit();
+        }
 
-      <!-- Password Requirements -->
-      <div class="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-        <p class="font-medium">Your new password must contain:</p>
-        <ul class="list-disc list-inside ml-2 space-y-0.5">
-          <li>At least 8 characters</li>
-          <li>At least one uppercase letter (A-Z)</li>
-          <li>At least one lowercase letter (a-z)</li>
-          <li>At least one number (0-9)</li>
-          <li>Cannot be "kingsford123"</li>
-        </ul>
-      </div>
-    </div>
+        // Check for saved theme preference
+        if (localStorage.getItem('color-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
 
-    <!-- Confirm New Password -->
-    <div>
-      <x-input-label for="password_confirmation" :value="__('Confirm New Password')" />
-      <div class="relative">
-        <x-text-input id="password_confirmation" type="password" name="password_confirmation"
-          placeholder="Re-enter new password" required class="pr-10" />
-
-        <button type="button" onclick="togglePasswordVisibility('password_confirmation')"
-          class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-          <svg id="password_confirmation-eye-icon" class="h-5 w-5" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg id="password_confirmation-eye-slash-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
-      </div>
-      <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-    </div>
-
-    <!-- Change Password Button -->
-    <x-primary-button class="w-full justify-center">
-      {{ __('Change Password') }}
-    </x-primary-button>
-  </form>
-
-  <!-- Help Text -->
-  <div class="mt-4 text-center">
-    <p class="text-xs text-gray-500 dark:text-gray-400">
-      Need help? Contact
-      <a href="mailto:support@ksf.it.com" class="text-[#dc2d3d] hover:text-[#b82532] transition-colors">
-        support@ksf.it.com
-      </a>
-    </p>
-  </div>
-
-  <!-- JavaScript -->
-  <script>
-    function togglePasswordVisibility(fieldId) {
-      const field = document.getElementById(fieldId);
-      const eyeIcon = document.getElementById(fieldId + '-eye-icon');
-      const eyeSlashIcon = document.getElementById(fieldId + '-eye-slash-icon');
-
-      if (field.type === 'password') {
-        field.type = 'text';
-        eyeIcon.classList.add('hidden');
-        eyeSlashIcon.classList.remove('hidden');
-      } else {
-        field.type = 'password';
-        eyeIcon.classList.remove('hidden');
-        eyeSlashIcon.classList.add('hidden');
-      }
-    }
-  </script>
-</x-guest-layout>
+</html>

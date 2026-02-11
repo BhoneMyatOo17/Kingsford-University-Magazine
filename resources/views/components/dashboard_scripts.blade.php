@@ -23,44 +23,81 @@
       });
     }
 
-    // Dashboard theme toggle
-    const themeToggleDashboard = document.getElementById('theme-toggle-dashboard');
-    const themeToggleDarkIconDashboard = document.getElementById('theme-toggle-dark-icon-dashboard');
-    const themeToggleLightIconDashboard = document.getElementById('theme-toggle-light-icon-dashboard');
+    // Sidebar active link
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
 
-    function updateDashboardThemeIcons(isDark) {
+    // Top navbar theme toggle
+    const themeToggleTop = document.getElementById('theme-toggle-top');
+    const themeToggleDarkIconTop = document.getElementById('theme-toggle-dark-icon-top');
+    const themeToggleLightIconTop = document.getElementById('theme-toggle-light-icon-top');
+
+    function updateAllThemeIcons(isDark) {
+      // Update top navbar icons
       if (isDark) {
-        themeToggleDarkIconDashboard?.classList.remove('hidden');
-        themeToggleLightIconDashboard?.classList.add('hidden');
+        themeToggleDarkIconTop?.classList.remove('hidden');
+        themeToggleLightIconTop?.classList.add('hidden');
       } else {
-        themeToggleLightIconDashboard?.classList.remove('hidden');
-        themeToggleDarkIconDashboard?.classList.add('hidden');
+        themeToggleLightIconTop?.classList.remove('hidden');
+        themeToggleDarkIconTop?.classList.add('hidden');
       }
     }
 
     // Check initial theme
     if (document.documentElement.classList.contains('dark')) {
-      updateDashboardThemeIcons(true);
+      updateAllThemeIcons(true);
     } else {
-      updateDashboardThemeIcons(false);
+      updateAllThemeIcons(false);
     }
 
-    // Theme toggle click
-    if (themeToggleDashboard) {
-      themeToggleDashboard.addEventListener('click', function () {
-        const isDarkMode = document.documentElement.classList.contains('dark');
+    // Function to toggle theme
+    function toggleTheme() {
+      const isDarkMode = document.documentElement.classList.contains('dark');
 
-        if (isDarkMode) {
-          document.documentElement.classList.remove('dark');
-          document.documentElement.setAttribute('data-web-theme', 'light');
-          localStorage.setItem('color-theme', 'light');
-          updateDashboardThemeIcons(false);
-        } else {
-          document.documentElement.classList.add('dark');
-          document.documentElement.setAttribute('data-web-theme', 'dark');
-          localStorage.setItem('color-theme', 'dark');
-          updateDashboardThemeIcons(true);
+      if (isDarkMode) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-web-theme', 'light');
+        localStorage.setItem('color-theme', 'light');
+        updateAllThemeIcons(false);
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-web-theme', 'dark');
+        localStorage.setItem('color-theme', 'dark');
+        updateAllThemeIcons(true);
+      }
+    }
+
+    // Add event listener to theme toggle
+    if (themeToggleTop) {
+      themeToggleTop.addEventListener('click', toggleTheme);
+    }
+
+    // Notification dropdown toggle
+    const notificationButton = document.getElementById('notification-button');
+    const notificationMenu = document.getElementById('notification-menu');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+
+    if (notificationButton && notificationMenu) {
+      notificationButton.addEventListener('click', function (e) {
+        e.stopPropagation();
+        notificationMenu.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function (e) {
+        if (notificationDropdown && !notificationDropdown.contains(e.target)) {
+          notificationMenu.classList.add('hidden');
         }
+      });
+
+      // Prevent closing when clicking inside the dropdown
+      notificationMenu.addEventListener('click', function (e) {
+        e.stopPropagation();
       });
     }
   });

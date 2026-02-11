@@ -19,11 +19,6 @@ use Illuminate\Support\Str;
 class RegisteredUserController extends Controller
 {
     /**
-     * Temporary password that requires change
-     */
-    const TEMPORARY_PASSWORD = 'kingsford123';
-
-    /**
      * Display the registration view.
      */
     public function create(): View
@@ -40,22 +35,23 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $email = strtolower($request->email);
+        $isTestAccount = ($email === 'test@ksf.it.com');
+        
         // Validate the request
-        $validated = $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'student_id' => ['required','regex:/^ksf\d{4}$/',],
+            'student_id' => [
+                'required',
+                'regex:/^ksf\d{4}$/',
+                'unique:students,student_id', // Check uniqueness in students table
+            ],
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                'unique:users',
-                function ($attribute, $value, $fail) {
-                    if (!Str::endsWith(strtolower($value), '@ksf.it.com')) {
-                        $fail('Only Kingsford University email addresses (@ksf.it.com) are allowed.');
-                    }
-                },
             ],
             'faculty_id' => ['required', 'exists:faculties,id'],
             'program' => ['required', 'string', 'max:255'],
@@ -63,18 +59,41 @@ class RegisteredUserController extends Controller
             'study_level' => ['required', 'in:undergraduate,postgraduate,doctorate'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
-        ]);
+        ];
 
-        // Check if using temporary password
-        $isTemporaryPassword = $request->password === self::TEMPORARY_PASSWORD;
+        // Add unique email validation ONLY if NOT test account
+        if (!$isTestAccount) {
+            $rules['email'][] = 'unique:users';
+        }
 
-        DB::transaction(function () use ($validated, $isTemporaryPassword, &$user) {
+        // Validate email domain based on role (assuming student registration)
+        $rules['email'][] = function ($attribute, $value, $fail) {
+            if (!Str::endsWith(strtolower($value), '@ksf.it.com')) {
+                $fail('Only Kingsford University email addresses (@ksf.it.com) are allowed.');
+            }
+        };
+
+        $validated = $request->validate($rules);
+
+        DB::transaction(function () use ($validated, $isTestAccount, &$user) {
+            // If test account, delete existing test@ksf.it.com user first
+            if ($isTestAccount) {
+                User::where('email', 'test@ksf.it.com')->forceDelete();
+                Student::whereHas('user', function($query) {
+                    $query->where('email', 'test@ksf.it.com');
+                })->forceDelete();
+            }
+
             // Create user account
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'is_active' => true,
+                'password_changed_at' => now(),
+                'must_change_password' => false,
+                // Skip email verification for test account
+                'email_verified_at' => $isTestAccount ? now() : null,
             ]);
 
             // Assign student role
@@ -89,27 +108,25 @@ class RegisteredUserController extends Controller
                 'enrollment_year' => $validated['enrollment_year'],
                 'study_level' => $validated['study_level'],
             ]);
-
-            // Mark for password change if using temporary password
-            if ($isTemporaryPassword) {
-                session(['must_change_password' => true]);
-            }
         });
 
-        // Fire the registered event
-        event(new Registered($user));
+        // Fire the registered event (only if NOT test account)
+        if (!$isTestAccount) {
+            event(new Registered($user));
+        }
 
         // Log the user in
         Auth::login($user);
 
-        // Redirect based on password type
-        if ($isTemporaryPassword) {
-            return redirect()->route('password.change')
-                ->with('warning', 'You are using a temporary password. Please change it now for security.');
+        // Redirect based on account type
+        if ($isTestAccount) {
+            // Test account - skip email verification
+            return redirect()->route('dashboard')
+                ->with('status', 'Test account created successfully!');
+        } else {
+            // Regular account - require email verification
+            return redirect()->route('verification.notice')
+                ->with('status', 'Registration successful! Please verify your email address to access all features.');
         }
-
-        // Redirect to email verification notice
-        return redirect()->route('verification.notice')
-            ->with('status', 'Registration successful! Please verify your email address to access all features.');
     }
 }

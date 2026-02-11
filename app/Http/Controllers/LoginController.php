@@ -68,13 +68,33 @@ class LoginController extends Controller
      */
     protected function validateLogin(Request $request)
     {
+        $email = strtolower($request->email);
+        $isTestAccount = ($email === 'test@ksf.it.com');
+        
+        // Check if user is a guest
+        $user = User::where('email', $email)->first();
+        $isGuest = $user && $user->hasRole('guest');
+
         $request->validate([
             'email' => [
                 'required',
                 'string',
                 'email',
-                function ($attribute, $value, $fail) {
-                    if (!Str::endsWith(strtolower($value), '@ksf.it.com')) {
+                function ($attribute, $value, $fail) use ($isTestAccount, $isGuest) {
+                    $email = strtolower($value);
+                    
+                    // Allow test@ksf.it.com
+                    if ($email === 'test@ksf.it.com') {
+                        return;
+                    }
+                    
+                    // Allow any email for guests
+                    if ($isGuest) {
+                        return;
+                    }
+                    
+                    // Require @ksf.it.com for all other users
+                    if (!Str::endsWith($email, '@ksf.it.com')) {
                         $fail('Only Kingsford University email address is allowed.');
                     }
                 },

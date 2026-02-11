@@ -10,53 +10,10 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
   @include('components.sidebar_navigation')
+  @include('components.top_navigation', ['title' => 'Dashboard'])
 
   <!-- Main Content -->
   <div class="lg:ml-64">
-    <!-- Top Navigation Bar -->
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-      <div class="px-4 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <!-- Mobile Menu Toggle -->
-          <button id="sidebar-toggle"
-            class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          <!-- Page Title -->
-          <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-
-          <!-- Right Side Actions -->
-          <div class="flex items-center space-x-4">
-            <!-- Dark Mode Toggle -->
-            <button id="theme-toggle-dashboard"
-              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <svg id="theme-toggle-dark-icon-dashboard" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-              </svg>
-              <svg id="theme-toggle-light-icon-dashboard" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  fill-rule="evenodd" clip-rule="evenodd"></path>
-              </svg>
-            </button>
-
-            <!-- Notifications -->
-            <button class="relative text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span
-                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-[#dc2d3d] ring-2 ring-white dark:ring-gray-800"></span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <!-- Dashboard Content -->
     <main class="p-4 lg:p-8">
       <!-- Welcome Section -->
@@ -438,83 +395,7 @@
     </footer>
   </div>
 
-  <!-- Dashboard-specific JavaScript -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Sidebar toggle for mobile
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const sidebarClose = document.getElementById('sidebar-close');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-      if (sidebarToggle && sidebar && sidebarOverlay) {
-        sidebarToggle.addEventListener('click', function () {
-          sidebar.classList.remove('-translate-x-full');
-          sidebarOverlay.classList.remove('hidden');
-        });
-
-        sidebarClose.addEventListener('click', function () {
-          sidebar.classList.add('-translate-x-full');
-          sidebarOverlay.classList.add('hidden');
-        });
-
-        sidebarOverlay.addEventListener('click', function () {
-          sidebar.classList.add('-translate-x-full');
-          sidebarOverlay.classList.add('hidden');
-        });
-      }
-
-      // Sidebar active link
-      const sidebarLinks = document.querySelectorAll('.sidebar-link');
-      sidebarLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-          sidebarLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-        });
-      });
-
-      // Dashboard theme toggle
-      const themeToggleDashboard = document.getElementById('theme-toggle-dashboard');
-      const themeToggleDarkIconDashboard = document.getElementById('theme-toggle-dark-icon-dashboard');
-      const themeToggleLightIconDashboard = document.getElementById('theme-toggle-light-icon-dashboard');
-
-      function updateDashboardThemeIcons(isDark) {
-        if (isDark) {
-          themeToggleDarkIconDashboard?.classList.remove('hidden');
-          themeToggleLightIconDashboard?.classList.add('hidden');
-        } else {
-          themeToggleLightIconDashboard?.classList.remove('hidden');
-          themeToggleDarkIconDashboard?.classList.add('hidden');
-        }
-      }
-
-      // Check initial theme
-      if (document.documentElement.classList.contains('dark')) {
-        updateDashboardThemeIcons(true);
-      } else {
-        updateDashboardThemeIcons(false);
-      }
-
-      // Theme toggle click
-      if (themeToggleDashboard) {
-        themeToggleDashboard.addEventListener('click', function () {
-          const isDarkMode = document.documentElement.classList.contains('dark');
-
-          if (isDarkMode) {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.setAttribute('data-web-theme', 'light');
-            localStorage.setItem('color-theme', 'light');
-            updateDashboardThemeIcons(false);
-          } else {
-            document.documentElement.classList.add('dark');
-            document.documentElement.setAttribute('data-web-theme', 'dark');
-            localStorage.setItem('color-theme', 'dark');
-            updateDashboardThemeIcons(true);
-          }
-        });
-      }
-    });
-  </script>
+  @include('components.dashboard_scripts')
 </body>
 
 </html>

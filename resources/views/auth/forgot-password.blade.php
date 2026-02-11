@@ -15,7 +15,9 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email Address')" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" placeholder="example@ksf.it.com"
+            <x-text-input id="email" type="email" name="email" 
+                :value="auth()->check() ? auth()->user()->email : old('email')" 
+                placeholder="example@ksf.it.com"
                 required autofocus autocomplete="email" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
@@ -28,10 +30,17 @@
 
     <x-slot name="additionalLinks">
         <p class="text-sm text-gray-600 dark:text-gray-300">
-            <a href="{{ route('login') }}"
-                class="text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757] font-semibold transition-colors">
-                Back to Login
-            </a>
+            @auth
+                <a href="{{ route('dashboard') }}"
+                    class="text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757] font-semibold transition-colors">
+                    Back to Dashboard
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                    class="text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757] font-semibold transition-colors">
+                    Back to Login
+                </a>
+            @endauth
         </p>
     </x-slot>
 </x-guest-layout>

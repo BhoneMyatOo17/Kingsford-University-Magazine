@@ -3,82 +3,57 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
 
 class PasswordChangeController extends Controller
 {
     /**
-     * Temporary password constant
+     * Show the temporary password change form.
      */
-    const TEMPORARY_PASSWORD = 'kingsford123';
-
-    /**
-     * Show the password change form.
-     */
-    public function show(): View
+    public function showChangePasswordForm()
     {
-        // Ensure user must change password
-        if (!session('must_change_password')) {
-            return redirect()->route('verification.notice');
+        $user = Auth::user();
+        
+        // Only show this form if user must change password
+        if (!$user->must_change_password) {
+            return redirect()->route('dashboard');
         }
-
-        return view('auth.change-password');
+        
+        return view('auth.change-password', compact('user'));
     }
 
     /**
-     * Update the password from temporary.
+     * Handle temporary password change.
      */
-    public function update(Request $request): RedirectResponse
+    public function changePassword(Request $request)
     {
-        // Validate the request
+        $user = Auth::user();
+
         $request->validate([
-            'current_password' => ['required', 'string'],
-            'password' => [
-                'required',
-                'string',
+            'new_password' => [
+                'required', 
+                'string', 
+                'min:8', 
                 'confirmed',
                 Password::min(8)
                     ->mixedCase()
                     ->numbers()
-                    ->uncompromised(),
-                function ($attribute, $value, $fail) {
-                    if (strtolower($value) === strtolower(self::TEMPORARY_PASSWORD)) {
-                        $fail('Your new password cannot be the temporary password.');
-                    }
-                },
+                    ->symbols()
             ],
         ]);
 
-        // Verify current password
-        if (!Hash::check($request->current_password, Auth::user()->password)) {
-            throw ValidationException::withMessages([
-                'current_password' => ['The provided password does not match your current password.'],
-            ]);
-        }
-
-        // Verify it's the temporary password
-        if ($request->current_password !== self::TEMPORARY_PASSWORD) {
-            throw ValidationException::withMessages([
-                'current_password' => ['You can only use this form to change from the temporary password.'],
-            ]);
-        }
-
-        // Update the password
-        Auth::user()->update([
-            'password' => Hash::make($request->password),
+        // Update password and reset flags
+        $user->update([
+            'password' => Hash::make($request->new_password),
+            'must_change_password' => false,
+            'password_changed_at' => now(),
+            'email_verified_at' => now(), // Auto-verify email for admin-created users
         ]);
 
-        // Clear the session flag
-        session()->forget('must_change_password');
-
-        // Redirect to email verification
-        return redirect()->route('verification.notice')
-            ->with('status', 'Password changed successfully! Please verify your email address.');
+        return redirect()->route('dashboard')
+            ->with('success', 'Password changed successfully! Welcome to Kingsford University.');
     }
 }

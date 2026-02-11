@@ -364,7 +364,7 @@
                                 </svg>
                             </a>
 
-                            <a href="{{ route('password.change.form') }}"
+                            <a href="{{ route('password.request') }}"
                                 class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                 <span class="font-medium">Change Password</span>
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -15,11 +15,16 @@ class CheckTemporaryPassword
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = $request->user();
+
         // If user must change password, redirect to password change page
-        if (session('must_change_password')) {
-            // Allow access to password change route and logout
-            if (!$request->routeIs('password.change') && !$request->routeIs('password.update.temporary') && !$request->routeIs('logout')) {
-                return redirect()->route('password.change');
+        if ($user && $user->must_change_password) {
+            // Allow access to temporary password change routes and logout
+            if (!$request->routeIs('temporary-password.change') && 
+                !$request->routeIs('temporary-password.update') && 
+                !$request->routeIs('logout')) {
+                return redirect()->route('temporary-password.change')
+                    ->with('warning', 'You must change your temporary password before continuing.');
             }
         }
 

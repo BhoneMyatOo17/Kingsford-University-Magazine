@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\PasswordChangeController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -80,4 +81,26 @@ Route::middleware(['auth', 'verified', 'check.temporary.password', 'check.user.a
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     });
 
+});
+// ============================================
+// CONTACT ROUTES
+// ============================================
+
+// Public route - Contact form (accessible by everyone)
+Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// Admin routes - Contact management (only for users with permissions)
+Route::middleware(['auth', 'permission:view contacts|manage contacts'])->prefix('admin')->name('contact.')->group(function () {
+    Route::get('/contacts', [ContactController::class, 'index'])->name('index');
+    Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('show');
+});
+
+Route::middleware(['auth', 'permission:manage contacts'])->prefix('admin')->name('contact.')->group(function () {
+    Route::get('/contacts/{contact}/edit', [ContactController::class, 'edit'])->name('edit');
+    Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('update');
+});
+
+Route::middleware(['auth', 'permission:delete contacts'])->prefix('admin')->name('contact.')->group(function () {
+    Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('destroy');
 });

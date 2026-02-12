@@ -119,10 +119,39 @@
                   <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email Address <span class="text-red-500">*</span>
                   </label>
-                  <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
-                    placeholder="user@ksf.it.com">
-                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Must be a @ksf.it.com email</p>
+                  <div class="relative">
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required
+                      placeholder="user@ksf.it.com"
+                      class="w-full px-4 py-3 rounded-lg shadow-sm focus:outline-none pr-12 dark:bg-gray-700 dark:text-white transition-all"
+                      style="border: 1px solid #d1d5db;" />
+
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg id="icon-checking" class="animate-spin h-6 w-6 text-gray-400 hidden" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                      </svg>
+
+                      <svg id="icon-valid" class="h-8 w-8 text-green-500 hidden" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clip-rule="evenodd" />
+                      </svg>
+
+                      <svg id="icon-invalid" class="h-8 w-8 text-red-500 hidden" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div id="msg" class="mt-2 text-sm font-bold"></div>
                   @error('email')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                   @enderror
@@ -452,6 +481,84 @@
           }
         });
       }
+
+      // Email validation
+      const emailInput = document.getElementById('email');
+      const checking = document.getElementById('icon-checking');
+      const valid = document.getElementById('icon-valid');
+      const invalid = document.getElementById('icon-invalid');
+      const msg = document.getElementById('msg');
+      let timer;
+
+      emailInput.addEventListener('input', function () {
+        clearTimeout(timer);
+
+        // Reset
+        checking.classList.add('hidden');
+        valid.classList.add('hidden');
+        invalid.classList.add('hidden');
+        msg.innerHTML = '';
+        this.style.border = '1px solid #d1d5db';
+
+        const email = this.value.trim();
+        if (!email) return;
+
+        // Show loading
+        checking.classList.remove('hidden');
+
+        timer = setTimeout(() => {
+          // Check domain
+          if (!email.endsWith('@ksf.it.com')) {
+            checking.classList.add('hidden');
+            invalid.classList.remove('hidden');
+            msg.innerHTML = '<span style="color: #ef4444;">Please use a @ksf.it.com email</span>';
+            emailInput.style.border = '2px solid #ef4444';
+            return;
+          }
+
+          // Check if exists
+          fetch('/api/check-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email })
+          })
+            .then(r => r.json())
+            .then(data => {
+              console.log('API Response:', data); // Debug log
+              checking.classList.add('hidden');
+
+              // Your controller returns { valid, exists, message }
+              // exists = true means email is already taken
+              if (data.exists === true) {
+                // RED - email already exists
+                invalid.classList.remove('hidden');
+                msg.innerHTML = '<span style="color: #ef4444;">Email already registered</span>';
+                emailInput.style.border = '2px solid #ef4444';
+              } else if (data.valid === true || data.exists === false) {
+                // GREEN - email is available
+                valid.classList.remove('hidden');
+                msg.innerHTML = '<span style="color: #22c55e;"></span>';
+                emailInput.style.border = '2px solid #22c55e';
+              } else {
+                // Invalid format or other error
+                invalid.classList.remove('hidden');
+                msg.innerHTML = '<span style="color: #ef4444;">' + (data.message || 'Invalid email') + '</span>';
+                emailInput.style.border = '2px solid #ef4444';
+              }
+            })
+            .catch((error) => {
+              console.error('Email check error:', error);
+              checking.classList.add('hidden');
+              // Show error state
+              invalid.classList.remove('hidden');
+              msg.innerHTML = '<span style="color: #ef4444;">Could not verify email</span>';
+              emailInput.style.border = '2px solid #ef4444';
+            });
+        }, 500);
+      });
     });
   </script>
 </body>

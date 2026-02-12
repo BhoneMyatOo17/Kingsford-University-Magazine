@@ -155,11 +155,13 @@
 
             <!-- Password -->
             <div>
-                <x-input-label for="password" :value="__('Password')" />
+                <x-input-label for="password">
+                    <span>{{ __('Password') }}</span>
+                    @include('components.password-info')
+                </x-input-label>
                 <div class="relative">
-                    <x-text-input id="password" type="password" name="password"
-                        placeholder="Must contain upper, lower case, a number, and special character" required
-                        autocomplete="new-password" class="pr-10" />
+                    <x-text-input id="password" type="password" name="password" placeholder="Set a secure password"
+                        required autocomplete="new-password" class="pr-10" />
 
                     <button type="button" onclick="togglePass()"
                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">

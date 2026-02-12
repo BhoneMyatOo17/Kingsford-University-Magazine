@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 // Email validation endpoint (no auth required)
 Route::post('/check-email', [EmailValidationController::class, 'checkEmail'])
-    ->middleware('throttle:60,1');
+    ->name('api.check-email');
 
 // Your other API routes...
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

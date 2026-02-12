@@ -609,3 +609,16 @@ tbody tr {
 .empty-state-icon {
   @apply w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-4;
 }
+
+/* hide scrollbar but keep scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE & Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}

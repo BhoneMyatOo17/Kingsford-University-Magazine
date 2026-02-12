@@ -1,6 +1,11 @@
 <!-- Sidebar Navigation -->
-<aside id="sidebar"
-  class="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 transition-transform duration-300 lg:translate-x-0 -translate-x-full">
+<aside id="sidebar" class="fixed left-0 top-0 h-screen w-64 
+         overflow-y-auto no-scrollbar
+         bg-white dark:bg-gray-800 
+         border-r border-gray-200 dark:border-gray-700 
+         z-40 transition-transform duration-300 
+         lg:translate-x-0 -translate-x-full">
+
   <!-- Sidebar Header -->
   <div class="h-20 flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700">
     <a href="{{ route('home') }}" class="flex items-center">
@@ -86,6 +91,41 @@
       </svg>
       <span class="font-medium">Browse Magazine</span>
     </a>
+
+    @if(auth()->user()->hasRole(['admin', 'marketing_manager']))
+      <!-- Contact Requests (Admin/Manager) -->
+      <a href="{{ route('contact.index') }}"
+        class="sidebar-link {{ request()->routeIs('contact.index', 'contact.show', 'contact.edit') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <span class="font-medium">Contact List</span>
+        @php
+          $pendingContacts = \App\Models\Contact::where('status', 'pending')->count();
+        @endphp
+        @if($pendingContacts > 0)
+          <span class="ml-auto flex items-center justify-center
+                   w-6 h-6
+                   text-xs font-bold rounded-full
+                   {{ request()->routeIs('contact.index', 'contact.show', 'contact.edit')
+          ? 'bg-white text-[#dc2d3d]'
+          : 'bg-[#dc2d3d] text-white' }}">
+            {{ $pendingContacts }}
+          </span>
+        @endif
+      </a>
+    @else
+      <!-- Contact Us (Students/Coordinators) -->
+      <a href="{{ route('contact.create') }}"
+        class="sidebar-link {{ request()->routeIs('contact.create') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <span class="font-medium">Contact Us</span>
+      </a>
+    @endif
 
     @if(auth()->user()->isMarketingCoordinator() || auth()->user()->isMarketingManager())
       <!-- Divider -->

@@ -18,9 +18,15 @@
 
         <!-- Password -->
         <div>
-            <x-input-label for="password" :value="__('New Password')" />
-            <x-text-input id="password" type="password" name="password" placeholder="Enter new password" required
-                autocomplete="new-password" />
+            <x-input-label for="password">
+                <span>{{ __('New Password') }}</span>
+                @include('components.password-info')
+            </x-input-label>
+            <div class="relative">
+                <x-text-input id="password" type="password" name="password" placeholder="Enter new password" required
+                    autocomplete="new-password" class="pr-10" />
+                <x-password-toggle :targets="['password', 'password_confirmation']" />
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -47,4 +53,6 @@
             </a>
         </p>
     </x-slot>
+
+
 </x-guest-layout>

@@ -54,6 +54,7 @@
                                 {{ auth()->check() ? 'readonly' : '' }}
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent {{ auth()->check() ? 'cursor-not-allowed opacity-75' : '' }}"
                                 required
+                                placeholder="Enter your name"
                             >
                             @if(auth()->check())
                                 <p class="mt-2 text-sm text-green-700 dark:text-gray-400 flex items-center">
@@ -80,6 +81,7 @@
                                 value="{{ auth()->check() ? auth()->user()->email : old('email') }}"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent"
                                 required
+                                placeholder="Email address where we will send response to"
                             >
                             @error('email')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -98,6 +100,7 @@
                                 value="{{ old('subject') }}"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent"
                                 required
+                                placeholder="Inquiry name"
                             >
                             @error('subject')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -113,8 +116,9 @@
                                 id="message" 
                                 name="message" 
                                 rows="6"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent resize-none"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent"
                                 required
+                                placeholder="Please describe your inquiry"
                             >{{ old('message') }}</textarea>
                             @error('message')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

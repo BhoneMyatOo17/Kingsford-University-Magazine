@@ -61,7 +61,7 @@
   </style>
 
   <div class="flex-grow flex items-center justify-center px-6">
-    <div class="max-w-lg w-full text-center">
+    <div class="max-w-4xl w-full text-center">
       <div class="mb-4 md:mb-8 relative">
         <h1 class="text-8xl md:text-[12rem] font-extrabold text-brandRed opacity-20 dark:opacity-20 select-none">
           500
@@ -78,7 +78,7 @@
       <h2 class="text-2xl md:text-3xl font-bold text-lGray800 dark:text-white mb-4">
         Internal Server Error
       </h2>
-      <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed max-w-sm mx-auto">
+      <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed mx-auto">
         Something went wrong on our end. We are working to fix the issue. Please try refreshing the page or come back
         later.
       </p>

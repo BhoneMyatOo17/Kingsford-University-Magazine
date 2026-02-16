@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
@@ -12,9 +11,12 @@ use App\Models\Student;
 use App\Models\Staff;
 use App\Models\Faculty;
 use App\Models\Contribution;
+use App\Services\StorageService;
 
 class ProfileController extends Controller
 {
+    public function __construct(protected StorageService $storage) {}
+
     /**
      * Display the user's profile.
      */
@@ -89,16 +91,11 @@ class ProfileController extends Controller
             'email' => $validatedData['email'],
         ];
 
-        // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
-            // Delete old profile picture if exists
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
-            
-            // Store new profile picture
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $updateData['profile_picture'] = $path;
+            $updateData['profile_picture'] = $this->storage->uploadProfilePicture(
+                $request->file('profile_picture'),
+                $user->profile_picture
+            );
         }
 
         // Update user table

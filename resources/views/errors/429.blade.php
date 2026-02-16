@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found | Kingsford University</title>
+  <title>429 - Too Many Requests | Kingsford University</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,7 +64,7 @@
     <div class="max-w-4xl w-full text-center">
       <div class="mb-4 md:mb-8 relative">
         <h1 class="text-8xl md:text-[12rem] font-extrabold text-brandRed opacity-20 dark:opacity-20 select-none">
-          404
+          429
         </h1>
         <div class="absolute inset-0 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -76,12 +76,12 @@
       </div>
 
       <h2 class="text-2xl md:text-3xl font-bold text-lGray800 dark:text-white mb-4">
-        Page Not Found
+        Too Many Requests
       </h2>
       <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed mx-auto">
-        The page you are looking for might have been removed or is temporarily unavailable.<br> It seems you've wandered
-        out
-        of our network coverage.
+        Our server is experiencing a high volume of traffic or has detected too many requests from your connection. To
+        prevent a server error and maintain system stability, we have temporarily limited access. Please wait a moment
+        and refresh the page.
       </p>
 
       <div class="flex flex-col items-center gap-4">

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 - Page Not Found | Kingsford University</title>
+  <title>419 - Page Expired | Kingsford University</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,7 +64,7 @@
     <div class="max-w-4xl w-full text-center">
       <div class="mb-4 md:mb-8 relative">
         <h1 class="text-8xl md:text-[12rem] font-extrabold text-brandRed opacity-20 dark:opacity-20 select-none">
-          404
+          419
         </h1>
         <div class="absolute inset-0 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -76,12 +76,11 @@
       </div>
 
       <h2 class="text-2xl md:text-3xl font-bold text-lGray800 dark:text-white mb-4">
-        Page Not Found
+        Page Expired
       </h2>
       <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed mx-auto">
-        The page you are looking for might have been removed or is temporarily unavailable.<br> It seems you've wandered
-        out
-        of our network coverage.
+        This page has expired due to a session timeout or a security token error. This is a standard safety measure to
+        protect your connection to our server. Please refresh the page to start a new session.
       </p>
 
       <div class="flex flex-col items-center gap-4">

@@ -68,7 +68,7 @@
                         <div
                             class="w-32 h-32 bg-white dark:bg-gray-700 rounded-full border-4 border-white flex items-center justify-center shadow-lg flex-shrink-0">
                             @if ($user->profile_picture)
-                                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}"
+                                <img src="{{ app(\App\Services\StorageService::class)->profilePictureUrl($user->profile_picture) }}" alt="{{ $user->name }}"
                                     class="w-full h-full rounded-full object-cover">
                             @else
                                 <span class="text-4xl font-bold text-[#dc2d3d]">

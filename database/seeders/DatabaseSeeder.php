@@ -15,12 +15,13 @@ class DatabaseSeeder extends Seeder
         // Seed roles first (required for user creation)
         $this->call([
             RoleSeeder::class,
+            ContactPermissionSeeder::class,
             FacultySeeder::class,
             // Add more seeders here as needed
         ]);
 
         // Optionally create a default admin user
-     $this->createDefaultAdmin();
+        $this->createDefaultAdmin();
     }
 
     /**

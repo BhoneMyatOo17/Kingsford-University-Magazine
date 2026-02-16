@@ -171,7 +171,7 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       @if($user->profile_picture)
-                        <img src="{{ Storage::url($user->profile_picture) }}" alt="{{ $user->name }}"
+                        <img src="{{ app(\App\Services\StorageService::class)->profilePictureUrl($user->profile_picture) }}" alt="{{ $user->name }}"
                           class="w-10 h-10 rounded-full object-cover">
                       @else
                         <div

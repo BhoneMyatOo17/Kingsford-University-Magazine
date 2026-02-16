@@ -237,7 +237,7 @@
                                 <div
                                     class="w-32 h-32 mx-auto bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
                                     @if ($user->profile_picture)
-                                        <img id="preview-image" src="{{ asset('storage/' . $user->profile_picture) }}"
+                                        <img id="preview-image" src="{{ app(\App\Services\StorageService::class)->profilePictureUrl($user->profile_picture) }}"
                                             alt="{{ $user->name }}" class="w-full h-full object-cover">
                                     @else
                                         <span id="preview-initials" class="text-4xl font-bold text-[#dc2d3d]">

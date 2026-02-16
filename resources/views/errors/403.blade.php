@@ -61,7 +61,7 @@
   </style>
 
   <div class="flex-grow flex items-center justify-center px-6">
-    <div class="max-w-lg w-full text-center">
+    <div class="max-w-4xl w-full text-center">
       <div class="mb-4 md:mb-8 relative">
         <h1 class="text-8xl md:text-[12rem] font-extrabold text-brandRed opacity-20 dark:opacity-20 select-none">
           403
@@ -78,8 +78,9 @@
       <h2 class="text-2xl md:text-3xl font-bold text-lGray800 dark:text-white mb-4">
         Access Forbidden
       </h2>
-      <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed max-w-sm mx-auto">
-        You do not have permission to view this resource. Please ensure you are logged in with the correct credentials
+      <p class="text-sm md:text-base text-lGray600 dark:text-lGray400 mb-10 leading-relaxed mx-auto">
+        You do not have permission to view this resource. <br>Please ensure you are logged in with the correct
+        credentials
         or contact the administrator.
       </p>
 

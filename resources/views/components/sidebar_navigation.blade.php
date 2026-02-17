@@ -25,7 +25,7 @@
       <div
         class="w-12 h-12 bg-[#dc2d3d] rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
         @if(auth()->user()->profile_picture)
-          <img src="{{ app(\App\Services\StorageService::class)->profilePictureUrl($user->profile_picture) }}"
+          <img src="{{ app(\App\Services\StorageService::class)->profilePictureUrl(auth()->user()->profile_picture) }}"
             alt="{{ auth()->user()->name }}" class="w-full h-full rounded-full object-cover">
         @else
           {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
@@ -106,9 +106,9 @@
         @endphp
         @if($pendingContacts > 0)
           <span class="ml-auto flex items-center justify-center
-                       w-6 h-6
-                       text-xs font-bold rounded-full
-                       {{ request()->routeIs('contact.index', 'contact.show', 'contact.edit')
+                           w-6 h-6
+                           text-xs font-bold rounded-full
+                           {{ request()->routeIs('contact.index', 'contact.show', 'contact.edit')
           ? 'bg-white text-[#dc2d3d]'
           : 'bg-[#dc2d3d] text-white' }}">
             {{ $pendingContacts }}

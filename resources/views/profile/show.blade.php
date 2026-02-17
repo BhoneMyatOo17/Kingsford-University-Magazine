@@ -83,7 +83,10 @@
                                 {{ $user->name }}
                             </h2>
                             <p class="text-white/90 text-lg mt-1">
-                                {{ $student->program ?? '' }} @if($student->faculty) • {{ $student->faculty->name }}
+                                @if ($user->isStudent() && isset($student))
+                                    {{ $student->program ?? '' }} @if($student->faculty) • {{ $student->faculty->name }} @endif
+                                @elseif (!$user->isStudent() && isset($staff))
+                                    {{ $staff->position ?? '' }} @if($staff->department) • {{ $staff->department }} @endif
                                 @endif
                             </p>
                         </div>

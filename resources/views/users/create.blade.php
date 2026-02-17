@@ -225,8 +225,8 @@
                     Student ID <span class="text-red-500">*</span>
                   </label>
                   <input type="text" name="student_id" id="student_id" value="{{ old('student_id') }}"
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
-                    placeholder="e.g., S2024001">
+                    class="w-full px-4 uppercase py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                    placeholder="e.g., S2024001" maxlength="7">
                   @error('student_id')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                   @enderror
@@ -292,8 +292,8 @@
                     Staff ID <span class="text-red-500">*</span>
                   </label>
                   <input type="text" name="staff_id" id="staff_id" value="{{ old('staff_id') }}"
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
-                    placeholder="e.g., STF2024001">
+                    class="w-full px-4 uppercase py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                    placeholder="e.g., STF0001" maxlength="7">
                   @error('staff_id')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                   @enderror
@@ -304,7 +304,7 @@
                   <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Department
                   </label>
-                  <input type="text" name="department" id="department" value="{{ old('department', 'Marketing') }}"
+                  <input type="text" name="department" id="department" value="{{ old('department') }}"
                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all">
                   @error('department')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -397,10 +397,17 @@
       // Toggle fields based on user type
       userTypeSelect.addEventListener('change', function () {
         const userType = this.value;
+        const facultySelect = document.getElementById('faculty_id');
+        const facultyWrapper = facultySelect.closest('div');
 
         // Hide all specific fields first
         studentFields.classList.add('hidden');
         staffFields.classList.add('hidden');
+
+        // Reset faculty field
+        facultySelect.disabled = false;
+        facultySelect.required = true;
+        facultyWrapper.style.opacity = '1';
 
         // Show relevant fields
         if (userType === 'student') {
@@ -411,7 +418,11 @@
           facultyNote.textContent = 'Required for coordinators';
         } else if (userType === 'marketing_manager') {
           staffFields.classList.remove('hidden');
-          facultyNote.textContent = 'Not required for managers';
+          facultySelect.disabled = true;
+          facultySelect.required = false;
+          facultySelect.value = '';
+          facultyWrapper.style.opacity = '0.4';
+          facultyNote.textContent = 'Not applicable for managers';
         }
       });
 

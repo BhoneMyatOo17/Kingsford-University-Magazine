@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Faculty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -39,15 +40,14 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|exists:roles,name',
+            'user_type' => 'required|exists:roles,name',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'student_id' => 'nullable|string|max:50|unique:students,student_id',
             'faculty_id' => 'nullable|exists:faculties,id',
             'program' => 'nullable|string|max:255',
-            'study_level' => 'nullable|in:undergraduate,graduate,doctorate',
+            'study_level' => 'nullable|in:undergraduate,postgraduate,doctorate',
             'enrollment_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
-            'staff_id' => 'nullable|string|max:50|unique:staff,staff_id',
+            'staff_id' => ['nullable', 'string', 'max:7', 'regex:/^STF\d{4}$/i', 'unique:staff,staff_id'],
             'department' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
             'hire_date' => 'nullable|date',
@@ -56,14 +56,30 @@ class UserController extends Controller
             'office_location' => 'nullable|string|max:255',
         ]);
 
+        // One coordinator per faculty check
+        if ($validated['user_type'] === 'marketing_coordinator' && !empty($validated['faculty_id'])) {
+            $existingCoordinator = \App\Models\Staff::whereHas('user', function ($q) {
+                $q->role('marketing_coordinator');
+            })->where('faculty_id', $validated['faculty_id'])->exists();
+
+            if ($existingCoordinator) {
+                return back()->withInput()->withErrors([
+                    'faculty_id' => 'This faculty already has a Marketing Coordinator. Only one coordinator is allowed per faculty.',
+                ]);
+            }
+        }
+
+        // Auto-generate temporary password
+        $temporaryPassword = \Illuminate\Support\Str::random(10) . '!1';
+
         // Create user
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'password' => bcrypt($temporaryPassword),
             'email_verified_at' => now(),
             'is_active' => true,
-            'must_change_password' => false,
+            'must_change_password' => true,
         ]);
 
         // Handle profile picture
@@ -74,32 +90,41 @@ class UserController extends Controller
         }
 
         // Assign role
-        $user->assignRole($validated['role']);
+        $user->assignRole($validated['user_type']);
 
         // Create student or staff record based on role
-        if ($validated['role'] === 'student') {
+        if ($validated['user_type'] === 'student') {
             $user->student()->create([
-                'student_id' => $validated['student_id'],
-                'faculty_id' => $validated['faculty_id'],
-                'program' => $validated['program'],
-                'study_level' => $validated['study_level'],
-                'enrollment_year' => $validated['enrollment_year'],
-                'phone' => $validated['phone'],
-                'address' => $validated['address'],
-            ]);
-        } elseif (in_array($validated['role'], ['marketing_coordinator', 'marketing_manager', 'admin'])) {
-            $user->staff()->create([
-                'staff_id' => $validated['staff_id'],
+                'student_id' => $validated['student_id'] ?? null,
                 'faculty_id' => $validated['faculty_id'] ?? null,
-                'department' => $validated['department'],
-                'position' => $validated['position'],
-                'hire_date' => $validated['hire_date'],
-                'phone' => $validated['phone'],
-                'office_location' => $validated['office_location'],
+                'program' => $validated['program'] ?? null,
+                'study_level' => $validated['study_level'] ?? null,
+                'enrollment_year' => $validated['enrollment_year'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+            ]);
+        } elseif (in_array($validated['user_type'], ['marketing_coordinator', 'marketing_manager', 'admin'])) {
+            $user->staff()->create([
+                'staff_id' => $validated['staff_id'] ?? null,
+                'faculty_id' => $validated['faculty_id'] ?? null,
+                'department' => $validated['department'] ?? null,
+                'position' => $validated['position'] ?? null,
+                'hire_date' => $validated['hire_date'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'office_location' => $validated['office_location'] ?? null,
             ]);
         }
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        // Send temporary password email
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(
+                new \App\Mail\UserCreatedMail($user, $temporaryPassword)
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send temp password email: ' . $e->getMessage());
+        }
+
+        return redirect()->route('users.index')->with('success', 'User created successfully. Temporary password sent to ' . $user->email . '.');
     }
 
     public function show(User $user)

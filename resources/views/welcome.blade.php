@@ -578,9 +578,11 @@
                 </a>
             </div>
         </div>
+        @include('components.cookie_consent')
     </section>
 
     @include('components.footer')
+
 </body>
 
 </html>

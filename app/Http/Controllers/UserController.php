@@ -42,7 +42,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'user_type' => 'required|exists:roles,name',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'student_id' => 'nullable|string|max:50|unique:students,student_id',
+            'student_id' => ['nullable', 'string', 'max:50', 'regex:/^ksf[a-z0-9]{4}$/i', 'unique:students,student_id'],
             'faculty_id' => 'nullable|exists:faculties,id',
             'program' => 'nullable|string|max:255',
             'study_level' => 'nullable|in:undergraduate,postgraduate,doctorate',
@@ -95,7 +95,7 @@ class UserController extends Controller
         // Create student or staff record based on role
         if ($validated['user_type'] === 'student') {
             $user->student()->create([
-                'student_id' => $validated['student_id'] ?? null,
+                'student_id' => $validated['student_id'] ? strtoupper($validated['student_id']) : null,
                 'faculty_id' => $validated['faculty_id'] ?? null,
                 'program' => $validated['program'] ?? null,
                 'study_level' => $validated['study_level'] ?? null,
@@ -155,7 +155,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'student_id' => 'nullable|string|max:50|unique:students,student_id,' . ($user->student->id ?? 'NULL'),
+            'student_id' => ['nullable', 'string', 'max:50', 'regex:/^ksf[a-z0-9]{4}$/i', 'unique:students,student_id,' . ($user->student->id ?? 'NULL')],
             'faculty_id' => 'nullable|exists:faculties,id',
             'program' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -184,7 +184,7 @@ class UserController extends Controller
         // Update student or staff table
         if ($user->isStudent() && $user->student) {
             $user->student->update([
-                'student_id' => $validated['student_id'] ?? $user->student->student_id,
+                'student_id' => $validated['student_id'] ? strtoupper($validated['student_id']) : $user->student->student_id,
                 'faculty_id' => $validated['faculty_id'],
                 'program' => $validated['program'],
                 'phone' => $validated['phone'],

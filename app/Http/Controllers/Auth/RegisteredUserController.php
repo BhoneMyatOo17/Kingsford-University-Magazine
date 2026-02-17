@@ -43,8 +43,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'student_id' => [
                 'required',
-                'regex:/^ksf\d{4}$/',
-                'unique:students,student_id', // Check uniqueness in students table
+                'regex:/^ksf[a-z0-9]{4}$/i',
+                'unique:students,student_id',
             ],
             'email' => [
                 'required',
@@ -102,7 +102,7 @@ class RegisteredUserController extends Controller
             // Create student profile
             Student::create([
                 'user_id' => $user->id,
-                'student_id' => $validated['student_id'],
+                'student_id' => strtoupper($validated['student_id']), // Store in uppercase
                 'faculty_id' => $validated['faculty_id'],
                 'program' => $validated['program'],
                 'enrollment_year' => $validated['enrollment_year'],

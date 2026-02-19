@@ -247,7 +247,7 @@
 
     function setCookieConsent(choice) {
       var expires = new Date();
-      expires.setFullYear(expires.getFullYear() + 1);
+      expires.setDate(expires.getDate() + 1);
       document.cookie = 'ksf_cookie_consent=' + choice + '; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax';
 
       var banner = document.getElementById('cookie-banner');

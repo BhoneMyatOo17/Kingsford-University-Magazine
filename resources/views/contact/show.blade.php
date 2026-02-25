@@ -10,26 +10,9 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
   @include('components.sidebar_navigation')
+  @include('components.top_navigation', ['title' => $contact->subject])
 
   <div class="lg:ml-64">
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-      <div class="px-4 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <button id="sidebar-toggle"
-            class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{{ $contact->subject }}
-          </h1>
-          <a href="{{ route('contact.index') }}" class="text-[#dc2d3d] hover:text-[#b82532] font-medium">
-            Back to List
-          </a>
-        </div>
-      </div>
-    </header>
-
     <main class="p-4 lg:p-8">
       <div class="max-w-4xl mx-auto">
         <!-- Contact Details Card -->
@@ -126,7 +109,7 @@
         <!-- Action Buttons -->
         <div class="flex flex-wrap gap-4">
           <a href="{{ route('contact.edit', $contact) }}"
-            class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 hover:text-white bg-[#dc2d3d] text-white rounded-lg font-semibold hover:bg-[#b82532] transition-colors">
+            class="flex-1 sm:flex-none inline-flex items-center justify-center dark:text-white dark:hover:text-slate-200 px-6 py-3 hover:text-white bg-[#dc2d3d] text-white rounded-lg font-semibold hover:bg-[#b82532] transition-colors">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -149,13 +132,14 @@
           </form>
 
           <a href="{{ route('contact.index') }}"
-            class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            class="flex-1 sm:flex-none inline-flex items-center dark:hover:text-slate-200 justify-center px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
             Cancel
           </a>
         </div>
       </div>
     </main>
   </div>
+  @include('components.dashboard_scripts')
 </body>
 
 </html>

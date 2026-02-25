@@ -89,8 +89,10 @@ class ContactController extends Controller
 
         if ($request->filled('admin_response')) {
             $validated['responded_at'] = now();
+            if ($validated['status'] === 'pending') {
+                $validated['status'] = 'resolved';
+            }
         }
-
         $contact->update($validated);
 
         return redirect()->route('contact.index')

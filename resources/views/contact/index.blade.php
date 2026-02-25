@@ -207,6 +207,7 @@
       </div>
     </main>
   </div>
+  @include('components.dashboard_scripts')
 </body>
 
 </html>

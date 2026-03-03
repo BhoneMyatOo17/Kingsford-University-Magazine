@@ -1,7 +1,7 @@
 <!-- Top Navigation Bar (Mobile & Desktop) -->
 <header class="lg:ml-64 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-  <div class="px-4 lg:px-8 py-4">
-    <div class="flex items-center justify-between">
+  <div class="px-4 lg:px-8 h-20 flex items-center">
+    <div class="flex items-center justify-between w-full">
       <!-- Mobile Menu Toggle -->
       <button id="sidebar-toggle"
         class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">

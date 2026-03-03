@@ -21,16 +21,16 @@
         </div>
       @endif
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <!-- Stats Cards: 2x2 on mobile, 4 columns on md+ -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 lg:p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Total</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
+              <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Total</p>
+              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
             </div>
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 lg:w-6 lg:h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -39,14 +39,14 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 lg:p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['pending'] }}</h3>
+              <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Pending</p>
+              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['pending'] }}</h3>
             </div>
-            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor"
+            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 lg:w-6 lg:h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -55,14 +55,14 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 lg:p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">In Progress</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['in_progress'] }}</h3>
+              <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">In Progress</p>
+              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['in_progress'] }}</h3>
             </div>
-            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
+            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 lg:w-6 lg:h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -70,14 +70,14 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 lg:p-6">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Resolved</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['resolved'] }}</h3>
+              <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Resolved</p>
+              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['resolved'] }}</h3>
             </div>
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
+            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 lg:w-6 lg:h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -107,33 +107,21 @@
         </form>
       </div>
 
-      <!-- Contacts Table -->
+      <!-- Contacts Table (md+) / Card List (mobile) -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div class="overflow-x-auto">
+
+        {{-- Desktop/Tablet Table --}}
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  ID</th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Name</th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Subject</th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Type</th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status</th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Date</th>
-                <th
-                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Subject</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -149,41 +137,29 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @if($contact->user_id)
-                      <span
-                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                         {{ ucfirst($contact->user_role ?? 'User') }}
                       </span>
                     @else
-                      <span
-                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                         Guest
                       </span>
                     @endif
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @if($contact->status == 'pending')
-                      <span
-                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                        Pending
-                      </span>
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Pending</span>
                     @elseif($contact->status == 'in_progress')
-                      <span
-                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
-                        In Progress
-                      </span>
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">In Progress</span>
                     @else
-                      <span
-                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                        Resolved
-                      </span>
+                      <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Resolved</span>
                     @endif
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $contact->created_at->format('M d, Y') }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <a href="{{ route('contact.show', $contact) }}"
-                      class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">View</a>
+                    <a href="{{ route('contact.show', $contact) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">View</a>
                     <a href="{{ route('contact.edit', $contact) }}" class="text-[#dc2d3d] hover:text-[#b82532]">Edit</a>
                   </td>
                 </tr>
@@ -196,6 +172,58 @@
               @endforelse
             </tbody>
           </table>
+        </div>
+
+        {{-- Mobile Card List --}}
+        <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          @forelse($contacts as $contact)
+            <div class="p-4 space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $contact->name }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $contact->email }}</p>
+                </div>
+                <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">Cc{{ $contact->id }}</span>
+              </div>
+
+              <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ $contact->subject }}</p>
+
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                  {{-- Type badge --}}
+                  @if($contact->user_id)
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                      {{ ucfirst($contact->user_role ?? 'User') }}
+                    </span>
+                  @else
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                      Guest
+                    </span>
+                  @endif
+
+                  {{-- Status badge --}}
+                  @if($contact->status == 'pending')
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Pending</span>
+                  @elseif($contact->status == 'in_progress')
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">In Progress</span>
+                  @else
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Resolved</span>
+                  @endif
+
+                  <span class="text-xs text-gray-400 dark:text-gray-500">{{ $contact->created_at->format('M d, Y') }}</span>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0">
+                  <a href="{{ route('contact.show', $contact) }}" class="text-sm text-blue-600 hover:text-blue-900 dark:text-blue-400">View</a>
+                  <a href="{{ route('contact.edit', $contact) }}" class="text-sm text-[#dc2d3d] hover:text-[#b82532]">Edit</a>
+                </div>
+              </div>
+            </div>
+          @empty
+            <div class="p-8 text-center text-gray-500 dark:text-gray-400">
+              No contact requests found.
+            </div>
+          @endforelse
         </div>
 
         <!-- Pagination -->

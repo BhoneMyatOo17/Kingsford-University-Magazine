@@ -89,7 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function isValidEmail(string $email, $user = null): bool
     {
         $email = strtolower($email);
-        
+
         // Exception 1: test@ksf.it.com is always valid
         if ($email === 'test@ksf.it.com') {
             return true;
@@ -189,11 +189,11 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($this->student) {
             return $this->student->faculty;
         }
-        
+
         if ($this->staff && $this->staff->faculty) {
             return $this->staff->faculty;
         }
-        
+
         return null;
     }
 

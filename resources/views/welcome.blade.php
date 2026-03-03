@@ -32,7 +32,7 @@
                     <p class="text-sm md:text-base text-white mb-5 leading-relaxed">
                         Empowering innovation, technology, and excellence in computer science education.
                     </p>
-                    <a href="#about"
+                    <a href="{{ route('faculties.index') }}"
                         class="inline-flex items-center space-x-2 bg-white text-[#dc2d3d] px-5 py-2.5 rounded-md font-semibold text-sm hover:bg-opacity-90 transition-all shadow-lg">
                         <span>Explore Programs</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +132,7 @@
                             </div>
                         </div>
 
-                        <a href="#"
+                        <a href="{{ route('about') }}"
                             class="inline-flex items-center space-x-2 bg-[#dc2d3d]  text-white px-6 py-3 rounded-md font-semibold hover:text-white hover:bg-[#b82532] dark:bg-white dark:text-[#dc2d3d] dark:hover:bg-gray-100 transition-all shadow-lg">
                             <span>Learn More About Us</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Master
                         the art of building scalable, secure, and
                         innovative software solutions for the digital age.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +201,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Design
                         and manage robust network infrastructures
                         that power global connectivity and communications.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,7 +225,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Explore
                         the fundamentals of computing, algorithms,
                         and theoretical foundations of technology.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,7 +249,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Protect
                         digital assets and combat cyber threats
                         with advanced security methodologies and practices.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +273,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Harness
                         the power of data and artificial
                         intelligence to drive insights and innovation.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,7 +297,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Bridge
                         technology and finance to revolutionize
                         banking, payments, and financial services.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -321,7 +321,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Combine
                         business acumen with technical expertise to
                         lead digital transformation initiatives.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +345,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Integrate
                         technology and business processes to
                         optimize organizational efficiency and innovation.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +369,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Master
                         cloud technologies and architecture to build
                         scalable, resilient distributed systems.</p>
-                    <a href="#"
+                    <a href="{{ route('faculties.index') }}"
                         class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
                         Learn More
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

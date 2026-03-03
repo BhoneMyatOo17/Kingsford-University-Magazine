@@ -10,46 +10,10 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
     @include('components.sidebar_navigation')
+    @include('components.top_navigation', ['title' => 'Edit Profile'])
 
     <!-- Main Content -->
     <div class="lg:ml-64">
-        <!-- Top Navigation Bar -->
-        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-            <div class="px-4 lg:px-8 py-4">
-                <div class="flex items-center justify-between">
-                    <!-- Mobile Menu Toggle -->
-                    <button id="sidebar-toggle"
-                        class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-
-                    <!-- Page Title -->
-                    <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
-
-                    <!-- Right Side Actions -->
-                    <div class="flex items-center space-x-4">
-                        <!-- Dark Mode Toggle -->
-                        <button id="theme-toggle-dashboard"
-                            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                            <svg id="theme-toggle-dark-icon-dashboard" class="w-6 h-6 hidden" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                            </svg>
-                            <svg id="theme-toggle-light-icon-dashboard" class="w-6 h-6" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                                    fill-rule="evenodd" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
         <!-- Edit Profile Content -->
         <main class="p-4 lg:p-8">
             @if ($errors->any())
@@ -139,7 +103,7 @@
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Phone Number
                                         </label>
-                                        <input type="tel" id="phone" name="phone"
+                                        <input type="number" id="phone" name="phone"
                                             value="{{ old('phone', $student->phone ?? '') }}"
                                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white">
                                     </div>
@@ -314,6 +278,9 @@
                 reader.readAsDataURL(file);
             }
         });
+        document.querySelectorAll('.phone-input').forEach(input => {
+      allowOnlyPhoneChars(input);
+    });
     </script>
 </body>
 

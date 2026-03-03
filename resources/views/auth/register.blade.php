@@ -9,7 +9,7 @@
             <!-- Name and Student ID -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-input-label for="student_id">
+                    <x-input-label for="name">
                         {{ __('Full Name') }}<span class="text-red-500 ml-1">*</span>
                     </x-input-label>
                     <x-text-input id="name" type="text" name="name" :value="old('name')" placeholder="John Doe" required
@@ -27,9 +27,9 @@
                 </div>
             </div>
 
-            <!-- Email with INLINE BORDER -->
+            <!-- Email -->
             <div>
-                <x-input-label for="student_id">
+                <x-input-label for="email">
                     {{ __('University Email') }}<span class="text-red-500 ml-1">*</span>
                 </x-input-label>
                 <div class="relative">
@@ -37,34 +37,19 @@
                         placeholder="yourname@ksf.it.com" required autocomplete="username"
                         class="block w-full px-3 py-2 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:outline-none pr-12"
                         style="border: 1px solid #d1d5db;" />
-
-
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <svg id="icon-checking" class="animate-spin h-6 w-6 text-gray-400 hidden" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                            </circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
+                        <svg id="icon-checking" class="animate-spin h-6 w-6 text-gray-400 hidden" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-
-                        <svg id="icon-valid" class="h-8 w-8 text-green-500 hidden" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clip-rule="evenodd" />
+                        <svg id="icon-valid" class="h-8 w-8 text-green-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
-
-                        <svg id="icon-invalid" class="h-8 w-8 text-red-500 hidden" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                clip-rule="evenodd" />
+                        <svg id="icon-invalid" class="h-8 w-8 text-red-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                         </svg>
                     </div>
                 </div>
-
                 <div id="msg" class="mt-2 text-sm font-bold"></div>
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
@@ -72,7 +57,7 @@
             <!-- Faculty and Program -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-input-label for="student_id">
+                    <x-input-label for="faculty_id">
                         {{ __('Faculty') }}<span class="text-red-500 ml-1">*</span>
                     </x-input-label>
                     <div class="relative">
@@ -80,14 +65,14 @@
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#dc2d3d]">
                             <option value="">Select your faculty</option>
                             @foreach($faculties as $faculty)
-                                <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                                <option value="{{ $faculty->id }}" {{ old('faculty_id') == $faculty->id ? 'selected' : '' }}>
+                                    {{ $faculty->name }}
+                                </option>
                             @endforeach
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
@@ -95,19 +80,40 @@
                 </div>
 
                 <div>
-                    <x-input-label for="student_id">
+                    <x-input-label for="program_id">
                         {{ __('Program') }}<span class="text-red-500 ml-1">*</span>
                     </x-input-label>
-                    <x-text-input id="program" type="text" name="program" :value="old('program')"
-                        placeholder="BSc Computer Science" required />
-                    <x-input-error :messages="$errors->get('program')" class="mt-2" />
+                    <div class="relative">
+                        <select id="program_id" name="program_id" required
+                            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#dc2d3d]">
+                            <option value="">Select a program</option>
+                            @foreach($faculties as $faculty)
+                                @foreach($faculty->activePrograms as $program)
+                                    <option value="{{ $program->id }}"
+                                        data-faculty="{{ $faculty->id }}"
+                                        data-level="{{ $program->level }}"
+                                        class="program-option"
+                                        style="display:none"
+                                        {{ old('program_id') == $program->id ? 'selected' : '' }}>
+                                        {{ $program->name }}
+                                    </option>
+                                @endforeach
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <x-input-error :messages="$errors->get('program_id')" class="mt-2" />
                 </div>
             </div>
 
-            <!-- Year and Level -->
+            <!-- Enrollment Year and Study Level -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-input-label for="student_id">
+                    <x-input-label for="enrollment_year">
                         {{ __('Enrollment Year') }}<span class="text-red-500 ml-1">*</span>
                     </x-input-label>
                     <div class="relative">
@@ -115,14 +121,12 @@
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#dc2d3d]">
                             <option value="">Select year</option>
                             @for($year = date('Y'); $year >= date('Y') - 10; $year--)
-                                <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>{{ $year }}</option>
+                                <option value="{{ $year }}" {{ old('enrollment_year', date('Y')) == $year ? 'selected' : '' }}>{{ $year }}</option>
                             @endfor
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
@@ -130,22 +134,20 @@
                 </div>
 
                 <div>
-                    <x-input-label for="student_id">
+                    <x-input-label for="study_level">
                         {{ __('Study Level') }}<span class="text-red-500 ml-1">*</span>
                     </x-input-label>
                     <div class="relative">
                         <select id="study_level" name="study_level" required
                             class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#dc2d3d]">
-                            <option value="">Select level</option>
+                            <option value="">Select program level</option>
                             <option value="undergraduate">Undergraduate</option>
                             <option value="postgraduate">Postgraduate</option>
                             <option value="doctorate">Doctorate</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
@@ -180,8 +182,7 @@
                 <input id="terms" type="checkbox" name="terms"
                     class="mt-1 h-4 w-4 rounded border-gray-300 text-[#dc2d3d] cursor-pointer">
                 <span class="text-sm text-gray-600 dark:text-gray-400">
-                    I agree to the <a href="{{ route('terms') }}" class="hover:underline">Terms and
-                        Conditions</a>
+                    I agree to the <a href="{{ route('terms') }}" class="hover:underline">Terms and Conditions</a>
                 </span>
             </div>
             <x-input-error :messages="$errors->get('terms')" class="mt-2" />
@@ -190,7 +191,7 @@
         </form>
     </div>
 
-    <!-- Modal -->
+    <!-- Terms Modal -->
     <div id="modal" class="fixed inset-0 hidden" style="z-index: 99999;">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-black bg-opacity-50"></div>
@@ -199,22 +200,17 @@
                     <h3 class="text-xl font-bold text-white">Terms and Conditions</h3>
                     <button type="button" onclick="closeModal()" class="text-white hover:text-gray-200">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
                 <div id="content" class="px-6 py-4 max-h-96 overflow-y-auto">
-                    <!-- Introduction -->
                     <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">
                         These <strong>User Registration Terms and Conditions</strong> govern your use of the Kingsford
                         University Magazine System. Please read carefully before proceeding with registration.
                     </p>
-
-                    <!-- Section 1: Data Collection -->
                     <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">1. Data Collection</h3>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">The system collects the following personal
-                        information:</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">The system collects the following personal information:</p>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
                         <li>Full Name</li>
                         <li>University Email Address (@ksf.it.com)</li>
@@ -223,8 +219,6 @@
                         <li>Login Credentials (Username and Password)</li>
                         <li>Magazine Contributions (articles, images, comments)</li>
                     </ul>
-
-                    <!-- Section 2: Data Usage -->
                     <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">2. Use of Your Data</h3>
                     <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">Your data will be used for:</p>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
@@ -235,32 +229,22 @@
                         <li>Annual Magazine Publication</li>
                     </ul>
                     <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                        <strong>Important:</strong> Your data will <strong>NOT</strong> be used for commercial purposes
-                        or shared with external organizations.
+                        <strong>Important:</strong> Your data will <strong>NOT</strong> be used for commercial purposes or shared with external organizations.
                     </p>
-
-                    <!-- Section 3: Data Storage -->
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">3. Data Storage &
-                        Security</h3>
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">3. Data Storage & Security</h3>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
                         <li>All data is stored securely on university-managed systems</li>
                         <li>Data is retained only for academic, administrative, and audit purposes</li>
-                        <li>Your submissions are visible to authorized personnel (Marketing Coordinator, Marketing
-                            Manager, and Administrators) based on Faculty alignment</li>
-                        <li>Statistical reports (e.g., contribution counts per Faculty) may be generated for university
-                            reporting</li>
+                        <li>Your submissions are visible to authorized personnel (Marketing Coordinator, Marketing Manager, and Administrators) based on Faculty alignment</li>
+                        <li>Statistical reports (e.g., contribution counts per Faculty) may be generated for university reporting</li>
                     </ul>
-
-                    <!-- Section 4: Your Rights -->
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">4. Your Rights &
-                        Responsibilities</h3>
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">4. Your Rights & Responsibilities</h3>
                     <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Your Rights:</p>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
                         <li>Privacy and data protection according to applicable laws</li>
                         <li>Request correction of inaccurate personal information</li>
                         <li>Report misuse, abuse, or security issues</li>
                     </ul>
-
                     <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Your Responsibilities:</p>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
                         <li>Provide accurate and complete information during registration</li>
@@ -269,10 +253,7 @@
                         <li>No impersonation or misrepresentation of identity</li>
                         <li>Report unauthorized access immediately</li>
                     </ul>
-
-                    <!-- Section 5: University Rights -->
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">5. University Rights
-                    </h3>
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">5. University Rights</h3>
                     <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">The University reserves the right to:</p>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside mb-3 space-y-1 ml-2">
                         <li>Suspend or terminate access for users who violate these Terms</li>
@@ -280,21 +261,13 @@
                         <li>Take disciplinary action for serious breaches under University regulations</li>
                     </ul>
                     <p class="text-sm text-gray-600 dark:text-gray-400 italic mb-3">
-                        Note: The University does not guarantee uninterrupted availability and is not liable for data
-                        loss caused by technical failures beyond reasonable control.
+                        Note: The University does not guarantee uninterrupted availability and is not liable for data loss caused by technical failures beyond reasonable control.
                     </p>
-
-                    <!-- Section 6: Changes to Terms -->
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">6. Changes to These
-                        Terms</h3>
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2 mt-4">6. Changes to These Terms</h3>
                     <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                        The University may update these Terms at any time. Continued use of the system constitutes
-                        acceptance of updated terms.
+                        The University may update these Terms at any time. Continued use of the system constitutes acceptance of updated terms.
                     </p>
-
-                    <!-- Agreement Notice -->
-                    <div
-                        class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                         <p class="text-sm text-blue-900 dark:text-blue-200 font-medium">
                             By clicking "I have READ and AGREE to the Terms and Conditions" and completing registration,
                             you confirm that you have read, understood, and agree to all terms. Failure to comply may
@@ -306,14 +279,8 @@
                     <p class="text-sm text-yellow-800">⬇️ Scroll to read all terms</p>
                 </div>
                 <div class="px-6 py-4 flex justify-between bg-gray-50">
-                    <button type="button" onclick="closeModal()"
-                        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
-                        Decline
-                    </button>
-                    <button type="button" id="agree" disabled
-                        class="px-6 py-2 bg-[#dc2d3d] text-white rounded hover:bg-[#b82532] disabled:opacity-50">
-                        I Agree
-                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">Decline</button>
+                    <button type="button" id="agree" disabled class="px-6 py-2 bg-[#dc2d3d] text-white rounded hover:bg-[#b82532] disabled:opacity-50">I Agree</button>
                 </div>
             </div>
         </div>
@@ -325,116 +292,8 @@
             <a href="{{ route('login') }}" class="text-[#dc2d3d] font-semibold">Login</a>
         </p>
     </x-slot>
-
-    <script>
-        // Email validation - SIMPLE VERSION
-        const emailInput = document.getElementById('email');
-        const checking = document.getElementById('icon-checking');
-        const valid = document.getElementById('icon-valid');
-        const invalid = document.getElementById('icon-invalid');
-        const msg = document.getElementById('msg');
-        let timer;
-
-        emailInput.addEventListener('input', function () {
-            clearTimeout(timer);
-
-            // Reset
-            checking.classList.add('hidden');
-            valid.classList.add('hidden');
-            invalid.classList.add('hidden');
-            msg.innerHTML = '';
-            this.style.border = '1px solid #d1d5db';
-
-            const email = this.value.trim();
-            if (!email) return;
-
-            // Show loading
-            checking.classList.remove('hidden');
-
-            timer = setTimeout(() => {
-                // Check domain
-                if (!email.endsWith('@ksf.it.com')) {
-                    checking.classList.add('hidden');
-                    invalid.classList.remove('hidden');
-                    msg.innerHTML = '<span style="color: #ef4444;">Please use your student email</span>';
-                    emailInput.style.border = '2px solid #ef4444';
-                    return;
-                }
-
-                // Check if exists
-                fetch('/api/check-email', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ email })
-                })
-                    .then(r => r.json())
-                    .then(data => {
-                        checking.classList.add('hidden');
-
-                        if (data.exists) {
-                            // RED - exists
-                            invalid.classList.remove('hidden');
-                            msg.innerHTML = '<span style="color: #ef4444;">Email already registered</span>';
-                            emailInput.style.border = '2px solid #ef4444';
-                        } else {
-                            // GREEN - available
-                            valid.classList.remove('hidden');
-                            msg.innerHTML = '<span style="color: #22c55e; font-weight: bold;"></span>';
-                            emailInput.style.border = '2px solid #22c55e';
-                        }
-                    })
-                    .catch(() => {
-                        checking.classList.add('hidden');
-                        // If API fails, just show available (don't block user)
-                        valid.classList.remove('hidden');
-                        msg.innerHTML = '<span style="color: #22c55e;"></span>';
-                        emailInput.style.border = '2px solid #22c55e';
-                    });
-            }, 500);
-        });
-
-        // Modal - opens on FIRST click
-        const modal = document.getElementById('modal');
-        const checkbox = document.getElementById('terms');
-        const agreeBtn = document.getElementById('agree');
-        const content = document.getElementById('content');
-        const hint = document.getElementById('hint');
-
-        checkbox.addEventListener('change', function () {
-            if (this.checked) {
-                // First time checking - open modal
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        });
-
-        function closeModal() {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            checkbox.checked = false;
-        }
-
-        agreeBtn.addEventListener('click', function () {
-            checkbox.checked = true;
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        });
-
-        content.addEventListener('scroll', function () {
-            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 5) {
-                agreeBtn.disabled = false;
-                hint.classList.add('hidden');
-            }
-        });
-    </script>
-
+    @include('components.email-scripts')
     <style>
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-        }
+        select { appearance: none; -webkit-appearance: none; }
     </style>
 </x-guest-layout>

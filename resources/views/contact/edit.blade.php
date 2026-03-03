@@ -10,70 +10,91 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
   @include('components.sidebar_navigation')
+  @include('components.top_navigation', ['title' => 'Response'])
 
   <div class="lg:ml-64">
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-      <div class="px-4 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <button id="sidebar-toggle"
-            class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Edit Contact Request
-            #{{ $contact->id }}</h1>
-          <a href="{{ route('contact.show', $contact) }}" class="text-[#dc2d3d] hover:text-[#b82532] font-medium">
-            Back
-          </a>
-        </div>
-      </div>
-    </header>
-
     <main class="p-4 lg:p-8">
       <div class="max-w-4xl mx-auto">
-        <!-- Contact Info Card (Read-only) -->
+
+        <!-- Contact Info Card -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
           <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Contact Information</h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Name</label>
-              <p class="text-gray-900 dark:text-white font-medium">{{ $contact->name }}</p>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</label>
-              <p class="text-gray-900 dark:text-white font-medium">{{ $contact->email }}</p>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
-              @if($contact->user_id)
+          {{-- Mobile: compact single-line summary --}}
+          <div class="md:hidden space-y-3">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $contact->name }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 break-all">{{ $contact->email }}</p>
+              </div>
+              <div class="shrink-0 flex items-center gap-2">
+                @if($contact->user_id)
+                  <span
+                    class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                    {{ ucfirst($contact->user_role ?? 'User') }}
+                  </span>
+                @else
+                  <span
+                    class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    Guest
+                  </span>
+                @endif
                 <span
-                  class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                  {{ ucfirst($contact->user_role ?? 'User') }}
-                </span>
-              @else
-                <span
-                  class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                  Guest
-                </span>
-              @endif
+                  class="text-xs text-gray-400 dark:text-gray-500">{{ $contact->created_at->format('M d, Y') }}</span>
+              </div>
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Submitted</label>
-              <p class="text-gray-900 dark:text-white">{{ $contact->created_at->format('M d, Y h:i A') }}</p>
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $contact->subject }}</p>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+              <p class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap break-words">{{ $contact->message }}
+              </p>
             </div>
           </div>
 
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Subject</label>
-            <p class="text-gray-900 dark:text-white font-medium">{{ $contact->subject }}</p>
-          </div>
+          {{-- Desktop: original full grid layout --}}
+          <div class="hidden md:block">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Name</label>
+                <p class="text-gray-900 dark:text-white font-medium">{{ $contact->name }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</label>
+                <p class="text-gray-900 dark:text-white font-medium">{{ $contact->email }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
+                @if($contact->user_id)
+                  <span
+                    class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                    {{ ucfirst($contact->user_role ?? 'User') }}
+                  </span>
+                @else
+                  <span
+                    class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    Guest
+                  </span>
+                @endif
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Submitted</label>
+                <p class="text-gray-900 dark:text-white">{{ $contact->created_at->format('M d, Y h:i A') }}</p>
+              </div>
+            </div>
 
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Message</label>
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ $contact->message }}</p>
+            <div class="mt-4">
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Subject</label>
+              <p class="text-gray-900 dark:text-white font-medium">{{ $contact->subject }}</p>
+            </div>
+
+            <div class="mt-4">
+              <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Message</label>
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ $contact->message }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -135,24 +156,26 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-col sm:flex-row gap-3">
             <button type="submit"
-              class="flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 bg-[#dc2d3d] text-white rounded-lg font-semibold hover:bg-[#b82532] transition-colors shadow-lg">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="inline-flex items-center justify-center px-8 py-3 bg-[#dc2d3d] text-white rounded-lg font-semibold hover:bg-[#b82532] transition-colors shadow-lg">
+              <svg class="w-5 h-5 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
               Save Changes
             </button>
 
             <a href="{{ route('contact.show', $contact) }}"
-              class="flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+              class="inline-flex items-center justify-center px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
               Cancel
             </a>
           </div>
         </form>
+
       </div>
     </main>
   </div>
+  @include('components.dashboard_scripts')
 </body>
 
 </html>

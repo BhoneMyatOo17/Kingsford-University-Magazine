@@ -10,42 +10,11 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
   @include('components.sidebar_navigation')
+  @include('components.top_navigation', ['title' => 'Create User Account'])
 
   <!-- Main Content -->
   <div class="lg:ml-64">
-    <!-- Top Navigation Bar -->
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-      <div class="px-4 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-          <!-- Mobile Menu Toggle -->
-          <button id="sidebar-toggle"
-            class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
 
-          <!-- Page Title -->
-          <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Create New User</h1>
-
-          <!-- Right Side Actions -->
-          <div class="flex items-center space-x-4">
-            <!-- Dark Mode Toggle -->
-            <button id="theme-toggle-dashboard"
-              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-              <svg id="theme-toggle-dark-icon-dashboard" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-              </svg>
-              <svg id="theme-toggle-light-icon-dashboard" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  fill-rule="evenodd" clip-rule="evenodd"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
 
     <!-- Form Content -->
     <main class="p-4 lg:p-8">
@@ -386,7 +355,8 @@
     </main>
   </div>
 
-  <!-- Scripts -->
+  @include('components.dashboard_scripts')
+  @include('components.email-scripts')
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const userTypeSelect = document.getElementById('user_type');
@@ -394,22 +364,18 @@
       const staffFields = document.getElementById('staff-fields');
       const facultyNote = document.getElementById('faculty-note');
 
-      // Toggle fields based on user type
       userTypeSelect.addEventListener('change', function () {
         const userType = this.value;
         const facultySelect = document.getElementById('faculty_id');
         const facultyWrapper = facultySelect.closest('div');
 
-        // Hide all specific fields first
         studentFields.classList.add('hidden');
         staffFields.classList.add('hidden');
 
-        // Reset faculty field
         facultySelect.disabled = false;
         facultySelect.required = true;
         facultyWrapper.style.opacity = '1';
 
-        // Show relevant fields
         if (userType === 'student') {
           studentFields.classList.remove('hidden');
           facultyNote.textContent = 'Required for students';
@@ -426,150 +392,9 @@
         }
       });
 
-      // Trigger on page load if there's an old value
       if (userTypeSelect.value) {
         userTypeSelect.dispatchEvent(new Event('change'));
       }
-
-      // Sidebar toggle for mobile
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const sidebarClose = document.getElementById('sidebar-close');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-      if (sidebarToggle && sidebar && sidebarOverlay) {
-        sidebarToggle.addEventListener('click', function () {
-          sidebar.classList.remove('-translate-x-full');
-          sidebarOverlay.classList.remove('hidden');
-        });
-
-        sidebarClose.addEventListener('click', function () {
-          sidebar.classList.add('-translate-x-full');
-          sidebarOverlay.classList.add('hidden');
-        });
-
-        sidebarOverlay.addEventListener('click', function () {
-          sidebar.classList.add('-translate-x-full');
-          sidebarOverlay.classList.add('hidden');
-        });
-      }
-
-      // Dashboard theme toggle
-      const themeToggleDashboard = document.getElementById('theme-toggle-dashboard');
-      const themeToggleDarkIconDashboard = document.getElementById('theme-toggle-dark-icon-dashboard');
-      const themeToggleLightIconDashboard = document.getElementById('theme-toggle-light-icon-dashboard');
-
-      function updateDashboardThemeIcons(isDark) {
-        if (isDark) {
-          themeToggleDarkIconDashboard?.classList.remove('hidden');
-          themeToggleLightIconDashboard?.classList.add('hidden');
-        } else {
-          themeToggleLightIconDashboard?.classList.remove('hidden');
-          themeToggleDarkIconDashboard?.classList.add('hidden');
-        }
-      }
-
-      if (document.documentElement.classList.contains('dark')) {
-        updateDashboardThemeIcons(true);
-      } else {
-        updateDashboardThemeIcons(false);
-      }
-
-      if (themeToggleDashboard) {
-        themeToggleDashboard.addEventListener('click', function () {
-          const isDarkMode = document.documentElement.classList.contains('dark');
-
-          if (isDarkMode) {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.setAttribute('data-web-theme', 'light');
-            localStorage.setItem('color-theme', 'light');
-            updateDashboardThemeIcons(false);
-          } else {
-            document.documentElement.classList.add('dark');
-            document.documentElement.setAttribute('data-web-theme', 'dark');
-            localStorage.setItem('color-theme', 'dark');
-            updateDashboardThemeIcons(true);
-          }
-        });
-      }
-
-      // Email validation
-      const emailInput = document.getElementById('email');
-      const checking = document.getElementById('icon-checking');
-      const valid = document.getElementById('icon-valid');
-      const invalid = document.getElementById('icon-invalid');
-      const msg = document.getElementById('msg');
-      let timer;
-
-      emailInput.addEventListener('input', function () {
-        clearTimeout(timer);
-
-        // Reset
-        checking.classList.add('hidden');
-        valid.classList.add('hidden');
-        invalid.classList.add('hidden');
-        msg.innerHTML = '';
-        this.style.border = '1px solid #d1d5db';
-
-        const email = this.value.trim();
-        if (!email) return;
-
-        // Show loading
-        checking.classList.remove('hidden');
-
-        timer = setTimeout(() => {
-          // Check domain
-          if (!email.endsWith('@ksf.it.com')) {
-            checking.classList.add('hidden');
-            invalid.classList.remove('hidden');
-            msg.innerHTML = '<span style="color: #ef4444;">Please use a @ksf.it.com email</span>';
-            emailInput.style.border = '2px solid #ef4444';
-            return;
-          }
-
-          // Check if exists
-          fetch('/api/check-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email })
-          })
-            .then(r => r.json())
-            .then(data => {
-              console.log('API Response:', data); // Debug log
-              checking.classList.add('hidden');
-
-              // Your controller returns { valid, exists, message }
-              // exists = true means email is already taken
-              if (data.exists === true) {
-                // RED - email already exists
-                invalid.classList.remove('hidden');
-                msg.innerHTML = '<span style="color: #ef4444;">Email already registered</span>';
-                emailInput.style.border = '2px solid #ef4444';
-              } else if (data.valid === true || data.exists === false) {
-                // GREEN - email is available
-                valid.classList.remove('hidden');
-                msg.innerHTML = '<span style="color: #22c55e;"></span>';
-                emailInput.style.border = '2px solid #22c55e';
-              } else {
-                // Invalid format or other error
-                invalid.classList.remove('hidden');
-                msg.innerHTML = '<span style="color: #ef4444;">' + (data.message || 'Invalid email') + '</span>';
-                emailInput.style.border = '2px solid #ef4444';
-              }
-            })
-            .catch((error) => {
-              console.error('Email check error:', error);
-              checking.classList.add('hidden');
-              // Show error state
-              invalid.classList.remove('hidden');
-              msg.innerHTML = '<span style="color: #ef4444;">Could not verify email</span>';
-              emailInput.style.border = '2px solid #ef4444';
-            });
-        }, 500);
-      });
     });
   </script>
 </body>

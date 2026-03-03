@@ -12,7 +12,7 @@
         <div>
             <x-input-label for="email" :value="__('Email Address')" />
             <x-text-input id="email" type="email" name="email" :value="old('email', $request->email)"
-                placeholder="example@ksf.it.com" required autofocus autocomplete="username" />
+                placeholder="example@ksf.it.com" required readonly autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 

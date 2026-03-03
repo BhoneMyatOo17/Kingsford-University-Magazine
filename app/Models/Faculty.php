@@ -2,20 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Faculty extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'code',
@@ -23,60 +17,35 @@ class Faculty extends Model
         'is_active',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'is_active' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
-    /**
-     * Get all students in this faculty.
-     */
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
     }
 
-    /**
-     * Get all staff in this faculty.
-     */
     public function staff(): HasMany
     {
         return $this->hasMany(Staff::class);
     }
 
-    /**
-     * Get the marketing coordinator for this faculty
-     */
-    public function marketingCoordinator()
+    public function posts(): HasMany
     {
-        return $this->staff()
-            ->whereHas('user', function ($query) {
-                $query->role('marketing_coordinator');
-            })
-            ->with('user')
-            ->first();
+        return $this->hasMany(Post::class);
     }
 
-    /**
-     * Get all contributions from students in this faculty
-     */
-    public function contributions()
+    public function programs(): HasMany
     {
-        return Contribution::whereHas('student', function ($query) {
-            $query->where('faculty_id', $this->id);
-        });
+        return $this->hasMany(Program::class);
     }
 
-    /**
-     * Scope to get only active faculties
-     */
+    public function activePrograms(): HasMany
+    {
+        return $this->hasMany(Program::class)->where('is_active', true);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

@@ -160,7 +160,7 @@
                 </span>
               @else
                 <span class="inline-flex items-center text-sm text-green-700 dark:text-green-400">
-                  Permanent Password
+                  Valid Password
                 </span>
               @endif
             </div>

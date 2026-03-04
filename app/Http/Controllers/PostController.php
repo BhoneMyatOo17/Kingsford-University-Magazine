@@ -19,7 +19,7 @@ class PostController extends Controller
             ->orderBy('closure_date', 'desc');
 
         // Coordinator: only their faculty's posts
-        if ($user->hasRole('coordinator')) {
+        if ($user->hasRole('marketing_coordinator')) {
             $facultyId = $user->staff->faculty_id;
             $query->where('faculty_id', $facultyId);
         }
@@ -42,7 +42,12 @@ class PostController extends Controller
                 ->flip();
         }
 
-        return view('posts.index', compact('posts', 'submittedPostIds'));
+        $trashedPosts = collect();
+        if ($user->hasRole('admin')) {
+            $trashedPosts = Post::onlyTrashed()->with(['faculty', 'academicYear'])->orderBy('deleted_at', 'desc')->get();
+        }
+
+        return view('posts.index', compact('posts', 'submittedPostIds', 'trashedPosts'));
     }
 
     public function show(Post $post)
@@ -144,5 +149,14 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')
             ->with('success', 'Post deleted.');
+    }
+
+    public function restore(int $id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $post->restore();
+
+        return redirect()->route('posts.index')
+            ->with('success', 'Post restored successfully.');
     }
 }

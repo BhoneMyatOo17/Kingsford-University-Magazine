@@ -148,7 +148,20 @@
             <div>
               <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Last Login</label>
               <p class="text-base text-gray-900 dark:text-white">
-                {{ $user->last_login_at ? $user->last_login_at->format('M d, Y \a\t H:i') : 'Never' }}
+                @if($user->previous_login_at)
+                  {{ $user->previous_login_at->format('M d, Y \a\t H:i') }}
+                @elseif($user->last_login_at)
+                  {{ $user->last_login_at->format('M d, Y \a\t H:i') }}
+                @else
+                  Never
+                @endif
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Last Browser</label>
+              <p class="text-base text-gray-900 dark:text-white">
+                {{ $user->last_login_browser ?? 'Unknown' }}
               </p>
             </div>
 

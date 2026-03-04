@@ -62,33 +62,42 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Title <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="title" value="{{ old('title') }}"
+            <input type="text" name="title" value="{{ old('title') }}" required placeholder="Your submission title"
               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent @error('title') border-red-500 @enderror">
             @error('title')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-            <textarea name="description" rows="4"
+            <textarea name="description" rows="4" placeholder="Explain what your contribution is about"
               class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent">{{ old('description') }}</textarea>
           </div>
 
           {{-- Documents Upload --}}
           <div x-data="{
               files: [],
+              fileList: [],
               handleFiles(e) {
                 const selected = Array.from(e.target.files);
-                this.files = selected.map(f => ({
-                  name: f.name,
-                  size: this.formatSize(f.size),
-                  ext: f.name.split('.').pop().toLowerCase()
-                }));
+                selected.forEach(f => {
+                  this.files.push({
+                    name: f.name,
+                    size: this.formatSize(f.size),
+                    ext: f.name.split('.').pop().toLowerCase()
+                  });
+                  this.fileList.push(f);
+                });
+                this.syncInput();
               },
               removeFile(index) {
                 this.files.splice(index, 1);
-                if (this.files.length === 0) {
-                  this.$refs.docInput.value = '';
-                }
+                this.fileList.splice(index, 1);
+                this.syncInput();
+              },
+              syncInput() {
+                const dt = new DataTransfer();
+                this.fileList.forEach(f => dt.items.add(f));
+                this.$refs.docInput.files = dt.files;
               },
               formatSize(bytes) {
                 if (bytes < 1024) return bytes + ' B';
@@ -157,9 +166,9 @@
           {{-- Images Upload --}}
           <div x-data="{
               previews: [],
+              fileList: [],
               handleImages(e) {
                 const selected = Array.from(e.target.files);
-                this.previews = [];
                 selected.forEach(file => {
                   const reader = new FileReader();
                   reader.onload = (ev) => {
@@ -170,13 +179,19 @@
                     });
                   };
                   reader.readAsDataURL(file);
+                  this.fileList.push(file);
                 });
+                this.syncInput();
               },
               removeImage(index) {
                 this.previews.splice(index, 1);
-                if (this.previews.length === 0) {
-                  this.$refs.imgInput.value = '';
-                }
+                this.fileList.splice(index, 1);
+                this.syncInput();
+              },
+              syncInput() {
+                const dt = new DataTransfer();
+                this.fileList.forEach(f => dt.items.add(f));
+                this.$refs.imgInput.files = dt.files;
               },
               formatSize(bytes) {
                 if (bytes < 1024) return bytes + ' B';
@@ -239,10 +254,10 @@
           </div>
 
           <div class="flex items-start gap-3">
-            <input type="checkbox" name="terms_accepted" id="terms_accepted" value="1"
+            <input type="checkbox" name="terms_accepted" id="terms_accepted" value="1" required
               class="mt-1 h-4 w-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d] cursor-pointer @error('terms_accepted') border-red-500 @enderror"
-              {{ old('terms_accepted') ? 'checked' : '' }}>
-            <label for="terms_accepted" class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+              {{ old('terms_accepted') ? 'checked' : '' }} onclick="event.preventDefault(); openContribModal();">
+            <label class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer" onclick="openContribModal()">
               I have read and agree to the
               <button type="button" onclick="event.preventDefault(); openContribModal()"
                 class="text-[#dc2d3d] font-semibold hover:underline">Contribution Terms and Conditions</button>
@@ -280,7 +295,7 @@
             </svg>
           </button>
         </div>
-        <div id="contrib-content" class="px-6 py-4 max-h-96 overflow-y-auto">
+        <div id="contrib-content" class="px-6 py-4 max-h-96 overflow-y-auto" onscroll="checkContribScroll(this)">
           <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">
             These <strong>Contribution Terms and Conditions</strong> govern the submission of articles and images to the
             Kingsford University Magazine. Please read carefully before submitting.
@@ -328,13 +343,17 @@
             </p>
           </div>
         </div>
+        <div id="contrib-scroll-hint"
+          class="px-6 py-2 bg-blue-50 dark:bg-blue-900/20 text-center border-t border-yellow-100 dark:border-yellow-800">
+          <p class="text-sm text-gray-800 dark:text-gray-400">⬇️ Scroll to read all terms</p>
+        </div>
         <div class="px-6 py-4 flex justify-between bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
           <button type="button" onclick="closeContribModal()"
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
             Decline
           </button>
-          <button type="button" id="contrib-agree" onclick="agreeContribTerms()"
-            class="px-6 py-2 bg-[#dc2d3d] text-white rounded hover:bg-[#b82532]">
+          <button type="button" id="contrib-agree" onclick="agreeContribTerms()" disabled
+            class="px-6 py-2 bg-[#dc2d3d] text-white rounded disabled:opacity-50 hover:bg-[#b82532]">
             I Agree
           </button>
         </div>
@@ -350,16 +369,33 @@
     function openContribModal() {
       document.getElementById('contrib-modal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
+
+      const content = document.getElementById('contrib-content');
+      const btn = document.getElementById('contrib-agree');
+      const hint = document.getElementById('contrib-scroll-hint');
+      content.scrollTop = 0;
+      btn.disabled = true;
+      hint.style.display = '';
+    }
+
+    function checkContribScroll(el) {
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
+      if (atBottom) {
+        document.getElementById('contrib-agree').disabled = false;
+        document.getElementById('contrib-scroll-hint').style.display = 'none';
+      }
     }
 
     function closeContribModal() {
       document.getElementById('contrib-modal').classList.add('hidden');
       document.body.style.overflow = '';
+      document.getElementById('terms_accepted').checked = false;
     }
 
     function agreeContribTerms() {
       document.getElementById('terms_accepted').checked = true;
-      closeContribModal();
+      document.getElementById('contrib-modal').classList.add('hidden');
+      document.body.style.overflow = '';
     }
   </script>
 </body>

@@ -275,8 +275,8 @@
                         </p>
                     </div>
                 </div>
-                <div id="hint" class="px-6 py-2 bg-yellow-50 text-center border-t">
-                    <p class="text-sm text-yellow-800">⬇️ Scroll to read all terms</p>
+                <div id="hint" class="px-6 py-2 bg-blue-50 text-center border-t">
+                    <p class="text-sm text-gray-800">⬇️ Scroll to read all terms</p>
                 </div>
                 <div class="px-6 py-4 flex justify-between bg-gray-50">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">Decline</button>

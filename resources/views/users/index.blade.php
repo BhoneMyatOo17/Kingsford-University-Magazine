@@ -175,9 +175,7 @@
                 <th
                   class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status</th>
-                <th
-                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Last Login</th>
+
                 @if(auth()->user()->hasRole('admin'))
                   <th
                     class="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -236,9 +234,7 @@
                         class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Inactive</span>
                     @endif
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
-                  </td>
+
                   @if(auth()->user()->hasRole('admin'))
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <a href="{{ route('users.show', $user) }}"
@@ -248,7 +244,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="{{ auth()->user()->hasRole('admin') ? '7' : '6' }}" class="px-6 py-12 text-center">
+                  <td colspan="{{ auth()->user()->hasRole('admin') ? '6' : '5' }}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center justify-center">
                       <svg class="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
@@ -308,7 +304,7 @@
                 @endif
               </div>
 
-              {{-- Row 3: Faculty · Last login --}}
+              {{-- Row 3: Faculty --}}
               <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
                 <span>
                   @if($user->student && $user->student->faculty)
@@ -319,8 +315,6 @@
                     Unassigned
                   @endif
                 </span>
-                <span>·</span>
-                <span>{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never logged in' }}</span>
               </div>
             </div>
           @empty

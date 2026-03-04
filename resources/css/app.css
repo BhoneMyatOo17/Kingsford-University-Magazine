@@ -35,8 +35,12 @@
     @apply max-w-full;
   }
 
+  a:not([class*="text-"]) {
+    @apply text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757];
+  }
+
   a {
-    @apply text-balance break-words text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757] no-underline;
+    @apply text-balance break-words no-underline;
   }
 
   a,

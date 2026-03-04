@@ -115,8 +115,22 @@
               class="inline-flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               Cancel
             </a>
+            @if(!$academicYear->is_active)
+              <button type="button"
+                onclick="if(!confirm('Delete {{ $academicYear->name }}? This cannot be undone.')) return false; document.getElementById('delete-form').submit();"
+                class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 font-semibold rounded-lg border border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                Delete
+              </button>
+            @endif
           </div>
         </form>
+
+        @if(!$academicYear->is_active)
+          <form id="delete-form" action="{{ route('academic-years.destroy', $academicYear) }}" method="POST"
+            class="hidden">
+            @csrf @method('DELETE')
+          </form>
+        @endif
       </div>
 
     </main>

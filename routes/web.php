@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\PasswordChangeController;
 use App\Http\Controllers\ContactController;
@@ -52,9 +53,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified', 'check.temporary.password', 'check.user.active'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ============================================
     // PROFILE ROUTES
@@ -134,6 +133,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Posts — admin management (MUST be before posts.show to avoid {post} swallowing 'create')
     Route::middleware(['role:admin'])->group(function () {
+        Route::post('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+        Route::resource('posts', PostController::class);
         Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
         Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
         Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
@@ -159,6 +160,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/contributions/{contribution}/edit', [ContributionController::class, 'edit'])->name('contributions.edit');
         Route::put('/contributions/{contribution}', [ContributionController::class, 'update'])->name('contributions.update');
         Route::delete('/contributions/{contribution}', [ContributionController::class, 'destroy'])->name('contributions.destroy');
+        Route::delete('/contributions/files/{file}', [ContributionController::class, 'destroyFile'])->name('contributions.files.destroy');
     });
 
     // Coordinator + Manager: contribution index
@@ -178,6 +180,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:marketing_coordinator'])->group(function () {
         Route::post('/contributions/{contribution}/comment', [ContributionController::class, 'comment'])->name('contributions.comment');
         Route::post('/contributions/{contribution}/toggle-approval', [ContributionController::class, 'toggleApproval'])->name('contributions.toggleApproval');
+        Route::post('/contributions/{contribution}/reject', [ContributionController::class, 'reject'])->name('contributions.reject');
     });
 
     // Report: coordinator or student

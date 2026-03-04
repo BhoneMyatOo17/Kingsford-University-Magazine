@@ -16,12 +16,12 @@
     <main class="p-4 lg:p-8">
 
       <div class="mb-6 flex items-center justify-between">
-        <a href="{{ route('posts.index') }}"
+        <a href="{{ $backUrl }}"
           class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-[#dc2d3d] transition-colors">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
-          Back to Posts
+          Back
         </a>
         <div class="flex gap-2">
           @if($canEdit)
@@ -35,10 +35,10 @@
             </a>
           @endif
           @if($canDelete)
-            <form action="{{ route('contributions.destroy', $contribution) }}" method="POST"
-              onsubmit="return confirm('Delete this contribution? This cannot be undone.')">
+            <form action="{{ route('contributions.destroy', $contribution) }}" method="POST">
               @csrf @method('DELETE')
-              <button
+              <button type="button"
+                onclick="if(confirm('Delete this contribution? This cannot be undone.')) this.closest('form').submit();"
                 class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -55,13 +55,27 @@
         @if(session($msg))
           <div
             class="mb-6 px-4 py-3 rounded-lg flex items-center
-                  {{ $msg === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200' :
+                          {{ $msg === 'error' ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200' :
           ($msg === 'info' ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200' :
             'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200') }}">
             {{ session($msg) }}
           </div>
         @endif
       @endforeach
+
+      @if(auth()->user()->isMarketingCoordinator() && $contribution->comments->isEmpty() && $contribution->created_at->lte(now()->subDays(14)))
+        <div
+          class="mb-6 bg-red-50 dark:bg-red-900/20 border border-[#dc2d3d] rounded-lg px-4 py-3 flex items-center gap-3">
+          <svg class="w-5 h-5 text-[#dc2d3d] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p class="text-sm font-medium text-[#dc2d3d]">
+            This contribution was submitted {{ $contribution->created_at->diffForHumans() }} and has not received a
+            comment yet. Please leave a comment below.
+          </p>
+        </div>
+      @endif
 
       {{-- Details --}}
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
@@ -106,7 +120,27 @@
           <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 lg:p-4">
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Submitted</p>
             <p class="text-sm font-semibold text-gray-900 dark:text-white">
-              {{ $contribution->created_at->format('d M Y, H:i') }}</p>
+              {{ $contribution->created_at->format('d M Y, H:i') }}
+            </p>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 lg:p-4">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Publication</p>
+            @if($contribution->status === 'pending')
+              <span class="text-sm font-semibold text-yellow-600 dark:text-yellow-400">Pending Approval</span>
+            @elseif($contribution->status === 'rejected')
+              <span class="text-sm font-semibold text-red-500 dark:text-red-400">Rejected</span>
+            @elseif($contribution->is_selected)
+              <span class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                Selected
+              </span>
+            @else
+              <span class="text-sm font-semibold text-gray-400 dark:text-gray-500">Not selected</span>
+            @endif
           </div>
         </div>
 
@@ -126,9 +160,8 @@
             @foreach($contribution->files as $file)
                   <li class="py-3 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3 min-w-0">
-                      {{-- Fixed-width badge container so filenames always start at the same point --}}
                       <span class="w-20 shrink-0 text-center px-2 py-0.5 rounded text-xs font-medium
-                            {{ $file->file_type === 'document'
+                                            {{ $file->file_type === 'document'
               ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
               : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' }}">
                         {{ strtoupper($file->file_type) }}
@@ -152,25 +185,50 @@
         </div>
       @endif
 
-      {{-- Coordinator: approval toggle --}}
+      {{-- Coordinator: approval + reject --}}
       @if($canApprove)
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 flex items-center justify-between gap-4">
-            <div>
-              <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Publication Status</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {{ $contribution->is_selected ? 'Currently selected for publication.' : 'Not yet selected for publication.' }}
-              </p>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Publication Status</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  {{ $contribution->is_selected ? 'Currently selected for publication.' : ($contribution->status === 'rejected' ? 'This contribution has been rejected.' : 'Not yet selected for publication.') }}
+                </p>
+                @if(!$hasCommented)
+                  <p class="text-xs text-[#dc2d3d] mt-1">You must leave a comment before approving or rejecting.</p>
+                @endif
+              </div>
+              <div class="flex gap-2 flex-wrap">
+                @if($contribution->status !== 'rejected')
+                        <form action="{{ route('contributions.reject', $contribution) }}" method="POST">
+                          @csrf
+                          <button type="button" @if($hasCommented)
+                            onclick="if(confirm('Reject this contribution? The student will be notified.')) this.closest('form').submit();"
+                          @endif @disabled(!$hasCommented)
+                            class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors
+                                  {{ $hasCommented
+                  ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 cursor-pointer'
+                  : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed opacity-50' }}">
+                            Reject
+                          </button>
+                        </form>
+                @endif
+                <form action="{{ route('contributions.toggleApproval', $contribution) }}" method="POST">
+                  @csrf
+                  <button type="button" @if($hasCommented)
+                    onclick="if(confirm('{{ $contribution->is_selected ? 'Revoke approval for this contribution?' : 'Approve this contribution for publication?' }}')) this.closest('form').submit();"
+                  @endif @disabled(!$hasCommented)
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors
+                        {{ !$hasCommented
+        ? 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed opacity-50'
+        : ($contribution->is_selected
+          ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 hover:bg-orange-200 cursor-pointer'
+          : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 cursor-pointer') }}">
+                    {{ $contribution->is_selected ? 'Revoke Approval' : 'Approve for Publication' }}
+                  </button>
+                </form>
+              </div>
             </div>
-            <form action="{{ route('contributions.toggleApproval', $contribution) }}" method="POST">
-              @csrf
-              <button
-                class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors
-                  {{ $contribution->is_selected
-        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
-        : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50' }}">
-                {{ $contribution->is_selected ? 'Revoke Approval' : 'Approve for Publication' }}
-              </button>
-            </form>
           </div>
       @endif
 

@@ -98,9 +98,11 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $ay->year }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {{ $ay->closure_date->format('d M Y') }}</td>
+                    {{ $ay->closure_date->format('d M Y') }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    {{ $ay->final_closure_date->format('d M Y') }}</td>
+                    {{ $ay->final_closure_date->format('d M Y') }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @if($ay->is_active)
                       <span
@@ -114,16 +116,6 @@
                     <div class="flex items-center justify-end gap-3">
                       <a href="{{ route('academic-years.show', $ay) }}"
                         class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 text-sm font-medium">View</a>
-                      <a href="{{ route('academic-years.edit', $ay) }}"
-                        class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 text-sm font-medium">Edit</a>
-                      @if(!$ay->is_active)
-                        <form action="{{ route('academic-years.destroy', $ay) }}" method="POST"
-                          onsubmit="return confirm('Delete {{ $ay->name }}? This cannot be undone.')">
-                          @csrf @method('DELETE')
-                          <button
-                            class="text-red-600 dark:text-red-400 hover:text-red-800 text-sm font-medium">Delete</button>
-                        </form>
-                      @endif
                     </div>
                   </td>
                 </tr>

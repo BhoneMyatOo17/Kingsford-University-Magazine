@@ -15,6 +15,18 @@
   <div class="lg:ml-64">
     <main class="p-4 lg:p-8">
 
+      @if(session('success'))
+        <div
+          class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg flex items-center">
+          <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd" />
+          </svg>
+          <span>{{ session('success') }}</span>
+        </div>
+      @endif
+
       <!-- Back + Actions -->
       <div class="mb-6 flex items-center justify-between gap-4">
         <a href="{{ route('posts.index') }}"
@@ -197,7 +209,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                   <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold
-                                        {{ $contribution->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                                                    {{ $contribution->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
                     ($contribution->status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
                       'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400') }}">
                                     {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}
@@ -208,7 +220,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                   <a href="{{ route('contributions.show', $contribution) }}"
-                                    class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium transition-colors">View</a>
+                                    class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium transition-colors fetch-link">View</a>
                                 </td>
                               </tr>
                   @endforeach
@@ -231,7 +243,7 @@
                         {{-- Row 3: status + date --}}
                         <div class="flex items-center gap-2">
                           <span class="px-2 py-0.5 text-xs font-semibold rounded-full
-                                {{ $contribution->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                                    {{ $contribution->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
                 ($contribution->status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
                   'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400') }}">
                             {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}
@@ -256,7 +268,7 @@
 
     </main>
   </div>
-
+  @include('components.fetch-loading')
   @include('components.dashboard_scripts')
 </body>
 

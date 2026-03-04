@@ -304,14 +304,25 @@
                                     class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->created_at->format('F d, Y') }}</span>
                             </div>
 
-                            @if ($user->last_login_at)
-                                <div class="flex flex-col sm:flex-row sm:items-center py-3">
-                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Last
-                                        Login:</span>
-                                    <span
-                                        class="text-gray-900 dark:text-white mt-1 sm:mt-0">{{ $user->last_login_at->diffForHumans() }}</span>
-                                </div>
-                            @endif
+                            <div class="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Last Login:</span>
+                                <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">
+                                    @if ($user->previous_login_at)
+                                        {{ $user->previous_login_at->format('F d, Y \a\t H:i') }}
+                                    @elseif ($user->last_login_at)
+                                        {{ $user->last_login_at->format('F d, Y \a\t H:i') }}
+                                    @else
+                                        First Login
+                                    @endif
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center py-3">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400 w-40">Last Browser:</span>
+                                <span class="text-gray-900 dark:text-white mt-1 sm:mt-0">
+                                    {{ $user->last_login_browser ?? 'Unknown' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,7 +383,7 @@
                             </div>
 
                             <div class="flex items-center justify-between py-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Email Verified</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Email Status</span>
                                 @if ($user->email_verified_at)
                                     <span
                                         class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full font-medium">

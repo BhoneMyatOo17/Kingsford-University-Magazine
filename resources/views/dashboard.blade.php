@@ -10,17 +10,66 @@
 
 <body class="bg-gray-50 dark:bg-[#18181b]">
   @include('components.sidebar_navigation')
-  @include('components.top_navigation', ['title' => 'Dashboard'])
+  @include('components.top_navigation', ['title' => 'Dashboard', 'overdueContributions' => $overdueContributions])
 
   <!-- Main Content -->
   <div class="lg:ml-64">
-    <!-- Dashboard Content -->
     <main class="p-4 lg:p-8">
+
       <!-- Welcome Section -->
       <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome back, John!</h2>
-        <p class="text-gray-600 dark:text-gray-400">Here's what's happening with your magazine contributions.</p>
+        @if(auth()->user()->previous_login_at === null)
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Welcome to Kingsford University, {{ auth()->user()->name }}!
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400">Your account is ready. Start exploring the platform.</p>
+        @else
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Welcome back, {{ auth()->user()->name }}!
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            Last login: {{ auth()->user()->previous_login_at->format('d M Y \a\t H:i') }}
+          </p>
+        @endif
       </div>
+
+      <!-- Coordinator: Overdue Comment Alert Banner -->
+      @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
+        <div class="mb-8 bg-red-50 dark:bg-red-900/20 border border-[#dc2d3d] rounded-lg p-4">
+          <div class="flex items-start space-x-3">
+            <svg class="w-5 h-5 text-[#dc2d3d] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="flex-1">
+              <h4 class="text-sm font-semibold text-[#dc2d3d] mb-1">
+                {{ $overdueContributions->count() }} {{ Str::plural('contribution', $overdueContributions->count()) }}
+                overdue for comment
+              </h4>
+              <p class="text-sm text-red-700 dark:text-red-300 mb-3">
+                The following submissions have had no comment for over 14 days. Please review them.
+              </p>
+              <ul class="space-y-1">
+                @foreach($overdueContributions as $contribution)
+                  <li class="flex items-center justify-left text-sm">
+                    <span class="text-gray-800 dark:text-gray-200 truncate max-w-xs">
+                      "{{ $contribution->title }}"
+                    </span>
+                    <span class="text-gray-500 dark:text-gray-400 ml-4 flex-shrink-0">
+                      submitted {{ $contribution->created_at->diffForHumans() }}
+                    </span>
+                    <a href="{{ route('contributions.show', $contribution) }}"
+                      class="ml-4 flex-shrink-0 text-[#dc2d3d] hover:text-[#b82532] font-medium">
+                      Comment →
+                    </a>
+                  </li>
+                @endforeach
+              </ul>
+            </div>
+          </div>
+        </div>
+      @endif
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -45,23 +94,48 @@
           </div>
         </div>
 
-        <!-- Card 2: Pending Review -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+        <!-- Card 2: Pending Review — coordinator sees overdue count -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all
+          @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty()) border border-[#dc2d3d] @endif">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending Review</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">3</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                @if(auth()->user()->hasRole('marketing_coordinator')) Overdue Comments @else Pending Review @endif
+              </p>
+              <h3
+                class="text-3xl font-bold
+                @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty()) text-[#dc2d3d] @else text-gray-900 dark:text-white @endif">
+                @if(auth()->user()->hasRole('marketing_coordinator'))
+                  {{ $overdueContributions->count() }}
+                @else
+                  3
+                @endif
+              </h3>
             </div>
-            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center
+              @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
+                bg-red-100 dark:bg-red-900/30
+              @else
+                bg-yellow-100 dark:bg-yellow-900/30
+              @endif">
+              <svg class="w-6 h-6
+                @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
+                  text-[#dc2d3d]
+                @else
+                  text-yellow-600 dark:text-yellow-400
+                @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
           <div class="mt-4 flex items-center text-sm">
-            <span class="text-gray-600 dark:text-gray-400">Awaiting comments</span>
+            @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
+              <span class="text-[#dc2d3d] font-medium">Action required</span>
+            @else
+              <span class="text-gray-600 dark:text-gray-400">Awaiting comments</span>
+            @endif
           </div>
         </div>
 
@@ -86,7 +160,7 @@
           </div>
         </div>
 
-        <!-- Card 4: Selected for Publication -->
+        <!-- Card 4: Published -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
           <div class="flex items-center justify-between">
             <div>
@@ -199,31 +273,40 @@
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
-              <button
-                class="w-full flex items-center justify-between px-4 py-3 bg-[#dc2d3d] text-white rounded-lg hover:bg-[#b82532] transition-colors">
-                <span class="font-medium">Submit New Article</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
+              @if(auth()->user()->hasRole('student'))
+                <a href="{{ route('posts.index') }}"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-[#dc2d3d] text-white rounded-lg hover:bg-[#b82532] transition-colors">
+                  <span class="font-medium">Submit New Article</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </a>
+              @endif
 
-              <button
-                class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <span class="font-medium">Upload Images</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </button>
+              @if(auth()->user()->hasRole('marketing_coordinator'))
+                <a href="{{ route('contributions.index') }}"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-[#dc2d3d] text-white rounded-lg hover:bg-[#b82532] transition-colors">
+                  <span class="font-medium">
+                    Review Contributions
+                    @if($overdueContributions->isNotEmpty())
+                      <span class="ml-2 bg-white text-[#dc2d3d] text-xs font-bold px-2 py-0.5 rounded-full">
+                        {{ $overdueContributions->count() }}
+                      </span>
+                    @endif
+                  </span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              @endif
 
-              <button
+              <a href="{{ route('contributions.index') }}"
                 class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <span class="font-medium">View Magazine</span>
+                <span class="font-medium">View All Contributions</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -267,18 +350,6 @@
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Terms & Conditions Status -->
-          <div class="bg-gradient-to-r from-[#dc2d3d] to-[#b82532] rounded-lg shadow-lg p-6 text-white">
-            <div class="flex items-center space-x-3 mb-3">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h4 class="font-bold">Terms Accepted</h4>
-            </div>
-            <p class="text-sm text-white/90">You have agreed to the Terms and Conditions for article submission.</p>
           </div>
         </div>
       </div>
@@ -324,9 +395,7 @@
                       Approved
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    1 comment
-                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">1 comment</td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
                   </td>
@@ -344,9 +413,7 @@
                       Pending
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    No comments
-                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">No comments</td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
                   </td>
@@ -364,9 +431,7 @@
                       Approved
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                    2 comments
-                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">2 comments</td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
                   </td>

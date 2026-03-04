@@ -27,8 +27,12 @@ class ContributionController extends Controller
         $user = Auth::user();
         abort_unless($user->hasRole('student'), 403);
 
-        // Prevent duplicate submission
-        $existing = $user->student->contributions()->where('post_id', $post->id)->first();
+        // Prevent duplicate submission — exclude soft-deleted so resubmission is allowed
+        $existing = $user->student->contributions()
+            ->withoutTrashed()
+            ->where('post_id', $post->id)
+            ->first();
+
         if ($existing) {
             return redirect()->route('contributions.show', $existing)
                 ->with('info', 'You have already submitted for this post.');
@@ -51,7 +55,7 @@ class ContributionController extends Controller
             'title'           => 'required|string|max:255',
             'description'     => 'nullable|string',
             'terms_accepted'  => 'accepted',
-            'documents'       => 'nullable|array|max:2',
+            'documents'       => 'required|array|min:1|max:2',
             'documents.*'     => 'file|mimes:docx,doc,pdf|max:10240', // 10 MB each
             'images'          => 'nullable|array|max:5',
             'images.*'        => 'file|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5 MB each
@@ -59,21 +63,21 @@ class ContributionController extends Controller
 
         DB::transaction(function () use ($request, $post, $user) {
             $contribution = Contribution::create([
-                'student_id'       => $user->student->id,
-                'post_id'          => $post->id,
-                'academic_year_id' => $post->academic_year_id,
-                'title'            => $request->title,
-                'description'      => $request->description,
-                'terms_accepted'   => true,
+                'student_id'        => $user->student->id,
+                'post_id'           => $post->id,
+                'academic_year_id'  => $post->academic_year_id,
+                'title'             => $request->title,
+                'description'       => $request->description,
+                'terms_accepted'    => true,
                 'terms_accepted_at' => now(),
-                'status'           => 'submitted',
+                'status'            => 'submitted',
             ]);
 
             $this->uploadFiles($contribution, $request);
 
             // Notify coordinator
             $coordinator = $post->faculty->staff()
-                ->whereHas('user', fn($q) => $q->whereHas('roles', fn($q) => $q->where('name', 'coordinator')))
+                ->whereHas('user', fn($q) => $q->whereHas('roles', fn($q) => $q->where('name', 'marketing_coordinator')))
                 ->with('user')
                 ->first();
 
@@ -109,13 +113,23 @@ class ContributionController extends Controller
         $canApprove  = $user->hasRole('marketing_coordinator');
         $canReport   = $user->hasRole('marketing_coordinator') || $user->hasRole('student');
 
+        $hasCommented = $canApprove
+            ? $contribution->comments->where('user_id', $user->id)->isNotEmpty()
+            : false;
+
+        $backUrl = url()->previous() !== url()->current()
+            ? url()->previous()
+            : route('posts.index');
+
         return view('contributions.show', compact(
             'contribution',
             'canEdit',
             'canDelete',
             'canComment',
             'canApprove',
-            'canReport'
+            'canReport',
+            'hasCommented',
+            'backUrl'
         ));
     }
 
@@ -145,13 +159,13 @@ class ContributionController extends Controller
         abort_unless($contribution->post->isOpenForEdit(), 403, 'The edit period has closed.');
 
         $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'documents'   => 'nullable|array',
-            'documents.*' => 'file|mimes:docx,doc,pdf|max:10240',
-            'images'      => 'nullable|array',
-            'images.*'    => 'file|mimes:jpg,jpeg,png,gif,webp|max:5120',
-            'remove_files' => 'nullable|array',
+            'title'          => 'required|string|max:255',
+            'description'    => 'nullable|string',
+            'documents'      => 'nullable|array',
+            'documents.*'    => 'file|mimes:docx,doc,pdf|max:10240',
+            'images'         => 'nullable|array',
+            'images.*'       => 'file|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'remove_files'   => 'nullable|array',
             'remove_files.*' => 'exists:contribution_files,id',
         ]);
 
@@ -184,6 +198,11 @@ class ContributionController extends Controller
                 abort(422, 'You can have a maximum of 5 images per contribution.');
             }
 
+            // Ensure at least 1 document remains after update
+            if ($remainingDocs + $newDocs < 1) {
+                abort(422, 'At least one document is required.');
+            }
+
             $this->uploadFiles($contribution, $request);
         });
 
@@ -192,7 +211,7 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // Student: delete contribution (only before post closure)
+    // Student: delete contribution — hard delete so student can resubmit
     // -------------------------------------------------------------------------
     public function destroy(Contribution $contribution)
     {
@@ -204,9 +223,9 @@ class ContributionController extends Controller
         DB::transaction(function () use ($contribution) {
             foreach ($contribution->files as $file) {
                 Storage::disk($file->disk)->delete($file->file_path);
-                $file->delete();
+                $file->forceDelete();
             }
-            $contribution->delete();
+            $contribution->forceDelete();
         });
 
         return redirect()->route('posts.index')
@@ -215,14 +234,14 @@ class ContributionController extends Controller
 
     // -------------------------------------------------------------------------
     // Coordinator: index — contributions under their faculty's posts
-    // Manager: index — approved contributions by default, filterable
+    // Manager/Admin: index — approved contributions by default, filterable
     // -------------------------------------------------------------------------
     public function index(Request $request)
     {
         $user = Auth::user();
         $isManager = $user->hasAnyRole(['marketing_manager', 'admin']);
 
-        $query = Contribution::with(['student.user', 'post.faculty', 'academicYear'])
+        $query = Contribution::with(['student.user', 'post.faculty', 'academicYear', 'comments'])
             ->orderBy('created_at', 'desc');
 
         // Coordinator: restrict to their faculty
@@ -272,6 +291,11 @@ class ContributionController extends Controller
         $user = Auth::user();
         abort_unless($user->hasRole('marketing_coordinator'), 403);
 
+        $hasCommented = $contribution->comments()->where('user_id', $user->id)->exists();
+        if (!$hasCommented) {
+            return back()->with('error', 'You must leave a comment before approving or revoking approval.');
+        }
+
         if ($contribution->is_selected) {
             $contribution->update([
                 'is_selected' => false,
@@ -292,6 +316,29 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
+    // Coordinator: reject contribution
+    // -------------------------------------------------------------------------
+    public function reject(Contribution $contribution)
+    {
+        $user = Auth::user();
+        abort_unless($user->hasRole('marketing_coordinator'), 403);
+
+        $hasCommented = $contribution->comments()->where('user_id', $user->id)->exists();
+        if (!$hasCommented) {
+            return back()->with('error', 'You must leave a comment before rejecting a contribution.');
+        }
+
+        $contribution->update([
+            'status'      => 'rejected',
+            'is_selected' => false,
+            'selected_at' => null,
+            'selected_by' => null,
+        ]);
+
+        return back()->with('success', 'Contribution has been rejected.');
+    }
+
+    // -------------------------------------------------------------------------
     // Report a contribution
     // -------------------------------------------------------------------------
     public function report(Request $request, Contribution $contribution)
@@ -306,6 +353,64 @@ class ContributionController extends Controller
         ]);
 
         return back()->with('success', 'Report submitted. An administrator will review it.');
+    }
+
+    // -------------------------------------------------------------------------
+    // Manager / Admin: download selected contributions as ZIP
+    // -------------------------------------------------------------------------
+    public function download(Request $request)
+    {
+        $user = Auth::user();
+        abort_unless($user->hasAnyRole(['marketing_manager', 'admin']), 403);
+
+        $ids = array_filter(explode(',', $request->input('ids', '')));
+        abort_if(empty($ids), 422, 'No contributions selected.');
+
+        $contributions = Contribution::with('files')
+            ->whereIn('id', $ids)
+            ->where('status', 'approved')
+            ->get();
+
+        abort_if($contributions->isEmpty(), 404, 'No approved contributions found for the selected IDs.');
+
+        $zipName = 'contributions_' . now()->format('Y_m_d_His') . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipName);
+
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new \ZipArchive();
+        abort_unless($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true, 500, 'Could not create ZIP file.');
+
+        foreach ($contributions as $contribution) {
+            $folderName = Str::slug($contribution->title) . '_' . $contribution->id;
+            foreach ($contribution->files as $file) {
+                $contents = Storage::disk($file->disk)->get($file->file_path);
+                if ($contents) {
+                    $zip->addFromString($folderName . '/' . $file->original_name, $contents);
+                }
+            }
+        }
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
+    }
+
+    // -------------------------------------------------------------------------
+    // Student: delete a single file from their contribution (AJAX)
+    // -------------------------------------------------------------------------
+    public function destroyFile(ContributionFile $file)
+    {
+        $user = Auth::user();
+        abort_unless($user->hasRole('student'), 403);
+        abort_unless($file->contribution->student->user_id === $user->id, 403);
+
+        Storage::disk($file->disk)->delete($file->file_path);
+        $file->delete();
+
+        return response()->json(['success' => true]);
     }
 
     // -------------------------------------------------------------------------
@@ -371,48 +476,5 @@ class ContributionController extends Controller
                 ]);
             }
         }
-    }
-
-    // -------------------------------------------------------------------------
-    // Manager / Admin: download selected contributions as ZIP
-    // -------------------------------------------------------------------------
-    public function download(Request $request)
-    {
-        $user = Auth::user();
-        abort_unless($user->hasAnyRole(['marketing_manager', 'admin']), 403);
-
-        $ids = array_filter(explode(',', $request->input('ids', '')));
-        abort_if(empty($ids), 422, 'No contributions selected.');
-
-        $contributions = Contribution::with('files')
-            ->whereIn('id', $ids)
-            ->where('status', 'approved')
-            ->get();
-
-        abort_if($contributions->isEmpty(), 404, 'No approved contributions found for the selected IDs.');
-
-        $zipName = 'contributions_' . now()->format('Y_m_d_His') . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipName);
-
-        if (!file_exists(storage_path('app/temp'))) {
-            mkdir(storage_path('app/temp'), 0755, true);
-        }
-
-        $zip = new \ZipArchive();
-        abort_unless($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true, 500, 'Could not create ZIP file.');
-
-        foreach ($contributions as $contribution) {
-            $folderName = Str::slug($contribution->title) . '_' . $contribution->id;
-            foreach ($contribution->files as $file) {
-                $contents = Storage::disk($file->disk)->get($file->file_path);
-                if ($contents) {
-                    $zip->addFromString($folderName . '/' . $file->original_name, $contents);
-                }
-            }
-        }
-
-        $zip->close();
-
-        return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
     }
 }

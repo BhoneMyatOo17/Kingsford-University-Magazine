@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Edit Contribution - Kingsford University</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -75,9 +76,9 @@
           @if($contribution->files->count())
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Files</label>
-              <ul class="space-y-2">
+              <ul class="space-y-2" id="file-list">
                 @foreach($contribution->files as $file)
-                  <li
+                  <li id="file-{{ $file->id }}"
                     class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-700">
                     <div class="flex items-center gap-3">
                       <span
@@ -90,12 +91,15 @@
                         <p class="text-xs text-gray-400">{{ $file->file_size_formatted }}</p>
                       </div>
                     </div>
-                    <label
-                      class="flex items-center gap-2 text-red-600 dark:text-red-400 text-xs cursor-pointer hover:text-red-700 transition-colors">
-                      <input type="checkbox" name="remove_files[]" value="{{ $file->id }}"
-                        class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                    <button type="button"
+                      onclick="confirmRemoveFile({{ $file->id }}, '{{ addslashes($file->original_name) }}')"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
                       Remove
-                    </label>
+                    </button>
                   </li>
                 @endforeach
               </ul>
@@ -144,7 +148,95 @@
     </main>
   </div>
 
+  {{-- Remove File Confirmation Modal --}}
+  <div id="remove-file-modal" class="fixed inset-0 hidden" style="z-index: 99999;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="fixed inset-0 bg-black/40"></div>
+      <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div
+              class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-white">Remove File</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">This cannot be undone.</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+            Are you sure you want to remove <strong id="remove-file-name" class="break-all"></strong>?
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button type="button" onclick="closeRemoveModal()"
+              class="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              Cancel
+            </button>
+            <button type="button" id="remove-file-confirm"
+              class="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   @include('components.dashboard_scripts')
+
+  <script>
+    let _removeFileId = null;
+
+    function confirmRemoveFile(fileId, fileName) {
+      _removeFileId = fileId;
+      document.getElementById('remove-file-name').textContent = fileName;
+      document.getElementById('remove-file-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRemoveModal() {
+      document.getElementById('remove-file-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+      _removeFileId = null;
+    }
+
+    document.getElementById('remove-file-confirm').addEventListener('click', function () {
+      if (!_removeFileId) return;
+
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = 'Removing...';
+
+      fetch(`/contributions/files/${_removeFileId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json',
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const el = document.getElementById(`file-${_removeFileId}`);
+            if (el) el.remove();
+          }
+          closeRemoveModal();
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = 'Remove';
+          alert('Failed to remove file. Please try again.');
+        });
+    });
+
+    // Close on backdrop click
+    document.getElementById('remove-file-modal').addEventListener('click', function (e) {
+      if (e.target === this.querySelector('.fixed')) closeRemoveModal();
+    });
+  </script>
 </body>
 
 </html>

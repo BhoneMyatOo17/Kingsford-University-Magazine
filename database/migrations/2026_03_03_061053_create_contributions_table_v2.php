@@ -29,7 +29,7 @@ return new class extends Migration
             $table->index('academic_year_id');
             $table->index('is_selected');
             $table->index('status');
-            $table->unique(['student_id', 'post_id']); // One contribution per student per post
+            // Uniqueness enforced at application level to support resubmission after deletion
         });
     }
 

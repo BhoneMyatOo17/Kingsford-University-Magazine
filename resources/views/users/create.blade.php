@@ -37,12 +37,14 @@
           </div>
 
           <!-- Form -->
-          <form action="{{ route('users.store') }}" method="POST" class="p-6 lg:p-8">
+          <form action="{{ route('users.store') }}" method="POST" class="p-6 lg:p-8"
+            onsubmit="showFetchLoader('Creating user...')">
             @csrf
 
             <!-- Error Messages -->
             @if($errors->any())
-              <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <div class=" mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg
+                    p-4">
                 <div class="flex">
                   <svg class="w-5 h-5 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -135,7 +137,8 @@
                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent dark:bg-gray-700 dark:text-white transition-all">
                     <option value="">Select user type</option>
                     <option value="student" {{ old('user_type') == 'student' ? 'selected' : '' }}>Student</option>
-                    <option value="marketing_coordinator" {{ old('user_type') == 'marketing_coordinator' ? 'selected' : '' }}>Marketing Coordinator</option>
+                    <option value="marketing_coordinator" {{ old('user_type') == 'marketing_coordinator' ? 'selected' : '' }}>
+                      Marketing Coordinator</option>
                     <option value="marketing_manager" {{ old('user_type') == 'marketing_manager' ? 'selected' : '' }}>
                       Marketing Manager</option>
                   </select>
@@ -354,6 +357,7 @@
       </div>
     </main>
   </div>
+  @include('components.fetch-loading')
 
   @include('components.dashboard_scripts')
   @include('components.email-scripts')

@@ -1,14 +1,7 @@
-{{--
-Upload Loading Overlay Component
-Usage: @include('components.upload-loading')
-Then on the form: onsubmit="showUploadLoader(this)"
-Or call showUploadLoader() manually before fetch/axios requests.
---}}
-
 <div id="upload-loader" class="fixed inset-0 hidden" style="z-index: 99999;">
 
   {{-- Backdrop with blur --}}
-  <div class="absolute inset-0 bg-gray-950/80 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
 
   {{-- Animated background grid --}}
   <div class="absolute inset-0 overflow-hidden pointer-events-none">

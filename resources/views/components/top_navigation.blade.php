@@ -1,4 +1,5 @@
 <!-- Top Navigation Bar (Mobile & Desktop) -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <header class="lg:ml-64 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
   <div class="px-4 lg:px-8 h-20 flex items-center">
     <div class="flex items-center justify-between w-full">
@@ -20,14 +21,11 @@
         <!-- Dark Mode Toggle -->
         <button id="theme-toggle-top"
           class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <svg id="theme-toggle-dark-icon-top" class="w-5 h-5 lg:w-6 lg:h-6 hidden" fill="currentColor"
-            viewBox="0 0 20 20">
+          <svg id="theme-toggle-dark-icon-top" class="w-5 h-5 lg:w-6 lg:h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
           </svg>
           <svg id="theme-toggle-light-icon-top" class="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-              fill-rule="evenodd" clip-rule="evenodd"></path>
+            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
           </svg>
         </button>
 
@@ -35,6 +33,8 @@
         @php
           $unreadNotifications = auth()->user()->unreadNotifications;
           $unreadCount = $unreadNotifications->count();
+          $recentRead = auth()->user()->readNotifications()->latest()->take(5)->get();
+          $allNotifications = $unreadNotifications->concat($recentRead);
         @endphp
 
         <div class="relative" id="notification-dropdown">
@@ -45,7 +45,7 @@
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             @if($unreadCount > 0)
-              <span
+              <span id="bell-badge"
                 class="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 rounded-full bg-[#dc2d3d] text-white text-[10px] font-bold ring-2 ring-white dark:ring-gray-800">
                 {{ $unreadCount > 9 ? '9+' : $unreadCount }}
               </span>
@@ -61,7 +61,7 @@
               <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h3>
               <div class="flex items-center space-x-2">
                 @if($unreadCount > 0)
-                  <span class="bg-[#dc2d3d] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  <span id="header-badge" class="bg-[#dc2d3d] text-white text-xs font-bold px-2 py-0.5 rounded-full">
                     {{ $unreadCount }}
                   </span>
                   <form method="POST" action="{{ route('notifications.read-all') }}">
@@ -76,14 +76,14 @@
 
             <!-- Notification List -->
             <div class="max-h-96 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
-              @forelse($unreadNotifications as $notification)
+              @forelse($allNotifications as $notification)
                 @php $data = $notification->data; @endphp
 
                 <a href="{{ $data['url'] ?? '#' }}"
                   data-notification-id="{{ $notification->id }}"
-                  class="notification-item flex items-start space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors bg-blue-50/30 dark:bg-blue-900/10">
+                  data-read="{{ $notification->read_at ? '1' : '0' }}"
+                  class="notification-item flex items-start space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors {{ $notification->read_at ? 'opacity-60' : 'bg-blue-50/30 dark:bg-blue-900/10' }}">
 
-                  <!-- Icon by event type -->
                   <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center
                     @switch($data['event'] ?? '')
                       @case('new_submission') bg-blue-100 dark:bg-blue-900/30 @break
@@ -170,22 +170,3 @@
     </div>
   </div>
 </header>
-
-<script>
-  document.querySelectorAll('.notification-item').forEach(item => {
-    item.addEventListener('click', function () {
-      const id = this.dataset.notificationId;
-      const url = this.getAttribute('href');
-
-      if (!id) return;
-
-      fetch(`/notifications/${id}/read`, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-          'Content-Type': 'application/json',
-        },
-      });
-    });
-  });
-</script>

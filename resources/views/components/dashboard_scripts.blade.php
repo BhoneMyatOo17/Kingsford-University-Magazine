@@ -11,12 +11,10 @@
         sidebar.classList.remove('-translate-x-full');
         sidebarOverlay.classList.remove('hidden');
       });
-
       sidebarClose.addEventListener('click', function () {
         sidebar.classList.add('-translate-x-full');
         sidebarOverlay.classList.add('hidden');
       });
-
       sidebarOverlay.addEventListener('click', function () {
         sidebar.classList.add('-translate-x-full');
         sidebarOverlay.classList.add('hidden');
@@ -24,21 +22,19 @@
     }
 
     // Sidebar active link
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', function (e) {
-        sidebarLinks.forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(function (link) {
+      link.addEventListener('click', function () {
+        document.querySelectorAll('.sidebar-link').forEach(function (l) { l.classList.remove('active'); });
         this.classList.add('active');
       });
     });
 
-    // Top navbar theme toggle
+    // Theme toggle
     const themeToggleTop = document.getElementById('theme-toggle-top');
     const themeToggleDarkIconTop = document.getElementById('theme-toggle-dark-icon-top');
     const themeToggleLightIconTop = document.getElementById('theme-toggle-light-icon-top');
 
     function updateAllThemeIcons(isDark) {
-      // Update top navbar icons
       if (isDark) {
         themeToggleDarkIconTop?.classList.remove('hidden');
         themeToggleLightIconTop?.classList.add('hidden');
@@ -48,36 +44,19 @@
       }
     }
 
-    // Check initial theme
-    if (document.documentElement.classList.contains('dark')) {
-      updateAllThemeIcons(true);
-    } else {
-      updateAllThemeIcons(false);
-    }
+    updateAllThemeIcons(document.documentElement.classList.contains('dark'));
 
-    // Function to toggle theme
     function toggleTheme() {
-      const isDarkMode = document.documentElement.classList.contains('dark');
-
-      if (isDarkMode) {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.setAttribute('data-web-theme', 'light');
-        localStorage.setItem('color-theme', 'light');
-        updateAllThemeIcons(false);
-      } else {
-        document.documentElement.classList.add('dark');
-        document.documentElement.setAttribute('data-web-theme', 'dark');
-        localStorage.setItem('color-theme', 'dark');
-        updateAllThemeIcons(true);
-      }
+      const isDark = document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', !isDark);
+      document.documentElement.setAttribute('data-web-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('color-theme', isDark ? 'light' : 'dark');
+      updateAllThemeIcons(!isDark);
     }
 
-    // Add event listener to theme toggle
-    if (themeToggleTop) {
-      themeToggleTop.addEventListener('click', toggleTheme);
-    }
+    if (themeToggleTop) themeToggleTop.addEventListener('click', toggleTheme);
 
-    // Notification dropdown toggle
+    // Notification dropdown
     const notificationButton = document.getElementById('notification-button');
     const notificationMenu = document.getElementById('notification-menu');
     const notificationDropdown = document.getElementById('notification-dropdown');
@@ -88,17 +67,59 @@
         notificationMenu.classList.toggle('hidden');
       });
 
-      // Close dropdown when clicking outside
       document.addEventListener('click', function (e) {
         if (notificationDropdown && !notificationDropdown.contains(e.target)) {
           notificationMenu.classList.add('hidden');
         }
       });
-
-      // Prevent closing when clicking inside the dropdown
-      notificationMenu.addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
     }
+
+    // Badge update helper
+    function updateBadge() {
+      var remaining = document.querySelectorAll('.notification-item[data-read="0"]').length;
+      var bellBadge = document.getElementById('bell-badge');
+      var headerBadge = document.getElementById('header-badge');
+      if (remaining === 0) {
+        if (bellBadge) bellBadge.remove();
+        if (headerBadge) headerBadge.remove();
+      } else {
+        var count = remaining > 9 ? '9+' : String(remaining);
+        if (bellBadge) bellBadge.textContent = count;
+        if (headerBadge) headerBadge.textContent = count;
+      }
+    }
+
+    // Notification item click
+    document.querySelectorAll('.notification-item').forEach(function (item) {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var id = this.dataset.notificationId;
+        var url = this.getAttribute('href');
+        var isUnread = this.dataset.read === '0';
+        var el = this;
+
+        if (isUnread) {
+          fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+              'Content-Type': 'application/json',
+            },
+          })
+            .catch(function () { })
+            .finally(function () {
+              el.dataset.read = '1';
+              el.classList.remove('bg-blue-50/30', 'dark:bg-blue-900/10');
+              el.classList.add('opacity-60');
+              updateBadge();
+              if (url && url !== '#') window.location.href = url;
+            });
+        } else {
+          if (url && url !== '#') window.location.href = url;
+        }
+      });
+    });
   });
 </script>

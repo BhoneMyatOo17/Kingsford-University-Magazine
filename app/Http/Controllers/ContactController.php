@@ -46,6 +46,13 @@ class ContactController extends Controller
             ->with('success', 'Your message has been sent successfully. We will get back to you soon.');
     }
 
+    // Authenticated user: view their own contact request (linked from notification)
+    public function myContact(Contact $contact)
+    {
+        abort_unless(Auth::id() === $contact->user_id, 403);
+        return view('contact.my_show', compact('contact'));
+    }
+
     // Admin: List all contacts
     public function index(Request $request)
     {

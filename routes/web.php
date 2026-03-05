@@ -108,6 +108,8 @@ Route::middleware(['auth', 'verified', 'check.temporary.password', 'check.user.a
 // Public route - Contact form (accessible by everyone)
 Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::middleware(['auth'])->get('/my-contact/{contact}', [ContactController::class, 'myContact'])
+    ->name('contact.my');
 
 // Admin routes - Contact management (only for users with permissions)
 Route::middleware(['auth', 'permission:view contacts|manage contacts'])->prefix('admin')->name('contact.')->group(function () {

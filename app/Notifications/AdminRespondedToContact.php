@@ -23,7 +23,7 @@ class AdminRespondedToContact extends Notification
       'event'      => 'admin_contact_response',
       'message'    => "Admin has responded to your contact request: \"{$this->contact->subject}\"",
       'contact_id' => $this->contact->id,
-      'url'        => route('contact.show', $this->contact),
+      'url'        => route('contact.my', $this->contact),
     ];
   }
 }

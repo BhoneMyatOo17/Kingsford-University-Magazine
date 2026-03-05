@@ -24,7 +24,7 @@ class AdminResolvedReport extends Notification
       'message'   => 'Admin has resolved your report.',
       'report_id' => $this->report->id,
       'note'      => $this->report->resolution_note,
-      'url'       => route('reports.edit', $this->report),
+      'url'       => route('reports.my', $this->report),
     ];
   }
 }

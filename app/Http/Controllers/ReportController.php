@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
+    public function myReport(Report $report)
+    {
+        abort_unless(Auth::id() === $report->reported_by, 403);
+        $report->load(['reportable.post.faculty']);
+        return view('reports.my_show', compact('report'));
+    }
+
     public function index(Request $request)
     {
         $query = Report::with(['reportedBy', 'resolvedBy', 'reportable'])

@@ -136,7 +136,7 @@ class FacultySeeder extends Seeder
                 ],
             ],
             [
-                'name'        => 'Data Science & Artificial Intelligence',
+                'name'        => 'Data Science & AI',
                 'code'        => 'DSA',
                 'description' => 'Combines statistical analysis, machine learning, and AI to extract insights from data.',
                 'programs'    => [
@@ -175,7 +175,7 @@ class FacultySeeder extends Seeder
                 ],
             ],
             [
-                'name'        => 'Business Information Technology',
+                'name'        => 'Business IT',
                 'code'        => 'BIT',
                 'description' => 'Combines business strategy with information technology management.',
                 'programs'    => [
@@ -206,7 +206,7 @@ class FacultySeeder extends Seeder
                 ],
             ],
             [
-                'name'        => 'Financial Technology (FinTech)',
+                'name'        => 'Financial Technology',
                 'code'        => 'FT',
                 'description' => 'Combines finance, programming, and data analysis for modern banking and payment systems.',
                 'programs'    => [

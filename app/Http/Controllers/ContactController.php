@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
+use App\Models\User;
+use App\Notifications\NewContactRequest;
+use App\Notifications\AdminRespondedToContact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,22 +21,26 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
 
         $contact = new Contact($validated);
 
-        // If user is logged in, attach user details
         if (Auth::check()) {
             $user = Auth::user();
-            $contact->user_id = $user->id;
-            $contact->user_role = $user->role; // Assuming user has role attribute
+            $contact->user_id   = $user->id;
+            $contact->user_role = $user->role;
         }
 
         $contact->save();
+
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new NewContactRequest($contact));
+        }
 
         return redirect()->route('contact.create')
             ->with('success', 'Your message has been sent successfully. We will get back to you soon.');
@@ -46,17 +53,16 @@ class ContactController extends Controller
 
         $query = Contact::with('user')->latest();
 
-        // Filter by status
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
         $contacts = $query->paginate(15);
         $stats = [
-            'total' => Contact::count(),
-            'pending' => Contact::pending()->count(),
+            'total'       => Contact::count(),
+            'pending'     => Contact::pending()->count(),
             'in_progress' => Contact::inProgress()->count(),
-            'resolved' => Contact::resolved()->count(),
+            'resolved'    => Contact::resolved()->count(),
         ];
 
         return view('contact.index', compact('contacts', 'stats'));
@@ -77,15 +83,17 @@ class ContactController extends Controller
         return view('contact.edit', compact('contact'));
     }
 
-    // Admin: Update contact
+    // Admin: Update contact (respond)
     public function update(Request $request, Contact $contact)
     {
         abort_unless(Auth::user()->hasPermissionTo('manage contacts'), 403);
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,resolved',
+            'status'         => 'required|in:pending,in_progress,resolved',
             'admin_response' => 'nullable|string',
         ]);
+
+        $wasResponded = !$contact->admin_response && $request->filled('admin_response');
 
         if ($request->filled('admin_response')) {
             $validated['responded_at'] = now();
@@ -93,7 +101,13 @@ class ContactController extends Controller
                 $validated['status'] = 'resolved';
             }
         }
+
         $contact->update($validated);
+
+        // Notify the contact's user if admin just added a response
+        if ($wasResponded && $contact->user) {
+            $contact->user->notify(new AdminRespondedToContact($contact));
+        }
 
         return redirect()->route('contact.index')
             ->with('success', 'Contact updated successfully.');

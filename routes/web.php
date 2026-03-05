@@ -14,6 +14,7 @@ use App\Http\Controllers\ContributionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\NotificationController;
 
 // Public routes
 Route::get('/', function () {
@@ -189,4 +190,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
         Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
     });
+
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
+        ->name('notifications.read-all');
 });

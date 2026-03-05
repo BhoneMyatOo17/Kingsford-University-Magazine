@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Notifications\AdminResolvedReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,12 +46,15 @@ class ReportController extends Controller
             'resolution_note' => 'nullable|string|max:2000',
         ]);
 
+        $wasResolved = !in_array($report->status, ['resolved', 'dismissed'])
+            && in_array($request->status, ['resolved', 'dismissed']);
+
         $data = ['status' => $request->status];
 
         if (in_array($request->status, ['resolved', 'dismissed'])) {
-            $data['resolved_by']      = Auth::id();
-            $data['resolved_at']      = now();
-            $data['resolution_note']  = $request->resolution_note;
+            $data['resolved_by']     = Auth::id();
+            $data['resolved_at']     = now();
+            $data['resolution_note'] = $request->resolution_note;
         } elseif ($request->status === 'reviewed') {
             $data['resolved_by']     = Auth::id();
             $data['resolved_at']     = null;
@@ -58,6 +62,14 @@ class ReportController extends Controller
         }
 
         $report->update($data);
+
+        // Notify the reporter when admin resolves or dismisses
+        if ($wasResolved) {
+            $reporter = $report->reportedBy;
+            if ($reporter) {
+                $reporter->notify(new AdminResolvedReport($report));
+            }
+        }
 
         return redirect()->route('reports.index')
             ->with('success', 'Report updated successfully.');

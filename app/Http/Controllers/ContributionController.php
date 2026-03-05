@@ -7,7 +7,11 @@ use App\Models\Contribution;
 use App\Models\ContributionFile;
 use App\Models\Comment;
 use App\Models\Report;
+use App\Models\User;
 use App\Mail\ContributionSubmitted;
+use App\Notifications\NewSubmissionPending;
+use App\Notifications\ContributionStatusUpdated;
+use App\Notifications\NewReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +31,6 @@ class ContributionController extends Controller
         $user = Auth::user();
         abort_unless($user->hasRole('student'), 403);
 
-        // Prevent duplicate submission — exclude soft-deleted so resubmission is allowed
         $existing = $user->student->contributions()
             ->withoutTrashed()
             ->where('post_id', $post->id)
@@ -56,9 +59,9 @@ class ContributionController extends Controller
             'description'     => 'nullable|string',
             'terms_accepted'  => 'accepted',
             'documents'       => 'required|array|min:1|max:2',
-            'documents.*'     => 'file|mimes:docx,doc,pdf|max:10240', // 10 MB each
+            'documents.*'     => 'file|mimes:docx,doc,pdf|max:10240',
             'images'          => 'nullable|array|max:5',
-            'images.*'        => 'file|mimes:jpg,jpeg,png,gif,webp|max:5120', // 5 MB each
+            'images.*'        => 'file|mimes:jpg,jpeg,png,gif,webp|max:5120',
         ]);
 
         DB::transaction(function () use ($request, $post, $user) {
@@ -75,7 +78,6 @@ class ContributionController extends Controller
 
             $this->uploadFiles($contribution, $request);
 
-            // Notify coordinator
             $coordinator = $post->faculty->staff()
                 ->whereHas('user', fn($q) => $q->whereHas('roles', fn($q) => $q->where('name', 'marketing_coordinator')))
                 ->with('user')
@@ -84,6 +86,8 @@ class ContributionController extends Controller
             if ($coordinator) {
                 Mail::to($coordinator->user->email)
                     ->send(new ContributionSubmitted($contribution, $coordinator->user));
+
+                $coordinator->user->notify(new NewSubmissionPending($contribution));
             }
         });
 
@@ -175,7 +179,6 @@ class ContributionController extends Controller
                 'description' => $request->description,
             ]);
 
-            // Remove selected files
             if ($request->remove_files) {
                 $filesToRemove = $contribution->files()->whereIn('id', $request->remove_files)->get();
                 foreach ($filesToRemove as $file) {
@@ -184,7 +187,6 @@ class ContributionController extends Controller
                 }
             }
 
-            // Validate totals after removal
             $remainingDocs   = $contribution->fresh()->documents()->count();
             $remainingImages = $contribution->fresh()->images()->count();
 
@@ -198,7 +200,6 @@ class ContributionController extends Controller
                 abort(422, 'You can have a maximum of 5 images per contribution.');
             }
 
-            // Ensure at least 1 document remains after update
             if ($remainingDocs + $newDocs < 1) {
                 abort(422, 'At least one document is required.');
             }
@@ -211,7 +212,7 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // Student: delete contribution — hard delete so student can resubmit
+    // Student: delete contribution
     // -------------------------------------------------------------------------
     public function destroy(Contribution $contribution)
     {
@@ -233,24 +234,21 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // Coordinator: index — contributions under their faculty's posts
-    // Manager/Admin: index — approved contributions by default, filterable
+    // Coordinator / Manager / Admin: index
     // -------------------------------------------------------------------------
     public function index(Request $request)
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $isManager = $user->hasAnyRole(['marketing_manager', 'admin']);
 
         $query = Contribution::with(['student.user', 'post.faculty', 'academicYear', 'comments'])
             ->orderBy('created_at', 'desc');
 
-        // Coordinator: restrict to their faculty
         if ($user->hasRole('marketing_coordinator')) {
             $facultyId = $user->staff->faculty_id;
             $query->whereHas('post', fn($q) => $q->where('faculty_id', $facultyId));
         }
 
-        // Manager/Admin: status filter (default to 'approved')
         if ($isManager) {
             $status = $request->input('status', 'approved');
             if ($status !== 'all') {
@@ -280,6 +278,12 @@ class ContributionController extends Controller
             'content' => $request->content,
         ]);
 
+        $contribution->load('student.user');
+        $student = $contribution->student->user ?? null;
+        if ($student) {
+            $student->notify(new ContributionStatusUpdated($contribution, 'commented'));
+        }
+
         return back()->with('success', 'Comment added.');
     }
 
@@ -296,6 +300,9 @@ class ContributionController extends Controller
             return back()->with('error', 'You must leave a comment before approving or revoking approval.');
         }
 
+        $contribution->load('student.user');
+        $student = $contribution->student->user ?? null;
+
         if ($contribution->is_selected) {
             $contribution->update([
                 'is_selected' => false,
@@ -310,6 +317,10 @@ class ContributionController extends Controller
                 'selected_by' => $user->id,
                 'status'      => 'approved',
             ]);
+
+            if ($student) {
+                $student->notify(new ContributionStatusUpdated($contribution, 'approved'));
+            }
         }
 
         return back()->with('success', 'Publication status updated.');
@@ -335,6 +346,12 @@ class ContributionController extends Controller
             'selected_by' => null,
         ]);
 
+        $contribution->load('student.user');
+        $student = $contribution->student->user ?? null;
+        if ($student) {
+            $student->notify(new ContributionStatusUpdated($contribution, 'rejected'));
+        }
+
         return back()->with('success', 'Contribution has been rejected.');
     }
 
@@ -345,12 +362,17 @@ class ContributionController extends Controller
     {
         $request->validate(['reason' => 'required|string|max:1000']);
 
-        Report::create([
+        $report = Report::create([
             'reportable_type' => Contribution::class,
             'reportable_id'   => $contribution->id,
             'reported_by'     => Auth::id(),
             'reason'          => $request->reason,
         ]);
+
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new NewReport($report));
+        }
 
         return back()->with('success', 'Report submitted. An administrator will review it.');
     }
@@ -399,7 +421,7 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // Student: delete a single file from their contribution (AJAX)
+    // Student: delete a single file (AJAX)
     // -------------------------------------------------------------------------
     public function destroyFile(ContributionFile $file)
     {

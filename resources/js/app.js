@@ -82,16 +82,27 @@ document.addEventListener('DOMContentLoaded', function() {
         themeToggleMobileBtn.addEventListener('click', toggleTheme);
     }
 
-    function updateHeroImage(isDark) {
-    const heroes = document.querySelectorAll('[data-hero-light][data-hero-dark]');
-
-    heroes.forEach(hero => {
-        const lightImg = hero.getAttribute('data-hero-light');
-        const darkImg = hero.getAttribute('data-hero-dark');
-
-        hero.style.backgroundImage = `url('${isDark ? darkImg : lightImg}')`;
+    // Re-evaluate hero image on resize/orientation change
+    window.addEventListener('resize', function() {
+        const isDark = document.documentElement.classList.contains('dark');
+        updateHeroImage(isDark);
     });
-}
+
+    function updateHeroImage(isDark) {
+        const heroes = document.querySelectorAll('[data-hero-light][data-hero-dark]');
+        const isMobile = window.innerWidth < 768;
+
+        heroes.forEach(hero => {
+            const lightImg = isMobile && hero.dataset.heroLightMobile
+                ? hero.dataset.heroLightMobile
+                : hero.dataset.heroLight;
+            const darkImg = isMobile && hero.dataset.heroDarkMobile
+                ? hero.dataset.heroDarkMobile
+                : hero.dataset.heroDark;
+
+            hero.style.backgroundImage = `url('${isDark ? darkImg : lightImg}')`;
+        });
+    }
 
 
 });
@@ -253,5 +264,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-

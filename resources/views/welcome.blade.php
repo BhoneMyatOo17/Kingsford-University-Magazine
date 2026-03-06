@@ -6,18 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kingsford University - Home</title>
     <meta name="description" content="Kingsford University offers world-class education in technological subjects">
-    <link rel="preload" as="image" href="{{ asset('assets/hero.jpg') }}">
-    <link rel="preload" as="image" href="{{ asset('assets/hero-night.png') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    {{-- Mobile: preload small hero. Desktop: preload full hero. Dark mode swap handled by JS. --}}
+    <link rel="preload" as="image" href="{{ asset('assets/hero-m.jpg') }}" media="(max-width: 767px)">
+    <link rel="preload" as="image" href="{{ asset('assets/hero.jpg') }}" media="(min-width: 768px)">
+
+    @vite(['resources/css/app.css'])
 </head>
 
 <body>
     @include('components.navigation')
 
     <!-- Hero Section -->
-    <section id="home" data-hero-light="/assets/hero.jpg" data-hero-dark="/assets/hero-night.png"
+    <section id="home" data-hero-light="{{ asset('assets/hero.jpg') }}"
+        data-hero-dark="{{ asset('assets/hero-night.png') }}" data-hero-light-mobile="{{ asset('assets/hero-m.jpg') }}"
+        data-hero-dark-mobile="{{ asset('assets/hero-mn.jpg') }}"
         class="relative h-[70vh] md:h-[80vh] lg:min-h-screen flex items-end pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat"
-        style="background-image: url('{{ asset('assets/hero.jpg') }}');">
+        style="background-image: url('{{ asset('assets/hero-m.jpg') }}');">
+        <style>
+            @media (min-width: 768px) {
+                #home {
+                    background-image: url('{{ asset('assets/hero.jpg') }}') !important;
+                }
+            }
+        </style>
 
         <!-- Dark Overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -92,7 +107,7 @@
                 </div>
                 <div class="col-12 lg:col-6">
                     <div class="lg:pl-12">
-                        <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">About Our
+                        <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">About Our
                             University</span>
                         <h2 class="text-3xl md:text-4xl font-bold mb-6">
                             An Introduction To Our <span class="text-[#dc2d3d]">University</span>
@@ -154,7 +169,7 @@
     <section class="section-area">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">Our
+                <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">Our
                     Faculties</span>
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
                     Explore Our <span class="text-[#dc2d3d]">Academic Programs</span>
@@ -347,7 +362,7 @@
     <section id="magazine" class="section-area">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">Student
+                <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">Student
                     Voices</span>
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
                     Our <span class="text-[#dc2d3d]">Magazine</span> & Student Stories
@@ -366,7 +381,7 @@
                             class="w-full h-64 object-cover">
                         <div class="p-8">
                             <span
-                                class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-2 block">Latest
+                                class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-2 block">Latest
                                 Edition</span>
                             <h3 class="text-2xl font-bold mb-4">Annual Student Magazine 2025</h3>
                             <p class="text-gray-600 dark:text-gray-300 mb-6">
@@ -533,6 +548,7 @@
 
     @include('components.footer')
 
+    @vite(['resources/js/app.js'])
 </body>
 
 </html>

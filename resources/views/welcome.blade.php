@@ -11,10 +11,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     {{-- Mobile: preload small hero. Desktop: preload full hero. Dark mode swap handled by JS. --}}
-    <link rel="preload" as="image" href="{{ asset('assets/hero-m.jpg') }}" media="(max-width: 767px)">
+    <link rel="preload" as="image" href="{{ asset('assets/hero-m.webp') }}" media="(max-width: 767px)">
     <link rel="preload" as="image" href="{{ asset('assets/hero.jpg') }}" media="(min-width: 768px)">
 
     @vite(['resources/css/app.css'])
+
+    <script>
+        (function () {
+            var isDark = localStorage.getItem('color-theme') === 'dark' ||
+                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            var isMobile = window.innerWidth < 768;
+            var images = {
+                light: '{{ asset('assets/hero.jpg') }}',
+                dark: '{{ asset('assets/hero-night.jpg') }}',
+                lightMobile: '{{ asset('assets/hero-m.webp') }}',
+                darkMobile: '{{ asset('assets/hero-mn.webp') }}'
+            };
+            var img = isDark
+                ? (isMobile ? images.darkMobile : images.dark)
+                : (isMobile ? images.lightMobile : images.light);
+            document.addEventListener('DOMContentLoaded', function () {
+                var hero = document.getElementById('home');
+                if (hero) hero.style.backgroundImage = "url('" + img + "')";
+            });
+        })();
+    </script>
 </head>
 
 <body>
@@ -22,17 +43,9 @@
 
     <!-- Hero Section -->
     <section id="home" data-hero-light="{{ asset('assets/hero.jpg') }}"
-        data-hero-dark="{{ asset('assets/hero-night.png') }}" data-hero-light-mobile="{{ asset('assets/hero-m.jpg') }}"
-        data-hero-dark-mobile="{{ asset('assets/hero-mn.jpg') }}"
-        class="relative h-[70vh] md:h-[80vh] lg:min-h-screen flex items-end pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat"
-        style="background-image: url('{{ asset('assets/hero-m.jpg') }}');">
-        <style>
-            @media (min-width: 768px) {
-                #home {
-                    background-image: url('{{ asset('assets/hero.jpg') }}') !important;
-                }
-            }
-        </style>
+        data-hero-dark="{{ asset('assets/hero-night.jpg') }}" data-hero-light-mobile="{{ asset('assets/hero-m.webp') }}"
+        data-hero-dark-mobile="{{ asset('assets/hero-mn.webp') }}"
+        class="relative h-[70vh] md:h-[80vh] lg:min-h-screen flex items-end pb-16 lg:pb-24 bg-cover bg-center bg-no-repeat">
 
         <!-- Dark Overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>

@@ -25,6 +25,10 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
+Route::get('/magazine', function () {
+    return view('magazine');
+})->name('magazine');
+
 Route::get('/terms', function () {
     return view('terms');
 })->name('terms');

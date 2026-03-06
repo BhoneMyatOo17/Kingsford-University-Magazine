@@ -53,9 +53,9 @@
       {{-- ── MANAGER VIEW ── --}}
       @if($isManager)
         <div x-data="{ selected: [] }" x-init="$watch('selected', val => {
-                            document.getElementById('download-ids').value = val.join(',');
-                            document.getElementById('download-count').textContent = val.length;
-                          })">
+                              document.getElementById('download-ids').value = val.join(',');
+                              document.getElementById('download-count').textContent = val.length;
+                            })">
 
           {{-- Filter tabs + Download --}}
           <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -67,7 +67,7 @@
                       @endphp
                       <a href="{{ route('contributions.index', ['status' => $val]) }}"
                         class="{{ $mobileHidden ? 'hidden sm:inline-flex' : 'inline-flex' }} px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                                                                                    {{ $active
+                                                                                                              {{ $active
                 ? 'bg-[#dc2d3d] text-white shadow'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-[#dc2d3d] hover:text-[#dc2d3d]' }}">
                         {{ $label }}
@@ -248,14 +248,15 @@
                 @forelse($contributions as $contribution)
                   @php
                     $isOverdue = auth()->user()->isMarketingCoordinator()
-                      && $contribution->comments->isEmpty()
+                      && $contribution->comments_count === 0
                       && $contribution->created_at->lte(now()->subDays(14));
                   @endphp
                   <tr
                     class="transition-colors {{ $isOverdue ? 'bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
                     <td class="px-6 py-4">
                       <p class="text-sm font-medium {{ $isOverdue ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
-                        {{ $contribution->title }}</p>
+                        {{ $contribution->title }}
+                      </p>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <p class="text-sm text-gray-700 dark:text-gray-300">{{ $contribution->student->user->name }}</p>
@@ -308,14 +309,15 @@
             @forelse($contributions as $contribution)
               @php
                 $isOverdue = auth()->user()->isMarketingCoordinator()
-                  && $contribution->comments->isEmpty()
+                  && $contribution->comments_count === 0
                   && $contribution->created_at->lte(now()->subDays(14));
               @endphp
               <div class="p-4 {{ $isOverdue ? 'bg-red-50 dark:bg-red-900/20' : '' }}">
                 {{-- Row 1: title + view --}}
                 <div class="flex items-start justify-between gap-3 mb-1">
                   <p class="text-sm font-semibold {{ $isOverdue ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
-                    {{ $contribution->title }}</p>
+                    {{ $contribution->title }}
+                  </p>
                   <a href="{{ route('contributions.show', $contribution) }}"
                     class="text-sm text-[#dc2d3d] hover:text-[#b82532] font-medium shrink-0">View</a>
                 </div>

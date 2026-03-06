@@ -11,7 +11,7 @@
       <!-- Mobile: Theme Toggle + Login/Dashboard + Hamburger -->
       <div class="flex items-center space-x-3 lg:hidden">
         <!-- Dark Mode Toggle Mobile -->
-        <button id="theme-toggle-mobile"
+        <button id="theme-toggle-mobile" aria-label="Toggle dark mode"
           class="theme-toggle-btn text-white hover:text-gray-300 transition-colors duration-300">
           <svg id="theme-toggle-dark-icon-mobile" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
@@ -42,7 +42,7 @@
           @endif
         @endauth
 
-        <button class="ic-navbar-toggler text-white text-3xl">
+        <button aria-label="Open navigation menu" class="ic-navbar-toggler text-white text-3xl">
           <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -71,7 +71,7 @@
             <div class="p-8">
               <div class="flex items-center justify-between mb-4">
                 <p class="text-[#dc2d3d] text-sm font-semibold uppercase tracking-wider">Our Faculties</p>
-                <a href="{{ route('faculties.index') }}"
+                <a href="{{ route('faculties.index') }}" aria-label="View all faculties"
                   class="text-xs text-gray-500 dark:text-gray-400 hover:text-[#dc2d3d] transition-colors font-medium">
                   View all →
                 </a>
@@ -93,12 +93,12 @@
           </div>
         </div>
 
-        <a href="#magazine"
-          class="ic-page-scroll nav-link text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 font-medium transition-colors duration-300">Our
+        <a href="{{ route('magazine') }}"
+          class="nav-link text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 font-medium transition-colors duration-300">Our
           Magazine</a>
 
         <!-- Dark Mode Toggle -->
-        <button id="theme-toggle"
+        <button id="theme-toggle" aria-label="Toggle dark mode"
           class="theme-toggle-btn text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 transition-colors duration-300">
           <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
@@ -162,14 +162,15 @@
             <p class="text-sm text-gray-400">No faculties available.</p>
           @endif
 
-          <a href="{{ route('faculties.index') }}" class="block text-[#dc2d3d] font-semibold text-sm pt-1">
+          <a href="{{ route('faculties.index') }}" aria-label="View all faculties"
+            class="block text-[#dc2d3d] font-semibold text-sm pt-1">
             View all faculties →
           </a>
         </div>
       </div>
 
-      <a href="#magazine"
-        class="ic-page-scroll block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors duration-300">Our
+      <a href="{{ route('magazine') }}"
+        class="block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors duration-300">Our
         Magazine</a>
     </div>
   </div>

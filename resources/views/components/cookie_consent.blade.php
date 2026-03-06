@@ -125,14 +125,14 @@
     .ck-desc {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.775rem;
-      color: #888;
+      color: #6b6b6b;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .dark .ck-desc {
-      color: #71717a;
+      color: #9ca3af;
     }
 
     .ck-actions {
@@ -157,13 +157,13 @@
 
     .ck-btn--ghost {
       background: transparent;
-      color: #999;
+      color: #6b6b6b;
       border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
       padding: 7px 14px !important;
     }
 
     .dark .ck-btn--ghost {
-      color: #71717a;
+      color: #9ca3af;
       border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
@@ -180,7 +180,7 @@
 
     .dark .ck-btn--outline {
       background: #2a2a2e;
-      color: #a1a1aa;
+      color: #c4c4cc;
     }
 
     .ck-btn--outline:hover {

@@ -105,6 +105,14 @@ class ContributionController extends Controller
 
         $contribution->load(['student.user', 'post.faculty', 'files', 'comments.user', 'academicYear']);
 
+        foreach ($contribution->files as $file) {
+            $file->temp_url = cache()->remember(
+                "file_url_{$file->id}",
+                now()->addMinutes(55),
+                fn() => Storage::disk($file->disk)->temporaryUrl($file->file_path, now()->addHour())
+            );
+        }
+
         $canEdit   = false;
         $canDelete = false;
 
@@ -241,12 +249,13 @@ class ContributionController extends Controller
         $user      = Auth::user();
         $isManager = $user->hasAnyRole(['marketing_manager', 'admin']);
 
-        $query = Contribution::with(['student.user', 'post.faculty', 'academicYear', 'comments'])
+        $query = Contribution::with(['student.user', 'post.faculty', 'academicYear'])
+            ->withCount('comments')
             ->orderBy('created_at', 'desc');
 
         if ($user->hasRole('marketing_coordinator')) {
             $facultyId = $user->staff->faculty_id;
-            $query->whereHas('post', fn($q) => $q->where('faculty_id', $facultyId));
+            $query->whereIn('post_id', Post::where('faculty_id', $facultyId)->select('id'));
         }
 
         if ($isManager) {

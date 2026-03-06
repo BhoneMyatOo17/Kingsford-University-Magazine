@@ -29,7 +29,6 @@ return new class extends Migration
             $table->index('academic_year_id');
             $table->index('is_selected');
             $table->index('status');
-            // Uniqueness enforced at application level to support resubmission after deletion
         });
     }
 

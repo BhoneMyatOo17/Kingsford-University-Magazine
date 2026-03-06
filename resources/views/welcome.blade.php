@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kingsford University - Home</title>
+    <meta name="description" content="Kingsford University offers world-class education in technological subjects">
     <link rel="preload" as="image" href="{{ asset('assets/hero.jpg') }}">
     <link rel="preload" as="image" href="{{ asset('assets/hero-night.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -57,19 +58,22 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-4 gap-4 lg:gap-8">
                 <div class="text-center">
-                    <h3 class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1">3K+</h3>
+                    <p class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1" aria-label="3,000+ Students">
+                        3K+</p>
                     <p class="text-xs md:text-lg lg:text-xl text-white font-medium">Students</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1">9</h3>
+                    <p class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1" aria-label="9 Faculties">9</p>
                     <p class="text-xs md:text-lg lg:text-xl text-white font-medium">Faculties</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1">45+</h3>
+                    <p class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1" aria-label="45+ Programs">45+
+                    </p>
                     <p class="text-xs md:text-lg lg:text-xl text-white font-medium">Programs</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1">150+</h3>
+                    <p class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-1"
+                        aria-label="150+ Research publications">150+</p>
                     <p class="text-xs md:text-lg lg:text-xl text-white font-medium">Research</p>
                 </div>
             </div>
@@ -88,7 +92,7 @@
                 </div>
                 <div class="col-12 lg:col-6">
                     <div class="lg:pl-12">
-                        <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">About Our
+                        <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">About Our
                             University</span>
                         <h2 class="text-3xl md:text-4xl font-bold mb-6">
                             An Introduction To Our <span class="text-[#dc2d3d]">University</span>
@@ -109,7 +113,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-lg mb-1">Industry-Leading Excellence</h4>
+                                    <h3 class="font-bold text-lg mb-1">Industry-Leading Excellence</h3>
                                     <p class="text-gray-600 dark:text-gray-300">We are committed to fostering a culture
                                         of excellence, ensuring our programs prepare students for global success.</p>
                                 </div>
@@ -125,7 +129,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-lg mb-1">Trusted By Students</h4>
+                                    <h3 class="font-bold text-lg mb-1">Trusted By Students</h3>
                                     <p class="text-gray-600 dark:text-gray-300">More trusted & recommended by students
                                         across the nation for academic excellence and career growth.</p>
                                 </div>
@@ -150,7 +154,7 @@
     <section class="section-area">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">Our
+                <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">Our
                     Faculties</span>
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
                     Explore Our <span class="text-[#dc2d3d]">Academic Programs</span>
@@ -177,13 +181,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Master
                         the art of building scalable, secure, and
                         innovative software solutions for the digital age.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 2 -->
@@ -201,13 +199,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Design
                         and manage robust network infrastructures
                         that power global connectivity and communications.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 3 -->
@@ -225,13 +217,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Explore
                         the fundamentals of computing, algorithms,
                         and theoretical foundations of technology.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 4 -->
@@ -249,13 +235,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Protect
                         digital assets and combat cyber threats
                         with advanced security methodologies and practices.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 5 -->
@@ -273,13 +253,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Harness
                         the power of data and artificial
                         intelligence to drive insights and innovation.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 6 -->
@@ -297,13 +271,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Bridge
                         technology and finance to revolutionize
                         banking, payments, and financial services.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 7 -->
@@ -321,13 +289,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Combine
                         business acumen with technical expertise to
                         lead digital transformation initiatives.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 8 -->
@@ -345,13 +307,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Integrate
                         technology and business processes to
                         optimize organizational efficiency and innovation.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
 
                 <!-- Faculty Card 9 -->
@@ -369,13 +325,7 @@
                     <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4 line-clamp-2">Master
                         cloud technologies and architecture to build
                         scalable, resilient distributed systems.</p>
-                    <a href="{{ route('faculties.index') }}"
-                        class="text-[#dc2d3d] text-sm md:text-base font-semibold hover:underline inline-flex items-center">
-                        Learn More
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+
                 </div>
             </div>
 
@@ -397,7 +347,7 @@
     <section id="magazine" class="section-area">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <span class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-4 block">Student
+                <span class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-4 block">Student
                     Voices</span>
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
                     Our <span class="text-[#dc2d3d]">Magazine</span> & Student Stories
@@ -416,7 +366,7 @@
                             class="w-full h-64 object-cover">
                         <div class="p-8">
                             <span
-                                class="text-[#dc2d3d] font-semibold text-sm uppercase tracking-wider mb-2 block">Latest
+                                class="text-[#b91c2c] font-semibold text-sm uppercase tracking-wider mb-2 block">Latest
                                 Edition</span>
                             <h3 class="text-2xl font-bold mb-4">Annual Student Magazine 2025</h3>
                             <p class="text-gray-600 dark:text-gray-300 mb-6">
@@ -427,7 +377,7 @@
                                 <div class="text-sm text-gray-500 dark:text-gray-400">
                                     <span class="font-semibold">250+</span> Contributions
                                 </div>
-                                <a href="#"
+                                <a href="{{ route('magazine') }}"
                                     class="inline-flex items-center text-[#dc2d3d] font-semibold hover:underline">
                                     Read Magazine
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -46,7 +46,7 @@ class RegisteredUserController extends Controller
             'program_id'      => ['required', 'exists:programs,id'],
             'enrollment_year' => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'study_level'     => ['required', 'in:undergraduate,postgraduate,doctorate'],
-            'password'        => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
             'terms'           => ['required', 'accepted'],
         ];
 

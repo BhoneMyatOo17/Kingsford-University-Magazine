@@ -19,7 +19,7 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg font-bold text-red-800 dark:text-red-200 mb-2">
-                        🔒 Account Temporarily Locked
+                        Account Temporarily Locked
                     </h3>
                     <p class="text-sm text-red-700 dark:text-red-300 mb-3">
                         Too many failed login attempts. Your account has been temporarily locked for security reasons.
@@ -130,22 +130,22 @@
         </x-primary-button>
     </form>
 
-    <!-- Help Text -->
-    <div class="mt-4 text-center">
-        <p class="text-xs text-gray-500 dark:text-gray-400">
-            Having trouble logging in? Contact
-            <a href="mailto:support@ksf.it.com"
-                class="text-[#dc2d3d] hover:text-[#b82532] dark:hover:text-[#ff4757] transition-colors">
-                support@ksf.it.com
-            </a>
-        </p>
+    <div class="flex items-center gap-3 mt-6">
+        <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+        <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">External visitor?</span>
+        <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
     </div>
+
+    <a href="{{ route('register.guest') }}"
+        class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-[#dc2d3d] hover:text-[#dc2d3d] dark:hover:border-[#dc2d3d] dark:hover:text-[#dc2d3d] transition-all duration-200">
+        Register as Guest
+    </a>
 
     <x-slot name="additionalLinks">
         <p class="text-sm text-gray-600 dark:text-gray-300">
             Don't have an account?
             <a href="{{ route('register') }}"
-                class="text-[#dc2d3d] hover:text-[#b82532] dark:text-[#dc2d3d] dark:hover:text-[#ff4757] font-semibold transition-colors">
+                class="text-[#dc2d3d] hover:text-[#b82532] font-semibold transition-colors">
                 Register here
             </a>
         </p>

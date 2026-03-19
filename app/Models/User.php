@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -26,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_picture',
         'password_changed_at',
         'must_change_password',
+        'guest_faculty_id',
     ];
 
     protected $hidden = [
@@ -75,6 +77,11 @@ class User extends Authenticatable implements MustVerifyEmail
             return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
         }
 
+        // Also allow any email if guest_faculty_id is set (during guest creation before role is assigned)
+        if ($user && !is_null($user->guest_faculty_id)) {
+            return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        }
+
         return str_ends_with($email, '@ksf.it.com');
     }
 
@@ -96,6 +103,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function staff(): HasOne
     {
         return $this->hasOne(Staff::class);
+    }
+
+    public function guestFaculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculty::class, 'guest_faculty_id');
     }
 
     public function isStudent(): bool
@@ -133,12 +145,19 @@ class User extends Authenticatable implements MustVerifyEmail
             return $this->staff->faculty;
         }
 
+        if ($this->isGuest()) {
+            return $this->guestFaculty;
+        }
+
         return null;
     }
 
     public function updateLastLogin(): void
     {
-        $this->update(['last_login_at' => now()]);
+        $this->update([
+            'previous_login_at' => $this->last_login_at,
+            'last_login_at'     => now(),
+        ]);
     }
 
     public function scopeActive($query)
@@ -149,5 +168,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeWithRole($query, string $role)
     {
         return $query->role($role);
+    }
+
+    public function scopeInternal($query)
+    {
+        return $query->whereNull('guest_faculty_id');
+    }
+
+    public function scopeGuests($query)
+    {
+        return $query->whereNotNull('guest_faculty_id');
     }
 }

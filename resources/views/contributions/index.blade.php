@@ -33,11 +33,40 @@
           <p class="text-gray-600 dark:text-gray-400 mt-1">
             @if($isManager)
               Browse and download approved contributions
+            @elseif($isGuest)
+              Selected contributions from your faculty
             @else
               Contributions submitted to your faculty's posts
             @endif
           </p>
         </div>
+
+        {{-- Search bar --}}
+        <form method="GET" action="{{ route('contributions.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
+          @if($isManager && request('status'))
+            <input type="hidden" name="status" value="{{ request('status') }}">
+          @endif
+          <div class="relative flex-1 sm:w-72">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+            </svg>
+            <input type="text" name="search" value="{{ $search ?? '' }}"
+              placeholder="Search by title, student, faculty..."
+              class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent">
+          </div>
+          <button type="submit"
+            class="px-4 py-2 bg-[#dc2d3d] text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors">
+            Search
+          </button>
+          @if($search)
+            <a href="{{ route('contributions.index', $isManager && request('status') ? ['status' => request('status')] : []) }}"
+              class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+              Clear
+            </a>
+          @endif
+        </form>
       </div>
 
       @php
@@ -52,10 +81,18 @@
 
       {{-- ── MANAGER VIEW ── --}}
       @if($isManager)
+        @php
+          $downloadableIds = $contributions->filter(function ($c) {
+            return $c->status === 'approved'
+              && $c->academicYear
+              && $c->academicYear->final_closure_date->isPast();
+          })->pluck('id')->toArray();
+        @endphp
+
         <div x-data="{ selected: [] }" x-init="$watch('selected', val => {
-                              document.getElementById('download-ids').value = val.join(',');
-                              document.getElementById('download-count').textContent = val.length;
-                            })">
+                          document.getElementById('download-ids').value = val.join(',');
+                          document.getElementById('download-count').textContent = val.length;
+                        })">
 
           {{-- Filter tabs + Download --}}
           <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -67,7 +104,7 @@
                       @endphp
                       <a href="{{ route('contributions.index', ['status' => $val]) }}"
                         class="{{ $mobileHidden ? 'hidden sm:inline-flex' : 'inline-flex' }} px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                                                                                              {{ $active
+                                                                                {{ $active
                 ? 'bg-[#dc2d3d] text-white shadow'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-[#dc2d3d] hover:text-[#dc2d3d]' }}">
                         {{ $label }}
@@ -100,7 +137,7 @@
                   <tr>
                     <th class="px-4 py-4 w-10">
                       <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d]"
-                        @change="selected = $event.target.checked ? {{ $contributions->pluck('id') }} : []">
+                        @change="selected = $event.target.checked ? {{ json_encode($downloadableIds) }} : []">
                     </th>
                     <th
                       class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -108,9 +145,6 @@
                     <th
                       class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Student</th>
-                    <th
-                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Post</th>
                     <th
                       class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Faculty</th>
@@ -127,19 +161,22 @@
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   @forelse($contributions as $contribution)
+                    @php $canDownload = $contribution->status === 'approved' && $contribution->academicYear && $contribution->academicYear->final_closure_date->isPast(); @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td class="px-4 py-4">
-                        <input type="checkbox" :value="{{ $contribution->id }}" x-model="selected"
-                          class="w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d]">
+                        @if($canDownload)
+                          <input type="checkbox" :value="{{ $contribution->id }}" x-model="selected"
+                            class="w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d]">
+                        @else
+                          <input type="checkbox" disabled
+                            class="w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d] opacity-40 cursor-not-allowed">
+                        @endif
                       </td>
                       <td class="px-6 py-4">
                         <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $contribution->title }}</p>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
                         <p class="text-sm text-gray-700 dark:text-gray-300">{{ $contribution->student->user->name }}</p>
-                      </td>
-                      <td class="px-6 py-4">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $contribution->post->title }}</p>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
                         <span class="text-xs font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
@@ -160,7 +197,7 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="8" class="px-6 py-12 text-center">
+                      <td colspan="7" class="px-6 py-12 text-center">
                         <svg class="mx-auto w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none"
                           stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -177,21 +214,24 @@
             {{-- Mobile card list --}}
             <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
               @forelse($contributions as $contribution)
+                @php $canDownload = $contribution->status === 'approved' && $contribution->academicYear && $contribution->academicYear->final_closure_date->isPast(); @endphp
                 <div class="p-4">
-                  {{-- Row 1: checkbox + title + view --}}
                   <div class="flex items-start gap-3 mb-2">
-                    <input type="checkbox" :value="{{ $contribution->id }}" x-model="selected"
-                      class="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d] shrink-0">
+                    @if($canDownload)
+                      <input type="checkbox" :value="{{ $contribution->id }}" x-model="selected"
+                        class="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#dc2d3d] focus:ring-[#dc2d3d] shrink-0">
+                    @else
+                      <input type="checkbox" disabled
+                        class="mt-0.5 w-4 h-4 rounded border-gray-300 opacity-40 cursor-not-allowed shrink-0">
+                    @endif
                     <p class="text-sm font-semibold text-gray-900 dark:text-white flex-1">{{ $contribution->title }}</p>
                     <a href="{{ route('contributions.show', $contribution) }}"
                       class="text-sm text-[#dc2d3d] fetch-link hover:text-[#b82532] font-medium shrink-0">View</a>
                   </div>
-                  {{-- Row 2: student · faculty --}}
                   <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 ml-7">
                     {{ $contribution->student->user->name }}
                     · <span class="font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
                   </p>
-                  {{-- Row 3: status + date --}}
                   <div class="flex items-center gap-2 ml-7">
                     <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $statusColor($contribution->status) }}">
                       {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}
@@ -206,8 +246,84 @@
             </div>
 
           </div>
-
         </div>{{-- end x-data --}}
+
+        {{-- ── GUEST VIEW ── --}}
+      @elseif($isGuest)
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+
+          {{-- Desktop table --}}
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Title</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Submitted By</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Submitted</th>
+                  <th
+                    class="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @forelse($contributions as $contribution)
+                  <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td class="px-6 py-4">
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $contribution->title }}</p>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-xs font-semibold text-gray-800">{{ $contribution->student->user->name }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {{ $contribution->created_at->format('d M Y') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                      <a href="{{ route('contributions.show', $contribution) }}"
+                        class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium transition-colors">View</a>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="4" class="px-6 py-12 text-center">
+                      <svg class="mx-auto w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">No selected contributions found</p>
+                    </td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+
+          {{-- Mobile card list --}}
+          <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+            @forelse($contributions as $contribution)
+              <div class="p-4">
+                <div class="flex items-start justify-between gap-3 mb-1">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white flex-1">{{ $contribution->title }}</p>
+                  <a href="{{ route('contributions.show', $contribution) }}"
+                    class="text-sm text-[#dc2d3d] hover:text-[#b82532] font-medium shrink-0">View</a>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  <span class="font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
+                  · {{ $contribution->created_at->format('d M Y') }}
+                </p>
+              </div>
+            @empty
+              <div class="p-8 text-center text-gray-500 dark:text-gray-400">No selected contributions found</div>
+            @endforelse
+          </div>
+
+        </div>
 
       @else
         {{-- ── COORDINATOR / ADMIN VIEW ── --}}
@@ -224,9 +340,6 @@
                   <th
                     class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Student</th>
-                  <th
-                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Post</th>
                   <th
                     class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Faculty</th>
@@ -261,9 +374,6 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <p class="text-sm text-gray-700 dark:text-gray-300">{{ $contribution->student->user->name }}</p>
                     </td>
-                    <td class="px-6 py-4">
-                      <p class="text-sm text-gray-600 dark:text-gray-400">{{ $contribution->post->title }}</p>
-                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span class="text-xs font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
                     </td>
@@ -290,7 +400,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="8" class="px-6 py-12 text-center">
+                    <td colspan="7" class="px-6 py-12 text-center">
                       <svg class="mx-auto w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -313,20 +423,18 @@
                   && $contribution->created_at->lte(now()->subDays(14));
               @endphp
               <div class="p-4 {{ $isOverdue ? 'bg-red-50 dark:bg-red-900/20' : '' }}">
-                {{-- Row 1: title + view --}}
                 <div class="flex items-start justify-between gap-3 mb-1">
-                  <p class="text-sm font-semibold {{ $isOverdue ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
+                  <p
+                    class="text-sm font-semibold {{ $isOverdue ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }} flex-1">
                     {{ $contribution->title }}
                   </p>
                   <a href="{{ route('contributions.show', $contribution) }}"
                     class="text-sm text-[#dc2d3d] hover:text-[#b82532] font-medium shrink-0">View</a>
                 </div>
-                {{-- Row 2: student · faculty --}}
                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {{ $contribution->student->user->name }}
                   · <span class="font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
                 </p>
-                {{-- Row 3: status + selected + date --}}
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $statusColor($contribution->status) }}">
                     {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}

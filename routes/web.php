@@ -11,10 +11,13 @@ use App\Http\Controllers\FacultyPageController;
 use App\Http\Controllers\ProgramPageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContributionController;
+use App\Http\Controllers\MagazineController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\AnalyticsController;
 
 // Public routes
 Route::get('/', function () {
@@ -25,13 +28,9 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
-Route::get('/magazine', function () {
-    return view('magazine');
-})->name('magazine');
+Route::get('/terms', fn() => view('terms'))->name('terms');
 
-Route::get('/terms', function () {
-    return view('terms');
-})->name('terms');
+Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 
 Route::get('/faculties', [FacultyPageController::class, 'index'])->name('faculties.index');
 
@@ -51,6 +50,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/change-password', [PasswordChangeController::class, 'changePassword'])
         ->name('temporary-password.update');
 });
+
+// ============================================
+// MAGAZINE ROUTES (public) — must be AFTER auth magazine routes so {magazine} doesn't swallow 'create'
+// ============================================
+Route::get('/magazine', [MagazineController::class, 'index'])->name('magazine.index');
+Route::post('/magazine/{id}/restore', [MagazineController::class, 'restore'])->name('magazine.restore');
+Route::delete('/magazine/{id}/force-delete', [MagazineController::class, 'forceDelete'])->name('magazine.forceDelete');
+
 
 // ============================================
 // AUTHENTICATED ROUTES
@@ -104,7 +111,43 @@ Route::middleware(['auth', 'verified', 'check.temporary.password', 'check.user.a
         Route::resource('programs', ProgramController::class);
         Route::post('programs/{id}/restore', [ProgramController::class, 'restore'])->name('programs.restore');
     });
+
+    // ============================================
+    // MAGAZINE MANAGEMENT ROUTES (manager/admin only)
+    // ============================================
+    Route::middleware(['role:marketing_manager|admin'])->group(function () {
+        // Magazine editions
+        Route::get('/magazine/create', [MagazineController::class, 'create'])->name('magazine.create');
+        Route::post('/magazine', [MagazineController::class, 'store'])->name('magazine.store');
+        Route::get('/magazine/{magazine}/edit', [MagazineController::class, 'edit'])->name('magazine.edit');
+        Route::put('/magazine/{magazine}', [MagazineController::class, 'update'])->name('magazine.update');
+        Route::delete('/magazine/{magazine}', [MagazineController::class, 'destroy'])->name('magazine.destroy');
+    });
+
+    // Guest Management
+    Route::middleware(['role:admin|marketing_coordinator'])->group(function () {
+        Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
+        Route::delete('/guests/{user}', [GuestController::class, 'destroy'])->name('guests.destroy');
+    });
+
+    // Analytics
+    Route::middleware(['role:admin'])->prefix('analytics')->name('analytics.')->group(function () {
+        Route::get('/contributions', [AnalyticsController::class, 'contributions'])->name('contributions');
+        Route::get('/users', [AnalyticsController::class, 'users'])->name('users');
+        Route::get('/faculty', [AnalyticsController::class, 'facultyIndex'])->name('faculty.index');
+    });
+
+    // Faculty show — admin + guest
+    Route::middleware(['auth', 'verified', 'check.temporary.password', 'check.user.active'])
+        ->get('/analytics/faculty/{faculty}', [AnalyticsController::class, 'facultyShow'])
+        ->name('analytics.faculty.show');
 });
+
+// ============================================
+// MAGAZINE SHOW ROUTES (public)
+// ============================================
+Route::get('/magazine/{magazine}', [MagazineController::class, 'show'])->name('magazine.show');
+
 // ============================================
 // CONTACT ROUTES
 // ============================================
@@ -166,14 +209,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Coordinator + Manager: contribution index
-    Route::middleware(['role:marketing_coordinator|marketing_manager|admin'])->group(function () {
+    Route::middleware(['role:marketing_coordinator|marketing_manager|admin|guest'])->group(function () {
         Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
     });
 
-    // Manager + Admin: download selected as ZIP (must be before contributions.show)
-    Route::middleware(['role:marketing_manager|admin'])->group(function () {
-        Route::get('/contributions/download', [ContributionController::class, 'download'])->name('contributions.download');
-    });
+    // Manager + Admin: download — MUST be registered before contributions.show
+    // so 'download' is not swallowed as a {contribution} parameter
+    Route::get('/contributions/download', [ContributionController::class, 'download'])
+        ->middleware(['role:marketing_manager|admin'])
+        ->name('contributions.download');
 
     // Show: student (own), coordinator (own faculty), admin, manager
     Route::get('/contributions/{contribution}', [ContributionController::class, 'show'])->name('contributions.show');
@@ -195,6 +239,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
         Route::put('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
+    });
+
+    Route::middleware(['role:student|marketing_coordinator'])->group(function () {
+        Route::get('/reports/{report}', [ReportController::class, 'myReport'])->name('reports.my');
     });
 
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])

@@ -8,46 +8,35 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\RegisteredGuestController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\PasswordChangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    // Registration Routes
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
+    // Student Registration
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    // Login Routes
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    // Guest Registration
+    Route::get('register/guest', [RegisteredGuestController::class, 'create'])->name('register.guest');
+    Route::post('register/guest', [RegisteredGuestController::class, 'store'])->name('register.guest.store');
 
+    // Login
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 });
 
-// Password Reset Routes - accessible by both guest AND authenticated users
-Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-    ->name('password.request');
-
-Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-    ->name('password.email');
-
-Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-    ->name('password.reset');
-
-Route::post('reset-password', [NewPasswordController::class, 'store'])
-    ->name('password.store');
+// Password Reset Routes
+Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 
 Route::middleware('auth')->group(function () {
-    // Temporary Password Change Routes
-    Route::get('change-password', [PasswordChangeController::class, 'show'])
-        ->name('password.change');
+    Route::get('change-password', [PasswordChangeController::class, 'show'])->name('password.change');
+    Route::put('change-password', [PasswordChangeController::class, 'update'])->name('password.update.temporary');
 
-    Route::put('change-password', [PasswordChangeController::class, 'update'])
-        ->name('password.update.temporary');
-
-    // Email Verification Routes
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice')
         ->middleware('check.temporary.password');
@@ -60,16 +49,10 @@ Route::middleware('auth')->group(function () {
         ->middleware(['throttle:6,1', 'check.temporary.password'])
         ->name('verification.send');
 
-    // Password Confirmation Routes
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
-
+    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    // Password Update Route
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
-    // Logout Route
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

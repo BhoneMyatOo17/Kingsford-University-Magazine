@@ -10,6 +10,11 @@ class UpdateLoginInfo
     public function handle(Login $event): void
     {
         $user = $event->user;
+
+        if (!empty($user->skipLoginTracking)) {
+            return;
+        }
+
         $agent = new Agent();
         $browser = $agent->browser();
         $version = $agent->version($browser);

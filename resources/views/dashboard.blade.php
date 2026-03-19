@@ -12,11 +12,10 @@
   @include('components.sidebar_navigation')
   @include('components.top_navigation', ['title' => 'Dashboard', 'overdueContributions' => $overdueContributions])
 
-  <!-- Main Content -->
   <div class="lg:ml-64">
     <main class="p-4 lg:p-8">
 
-      <!-- Welcome Section -->
+      {{-- Welcome --}}
       <div class="mb-8">
         @if(auth()->user()->previous_login_at === null)
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -33,243 +32,207 @@
         @endif
       </div>
 
-      <!-- Coordinator: Overdue Comment Alert Banner -->
+      {{-- Coordinator: Overdue Alert Banner (count only) --}}
       @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
         <div class="mb-8 bg-red-50 dark:bg-red-900/20 border border-[#dc2d3d] rounded-lg p-4">
-          <div class="flex items-start space-x-3">
-            <svg class="w-5 h-5 text-[#dc2d3d] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <div class="flex-1">
-              <h4 class="text-sm font-semibold text-[#dc2d3d] mb-1">
-                {{ $overdueContributions->count() }} {{ Str::plural('contribution', $overdueContributions->count()) }}
-                overdue for comment
-              </h4>
-              <p class="text-sm text-red-700 dark:text-red-300 mb-3">
-                The following submissions have had no comment for over 14 days. Please review them.
-              </p>
-              <ul class="space-y-1">
-                @foreach($overdueContributions as $contribution)
-                  <li class="flex items-center justify-left text-sm">
-                    <span class="text-gray-800 dark:text-gray-200 truncate max-w-xs">
-                      "{{ $contribution->title }}"
-                    </span>
-                    <span class="text-gray-500 dark:text-gray-400 ml-4 flex-shrink-0">
-                      submitted {{ $contribution->created_at->diffForHumans() }}
-                    </span>
-                    <a href="{{ route('contributions.show', $contribution) }}"
-                      class="ml-4 flex-shrink-0 text-[#dc2d3d] hover:text-[#b82532] font-medium">
-                      Comment →
-                    </a>
-                  </li>
-                @endforeach
-              </ul>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-[#dc2d3d] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h4 class="text-sm font-semibold text-[#dc2d3d]">
+                  {{ $overdueContributions->count() }} {{ Str::plural('contribution', $overdueContributions->count()) }}
+                  overdue for comment
+                </h4>
+                <p class="text-xs text-red-600 dark:text-red-400 mt-0.5">
+                  These submissions have had no comment for over 14 days.
+                </p>
+              </div>
             </div>
+            <a href="{{ route('contributions.index') }}"
+              class="flex-shrink-0 px-4 py-2 bg-[#dc2d3d] text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors">
+              Review Now →
+            </a>
           </div>
         </div>
       @endif
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Card 1: Total Contributions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Contributions</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">12</h3>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-          <div class="mt-4 flex items-center text-sm">
-            <span class="text-green-600 dark:text-green-400 font-medium">+2</span>
-            <span class="text-gray-600 dark:text-gray-400 ml-2">this month</span>
-          </div>
-        </div>
+      {{-- Stats Cards --}}
+      @if(!empty($stats))
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-        <!-- Card 2: Pending Review — coordinator sees overdue count -->
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all
-          @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty()) border border-[#dc2d3d] @endif">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                @if(auth()->user()->hasRole('marketing_coordinator')) Overdue Comments @else Pending Review @endif
-              </p>
-              <h3
-                class="text-3xl font-bold
-                @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty()) text-[#dc2d3d] @else text-gray-900 dark:text-white @endif">
-                @if(auth()->user()->hasRole('marketing_coordinator'))
-                  {{ $overdueContributions->count() }}
-                @else
-                  3
-                @endif
-              </h3>
+          {{-- Card 1: Total Contributions --}}
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Contributions</p>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
+              </div>
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+              </div>
             </div>
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center
+          </div>
+
+          {{-- Card 2: Pending / Overdue --}}
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all
+                  {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  {{ auth()->user()->hasRole('marketing_coordinator') ? 'Overdue Comments' : 'Pending Review' }}
+                </p>
+                <h3
+                  class="text-3xl font-bold {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
+                  {{ auth()->user()->hasRole('marketing_coordinator') ? $stats['overdue'] : $stats['pending'] }}
+                </h3>
+              </div>
+              <div
+                class="w-12 h-12 rounded-lg flex items-center justify-center
+                      {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
+                <svg
+                  class="w-6 h-6 {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-yellow-600 dark:text-yellow-400' }}"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div class="mt-4 text-sm">
               @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
-                bg-red-100 dark:bg-red-900/30
+                <span class="text-[#dc2d3d] font-medium">Action required</span>
               @else
-                bg-yellow-100 dark:bg-yellow-900/30
-              @endif">
-              <svg class="w-6 h-6
-                @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
-                  text-[#dc2d3d]
-                @else
-                  text-yellow-600 dark:text-yellow-400
-                @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+                <span class="text-gray-500 dark:text-gray-400">Awaiting review</span>
+              @endif
             </div>
           </div>
-          <div class="mt-4 flex items-center text-sm">
-            @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
-              <span class="text-[#dc2d3d] font-medium">Action required</span>
-            @else
-              <span class="text-gray-600 dark:text-gray-400">Awaiting comments</span>
-            @endif
-          </div>
-        </div>
 
-        <!-- Card 3: Approved -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Approved</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">7</h3>
+          {{-- Card 3: Approved --}}
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Approved</p>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['approved'] }}</h3>
+              </div>
+              <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
             </div>
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div class="mt-4 flex items-center text-sm">
+              <span class="text-green-600 dark:text-green-400 font-medium">{{ $stats['approval_rate'] }}%</span>
+              <span class="text-gray-600 dark:text-gray-400 ml-2">approval rate</span>
             </div>
           </div>
-          <div class="mt-4 flex items-center text-sm">
-            <span class="text-green-600 dark:text-green-400 font-medium">58%</span>
-            <span class="text-gray-600 dark:text-gray-400 ml-2">approval rate</span>
-          </div>
-        </div>
 
-        <!-- Card 4: Published -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Published</p>
-              <h3 class="text-3xl font-bold text-gray-900 dark:text-white">5</h3>
+          {{-- Card 4: Selected/Published --}}
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Selected</p>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['selected'] }}</h3>
+              </div>
+              <div class="w-12 h-12 bg-[#dc2d3d]/10 dark:bg-[#dc2d3d]/20 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-[#dc2d3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </div>
             </div>
-            <div class="w-12 h-12 bg-[#dc2d3d]/10 dark:bg-[#dc2d3d]/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-[#dc2d3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-              </svg>
+            <div class="mt-4 text-sm">
+              <span class="text-gray-500 dark:text-gray-400">Selected articles</span>
             </div>
           </div>
-          <div class="mt-4 flex items-center text-sm">
-            <span class="text-gray-600 dark:text-gray-400">Selected articles</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Two Column Layout -->
+        </div>
+      @endif
+
+      {{-- Two Column Layout --}}
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Recent Activity -->
+
+        {{-- Recent Activity / Contributions --}}
         <div class="lg:col-span-2">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-              <a href="#" class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium">View All</a>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Contributions</h3>
+              <a href="{{ route('contributions.index') }}"
+                class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium">View All</a>
             </div>
-
-            <div class="space-y-4">
-              <!-- Activity Item 1 -->
-              <div
-                class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <div
-                  class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-gray-900 dark:text-white font-medium">Article Approved</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Your article "AI in Education" has been approved
-                    by Dr. Smith</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">2 hours ago</p>
-                </div>
-              </div>
-
-              <!-- Activity Item 2 -->
-              <div
-                class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <div
-                  class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-gray-900 dark:text-white font-medium">New Comment Received</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Marketing Coordinator commented on "Future of
-                    Technology"</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">5 hours ago</p>
-                </div>
-              </div>
-
-              <!-- Activity Item 3 -->
-              <div
-                class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <div
-                  class="w-10 h-10 bg-[#dc2d3d]/10 dark:bg-[#dc2d3d]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-[#dc2d3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-gray-900 dark:text-white font-medium">New Submission</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">You submitted "Sustainable Computing Practices"
-                  </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">1 day ago</p>
-                </div>
-              </div>
-
-              <!-- Activity Item 4 -->
-              <div
-                class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <div
-                  class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-gray-900 dark:text-white font-medium">Deadline Reminder</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Final closure date is in 7 days</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">2 days ago</p>
-                </div>
-              </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Title</th>
+                    @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Student</th>
+                    @endif
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status</th>
+                    <th
+                      class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                  @forelse($recentContributions as $contribution)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-xs">
+                          {{ $contribution->title }}
+                        </div>
+                      </td>
+                      @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                          {{ $contribution->student->user->name ?? '—' }}
+                        </td>
+                      @endif
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        @php $status = $contribution->status; @endphp
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                                {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                                {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                                {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}
+                              ">
+                          {{ ucfirst(str_replace('_', ' ', $status)) }}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{{ route('contributions.show', $contribution) }}"
+                          class="text-[#dc2d3d] hover:text-[#b82532]">View</a>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="4" class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">No
+                        contributions yet.</td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <!-- Quick Actions & Important Dates -->
+        {{-- Right Column --}}
         <div class="space-y-6">
-          <!-- Quick Actions -->
+
+          {{-- Quick Actions --}}
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
@@ -282,7 +245,6 @@
                   </svg>
                 </a>
               @endif
-
               @if(auth()->user()->hasRole('marketing_coordinator'))
                 <a href="{{ route('contributions.index') }}"
                   class="w-full flex items-center justify-between px-4 py-3 bg-[#dc2d3d] text-white rounded-lg hover:bg-[#b82532] transition-colors">
@@ -299,7 +261,6 @@
                   </svg>
                 </a>
               @endif
-
               <a href="{{ route('contributions.index') }}"
                 class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                 <span class="font-medium">View All Contributions</span>
@@ -310,146 +271,66 @@
             </div>
           </div>
 
-          <!-- Important Dates -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Important Dates</h3>
-            <div class="space-y-4">
-              <div class="flex items-start space-x-3">
-                <div
-                  class="w-12 h-12 bg-[#dc2d3d] rounded-lg flex flex-col items-center justify-center text-white flex-shrink-0">
-                  <span class="text-xs font-medium">MAR</span>
-                  <span class="text-lg font-bold">15</span>
+          {{-- Important Dates --}}
+          @if($activeYear)
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Important Dates</h3>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">{{ $activeYear->name }}</p>
+              <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                  <div
+                    class="w-12 h-12 bg-[#dc2d3d] rounded-lg flex flex-col items-center justify-center text-white flex-shrink-0">
+                    <span
+                      class="text-xs font-medium">{{ \Carbon\Carbon::parse($activeYear->closure_date)->format('M') }}</span>
+                    <span
+                      class="text-lg font-bold">{{ \Carbon\Carbon::parse($activeYear->closure_date)->format('d') }}</span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900 dark:text-white">Closure for New Entries</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Last day for submissions</p>
+                    @if(\Carbon\Carbon::parse($activeYear->closure_date)->isPast())
+                      <span class="text-xs text-red-500 font-medium">Closed</span>
+                    @else
+                      <span class="text-xs text-green-600 dark:text-green-400 font-medium">
+                        {{ \Carbon\Carbon::parse($activeYear->closure_date)->diffForHumans() }}
+                      </span>
+                    @endif
+                  </div>
                 </div>
-                <div>
-                  <p class="font-medium text-gray-900 dark:text-white">Closure for New Entries</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Last day for submissions</p>
-                </div>
-              </div>
 
-              <div class="flex items-start space-x-3">
-                <div
-                  class="w-12 h-12 bg-blue-600 rounded-lg flex flex-col items-center justify-center text-white flex-shrink-0">
-                  <span class="text-xs font-medium">MAR</span>
-                  <span class="text-lg font-bold">31</span>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-900 dark:text-white">Final Closure Date</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">No more updates allowed</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3">
-                <div
-                  class="w-12 h-12 bg-green-600 rounded-lg flex flex-col items-center justify-center text-white flex-shrink-0">
-                  <span class="text-xs font-medium">APR</span>
-                  <span class="text-lg font-bold">15</span>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-900 dark:text-white">Magazine Publication</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Annual magazine release</p>
+                <div class="flex items-start space-x-3">
+                  <div
+                    class="w-12 h-12 bg-blue-600 rounded-lg flex flex-col items-center justify-center text-white flex-shrink-0">
+                    <span
+                      class="text-xs font-medium">{{ \Carbon\Carbon::parse($activeYear->final_closure_date)->format('M') }}</span>
+                    <span
+                      class="text-lg font-bold">{{ \Carbon\Carbon::parse($activeYear->final_closure_date)->format('d') }}</span>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900 dark:text-white">Final Closure Date</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">No more updates allowed</p>
+                    @if(\Carbon\Carbon::parse($activeYear->final_closure_date)->isPast())
+                      <span class="text-xs text-red-500 font-medium">Closed</span>
+                    @else
+                      <span class="text-xs text-green-600 dark:text-green-400 font-medium">
+                        {{ \Carbon\Carbon::parse($activeYear->final_closure_date)->diffForHumans() }}
+                      </span>
+                    @endif
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          @endif
+
         </div>
       </div>
 
-      <!-- Recent Contributions Table -->
-      <div class="mt-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Contributions</h3>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Title</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Submitted</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status</th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Comments</th>
-                  <th
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Actions</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">AI in Education</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Feb 1, 2026</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                      Approved
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">1 comment</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
-                  </td>
-                </tr>
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">Sustainable Computing</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Feb 5, 2026</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                      Pending
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">No comments</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
-                  </td>
-                </tr>
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">Future of Technology</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Jan 28, 2026</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                      Approved
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">2 comments</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button class="text-[#dc2d3d] hover:text-[#b82532]">View</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
       <div class="px-4 lg:px-8 py-6">
         <div class="flex flex-col md:flex-row items-center justify-between">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            © 2026 Kingsford University. All rights reserved.
-          </p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">© 2026 Kingsford University. All rights reserved.</p>
           <div class="flex items-center space-x-6 mt-4 md:mt-0">
             <a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-[#dc2d3d]">Privacy Policy</a>
             <a href="#" class="text-sm text-gray-600 dark:text-gray-400 hover:text-[#dc2d3d]">Terms of Service</a>

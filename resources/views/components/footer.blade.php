@@ -96,9 +96,10 @@
     </div>
 
     <div class="border-t border-gray-300 dark:border-gray-800 pt-8 text-center text-sm">
-      <p>&copy;1968 Kingsford University. All rights reserved. | <a href="#"
-          class="hover:text-[#dc2d3d] transition-colors hover:underline">Privacy Policy</a> | <a href="#"
-          class="hover:text-[#dc2d3d] transition-colors hover:underline">Terms of Service</a></p>
+      <p>&copy;1968 Kingsford University. All rights reserved. | <a href="{{ route('privacy') }}"
+          class="hover:text-[#dc2d3d] transition-colors hover:underline">Privacy Policy</a> | <a
+          href="{{ route('terms') }}" class="hover:text-[#dc2d3d] transition-colors hover:underline">Terms &
+          Conditions</a></p>
     </div>
   </div>
 </footer>

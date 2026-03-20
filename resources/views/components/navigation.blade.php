@@ -93,7 +93,11 @@
           </div>
         </div>
 
+<<<<<<< HEAD
         <a href="{{ route('magazine.index') }}"
+=======
+  <a href="{{ route('magazine.index') }}"
+>>>>>>> 591cac0f1c6a5a08fa2368f8ad17c8a74ab50942
           class="nav-link text-white dark:text-white hover:text-gray-300 dark:hover:text-gray-300 font-medium transition-colors duration-300">Our
           Magazines</a>
 

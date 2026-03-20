@@ -169,9 +169,7 @@
         </div>
       </div>
 
-      <<<<<<< HEAD <a href="{{ route('magazine.index') }}"=======<a href="#">>>>>>>
-        3fc0bb64f10da8402f3a7849abd0947f08a0502c
-        class="block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors
+      <a href="{{ route('magazine.index') }}" class="block text-gray-700 dark:text-gray-300 hover:text-[#dc2d3d] font-medium transition-colors
         duration-300">Our
         Magazine</a>
     </div>

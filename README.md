@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss" alt="Tailwind CSS"/>
   <img src="https://img.shields.io/badge/MySQL-orange?logo=mysql" alt="MySQL"/>
   <img src="https://img.shields.io/badge/Breeze-Auth-green?logo=laravel" alt="Laravel Breeze"/>
-  <img src="https://img.shields.io/badge/Spatie-Permissions-purple" alt="Spatie"/>
+  <img src="https://img.shields.io/badge/Spatie-Permissions-purple?logo=laravel" alt="Spatie"/>
 </p>
 
 ---

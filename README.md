@@ -1,62 +1,198 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kingsford University Magazine Contribution Management System
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="screenshots/logo.png" alt="Kingsford University Logo" width="200"/>
 </p>
 
-## About Laravel
+<p align="center">
+  A secure, role-based web platform for managing student magazine contributions at Kingsford University — from submission to publication.
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-12-red?logo=laravel" alt="Laravel"/>
+  <img src="https://img.shields.io/badge/PHP-8.2-blue?logo=php" alt="PHP"/>
+  <img src="https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss" alt="Tailwind CSS"/>
+  <img src="https://img.shields.io/badge/MySQL-orange?logo=mysql" alt="MySQL"/>
+  <img src="https://img.shields.io/badge/Breeze-Auth-green?logo=laravel" alt="Laravel Breeze"/>
+  <img src="https://img.shields.io/badge/Spatie-Permissions-purple" alt="Spatie"/>
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📌 About the Project
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+The Kingsford University Magazine Contribution Management System is a full-stack web application developed to manage the end-to-end process of collecting, reviewing, and publishing student contributions for the university's annual magazine.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The system replaces manual and fragmented processes with a centralised, role-based platform where students submit articles and images, coordinators review and approve them, and the Marketing Manager compiles and publishes the final magazine — all within one secure system.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🖼️ Preview
 
-### Premium Partners
+### Home Page
+<p align="center">
+  <img src="screenshots/index.png" alt="Dashboard" width="800"/>
+</p>
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Dashboard
+<p align="center">
+  <img src="screenshots/dashboard.png" alt="Dashboard" width="800"/>
+</p>
 
-## Contributing
+### Contribution Submission
+<p align="center">
+  <img src="screenshots/contribution.png" alt="Contribution" width="800"/>
+</p>
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Analytics
+<p align="center">
+  <img src="screenshots/analytics.png" alt="Analytics" width="800"/>
+</p>
 
-## Code of Conduct
+### Magazine Publication
+<p align="center">
+  <img src="screenshots/magazine.png" alt="Magazine" width="800"/>
+</p>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## ✨ Features
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 👤 User & Access Management
+- Student self-registration restricted to `@ksf.it.com` university email with email verification
+- Coordinator and Manager accounts created by Admin with enforced first-login password change
+- Guest accounts for faculty-specific public viewing
+- Role-based access control across all system modules
+- Last login timestamp displayed on every sign-in
 
-## License
+### 📝 Contribution Submission
+- Students submit Word documents and images to faculty-scoped contribution posts
+- Terms & Conditions agreement required before submission
+- Email and in-app notifications sent to coordinators on new submissions
+- Coordinators comment, approve, or reject contributions
+- Overdue submissions (no comment after 14 days) trigger automatic notifications
+- Inappropriate content can be reported by students or coordinators for admin review
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# Kingsford-University-Magazine" 
-"# Kingsford-University-Magazine" 
-"# Kingsford-University-Magazine" 
+### 📖 Magazine Publication
+- Marketing Manager downloads approved contributions as a ZIP file after final closure date
+- Published magazines displayed on a public-facing magazine portal with view counts
+- In-app notifications sent to all internal users on new publication
+
+### 📊 Reports & Analytics
+- Contribution analytics filtered by academic year with charts and faculty breakdown table
+- Faculty reports with exception reports: contributions with no comment and overdue (14+ days)
+- User activity report showing activity scores and last login per user
+- System usage analytics: page views, active users, browser usage
+
+### 🔔 In-App Notifications
+- New contribution submitted
+- Contribution commented on or approved
+- Submission overdue for comment (14+ days)
+- New report submitted / resolved by admin
+- Guest account created
+- Magazine published
+- Contact request submitted / responded to
+- Submission deadline approaching
+
+### 🛡️ Security & Data Integrity
+- Soft deletion across all major modules — no data is permanently lost
+- Admin can view and restore deleted records
+- Referential integrity enforced at database level
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend Framework | [Laravel](https://laravel.com/) (PHP) |
+| Templating | Blade Templating Engine |
+| Frontend Styling | [Tailwind CSS](https://tailwindcss.com/) |
+| Frontend Interactivity | [Alpine.js](https://alpinejs.dev/) |
+| Authentication | [Laravel Breeze](https://laravel.com/docs/starter-kits#laravel-breeze) |
+| Role & Permissions | [Spatie Laravel Permissions](https://spatie.be/docs/laravel-permission) |
+| Database | MySQL |
+| Asset Bundling | [Vite](https://vitejs.dev/) |
+| File Storage | [Cloudflare R2](https://developers.cloudflare.com/r2/) (S3-compatible) |
+| Hosting | [Laravel Cloud](https://cloud.laravel.com/) |
+| Outgoing Email (Production) | [Brevo](https://www.brevo.com/) (SMTP) |
+| Email Testing (Development) | [Mailtrap](https://mailtrap.io/) |
+| Email Routing | [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/) |
+| Charts & Graphs | [Chart.js](https://www.chartjs.org/) |
+| Rich Text Editor | [Quill.js](https://quilljs.com/) |
+| Architecture | MVC (Model-View-Controller) |
+| Methodology | Agile Scrum |
+
+---
+
+## ⚙️ Installation
+
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js & NPM
+- MySQL
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/BhoneMyatOo17/Kingsford-University-Magazine.git
+cd Kingsford-University-Magazine
+
+# Install PHP dependencies
+composer install
+
+# Install Node dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate app key
+php artisan key:generate
+
+# Configure your database in .env, then run migrations and seeders
+php artisan migrate --seed
+
+# Build frontend assets
+npm run dev
+
+# Start the local server
+php artisan serve
+```
+
+---
+
+## 👥 User Roles
+
+| Role | Access |
+|---|---|
+| **Admin** | Full system access, user management, academic year setup, analytics, soft-deleted records |
+| **Marketing Manager** | View all approved contributions, download ZIP after final closure, publish magazines |
+| **Marketing Coordinator** | View and manage contributions within their faculty, comment, approve/reject, manage guests |
+| **Student** | Submit contributions to faculty posts, view own submissions, receive notifications |
+| **Guest** | View approved contributions and faculty statistics for a specific faculty |
+
+---
+
+## 👨‍💻 Team
+
+| Role | Name | Banner ID |
+|---|---|---|
+| Product Owner | Kyi Phyu Thant | 001512422 |
+| SCRUM Master | Aye Myat Thiri Mon | 001510360 |
+| UI/UX Designer | Yoon Thiri | 001512423 |
+| Database Designer | Myat Shun Lei Zaw | 001512434 |
+| Front-end Developer | Poe Waddy Khin Soe Lwin | 001510348 |
+| Backend Developer | Bhone Myat Oo | 001510377 |
+| Tester | Aye Thandar Aung | 001510299 |
+| Tester | Min Thet Khine | 001510622 |
+
+---
+
+## 📄 License
+
+This project is developed as an academic submission for **COMP1640 — Enterprise Web Software Development**.

@@ -83,7 +83,7 @@
           {{-- Card 2: Pending / Overdue --}}
           <div
             class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all
-                  {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
+                    {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
@@ -96,7 +96,7 @@
               </div>
               <div
                 class="w-12 h-12 rounded-lg flex items-center justify-center
-                      {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
+                        {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
                 <svg
                   class="w-6 h-6 {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-yellow-600 dark:text-yellow-400' }}"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,11 +204,11 @@
                       <td class="px-6 py-4 whitespace-nowrap">
                         @php $status = $contribution->status; @endphp
                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
-                                {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
-                                {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
-                                {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}
-                              ">
+                                  {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                                  {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                                  {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                                  {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}
+                                ">
                           {{ ucfirst(str_replace('_', ' ', $status)) }}
                         </span>
                       </td>
@@ -261,13 +261,15 @@
                   </svg>
                 </a>
               @endif
-              <a href="{{ route('contributions.index') }}"
-                class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <span class="font-medium">View All Contributions</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+              @if(!auth()->user()->hasRole('student'))
+                <a href="{{ route('contributions.index') }}"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                  <span class="font-medium">View All Contributions</span>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              @endif
             </div>
           </div>
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class GuestController extends Controller
@@ -32,7 +31,7 @@ class GuestController extends Controller
         abort_unless($user->isGuest(), 403);
 
         $user->update(['is_active' => false]);
-        $user->delete(); // soft delete
+        $user->delete();
 
         return redirect()->route('guests.index')
             ->with('success', 'Guest account has been deactivated and removed.');

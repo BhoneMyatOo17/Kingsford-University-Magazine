@@ -107,14 +107,13 @@ The system replaces manual and fragmented processes with a centralised, role-bas
 
 | Layer | Technology |
 |---|---|
-| Backend Framework | [Laravel](https://laravel.com/) (PHP) |
-| Templating | Blade Templating Engine |
+| Methodology | Agile Scrum |
+| Backend Framework | [Laravel](https://laravel.com/)|
 | Frontend Styling | [Tailwind CSS](https://tailwindcss.com/) |
 | Frontend Interactivity | [Alpine.js](https://alpinejs.dev/) |
 | Authentication | [Laravel Breeze](https://laravel.com/docs/starter-kits#laravel-breeze) |
 | Role & Permissions | [Spatie Laravel Permissions](https://spatie.be/docs/laravel-permission) |
 | Database | MySQL |
-| Asset Bundling | [Vite](https://vitejs.dev/) |
 | File Storage | [Cloudflare R2](https://developers.cloudflare.com/r2/) (S3-compatible) |
 | Hosting | [Laravel Cloud](https://cloud.laravel.com/) |
 | Outgoing Email (Production) | [Brevo](https://www.brevo.com/) (SMTP) |
@@ -122,8 +121,6 @@ The system replaces manual and fragmented processes with a centralised, role-bas
 | Email Routing | [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/) |
 | Charts & Graphs | [Chart.js](https://www.chartjs.org/) |
 | Rich Text Editor | [Quill.js](https://quilljs.com/) |
-| Architecture | MVC (Model-View-Controller) |
-| Methodology | Agile Scrum |
 
 ---
 

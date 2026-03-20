@@ -1,4 +1,4 @@
-# Kingsford University Magazine Contribution Management System
+# Kingsford University Magazine Contribution Management
 
 <p align="center">
   <img src="screenshots/logo.png" alt="Kingsford University Logo" width="200"/>

@@ -199,12 +199,12 @@
         {{-- Delete form must be outside the update form --}}
         <div class="mt-4 flex justify-start">
           <form action="{{ route('magazine.destroy', $magazine) }}" method="POST"
-            onsubmit="return confirm('Delete this magazine? This cannot be undone.')">
+            onsubmit="return confirm('Archive this magazine? The magazine will not be visible to users anymore.')">
             @csrf
             @method('DELETE')
             <button type="submit"
               class="px-5 py-2.5 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700 rounded-lg text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition">
-              Delete
+              Archive
             </button>
           </form>
         </div>

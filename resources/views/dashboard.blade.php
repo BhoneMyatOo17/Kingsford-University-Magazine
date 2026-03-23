@@ -60,97 +60,96 @@
       @endif
 
       {{-- Stats Cards --}}
+      {{-- Stats Cards --}}
       @if(!empty($stats))
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
           {{-- Card 1: Total Contributions --}}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Contributions</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
-              </div>
-              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+              <p class="text-xs text-gray-600 dark:text-gray-400">Total Contributions</p>
+              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                 </svg>
               </div>
             </div>
+            <div class="mt-3">
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
+              <span class="text-xs text-gray-500 dark:text-gray-400">All submissions</span>
+            </div>
           </div>
 
           {{-- Card 2: Pending / Overdue --}}
           <div
-            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all
-                    {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all flex flex-col justify-between
+          {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
             <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  {{ auth()->user()->hasRole('marketing_coordinator') ? 'Overdue Comments' : 'Pending Review' }}
-                </p>
-                <h3
-                  class="text-3xl font-bold {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
-                  {{ auth()->user()->hasRole('marketing_coordinator') ? $stats['overdue'] : $stats['pending'] }}
-                </h3>
-              </div>
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                {{ auth()->user()->hasRole('marketing_coordinator') ? 'Overdue Comments' : 'Pending Review' }}
+              </p>
               <div
-                class="w-12 h-12 rounded-lg flex items-center justify-center
-                        {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
+                class="w-10 h-10 rounded-lg flex items-center justify-center
+              {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
                 <svg
-                  class="w-6 h-6 {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-yellow-600 dark:text-yellow-400' }}"
+                  class="w-5 h-5 {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-yellow-600 dark:text-yellow-400' }}"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
-            <div class="mt-4 text-sm">
+            <div class="mt-3">
+              <h3
+                class="text-2xl font-bold {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-gray-900 dark:text-white' }}">
+                {{ auth()->user()->hasRole('marketing_coordinator') ? $stats['overdue'] : $stats['pending'] }}
+              </h3>
               @if(auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty())
-                <span class="text-[#dc2d3d] font-medium">Action required</span>
+                <span class="text-xs text-[#dc2d3d] font-medium">Action required</span>
               @else
-                <span class="text-gray-500 dark:text-gray-400">Awaiting review</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Awaiting review</span>
               @endif
             </div>
           </div>
 
           {{-- Card 3: Approved --}}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Approved</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['approved'] }}</h3>
-              </div>
-              <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
+              <p class="text-xs text-gray-600 dark:text-gray-400">Approved</p>
+              <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
-            <div class="mt-4 flex items-center text-sm">
-              <span class="text-green-600 dark:text-green-400 font-medium">{{ $stats['approval_rate'] }}%</span>
-              <span class="text-gray-600 dark:text-gray-400 ml-2">approval rate</span>
+            <div class="mt-3">
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['approved'] }}</h3>
+              <span class="text-xs text-green-600 dark:text-green-400 font-medium">{{ $stats['approval_rate'] }}% approval
+                rate</span>
             </div>
           </div>
 
-          {{-- Card 4: Selected/Published --}}
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+          {{-- Card 4: Selected --}}
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Selected</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['selected'] }}</h3>
-              </div>
-              <div class="w-12 h-12 bg-[#dc2d3d]/10 dark:bg-[#dc2d3d]/20 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-[#dc2d3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <p class="text-xs text-gray-600 dark:text-gray-400">Selected</p>
+              <div class="w-10 h-10 bg-[#dc2d3d]/10 dark:bg-[#dc2d3d]/20 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#dc2d3d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
               </div>
             </div>
-            <div class="mt-4 text-sm">
-              <span class="text-gray-500 dark:text-gray-400">Selected articles</span>
+            <div class="mt-3">
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['selected'] }}</h3>
+              <span class="text-xs text-gray-500 dark:text-gray-400">Selected articles</span>
             </div>
           </div>
 
@@ -168,7 +167,37 @@
               <a href="{{ route('contributions.index') }}"
                 class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium">View All</a>
             </div>
-            <div class="overflow-x-auto">
+
+            {{-- Mobile Card View --}}
+            <div class="block md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+              @forelse($recentContributions as $contribution)
+                @php $status = $contribution->status; @endphp
+                <div class="px-4 py-4 flex items-center justify-between gap-3">
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $contribution->title }}</p>
+                    @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {{ $contribution->student->user->name ?? '—' }}</p>
+                    @endif
+                    <span
+                      class="mt-1 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full
+                {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
+                      {{ ucfirst(str_replace('_', ' ', $status)) }}
+                    </span>
+                  </div>
+                  <a href="{{ route('contributions.show', $contribution) }}"
+                    class="flex-shrink-0 text-sm text-[#dc2d3d] hover:text-[#b82532] font-medium">View</a>
+                </div>
+              @empty
+                <div class="px-4 py-10 text-center text-sm text-gray-500 dark:text-gray-400">No contributions yet.</div>
+              @endforelse
+            </div>
+
+            {{-- Desktop Table View --}}
+            <div class="hidden md:block overflow-x-auto">
               <table class="w-full">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                   <tr>
@@ -190,11 +219,11 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                   @forelse($recentContributions as $contribution)
+                    @php $status = $contribution->status; @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td class="px-6 py-4">
                         <div class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-xs">
-                          {{ $contribution->title }}
-                        </div>
+                          {{ $contribution->title }}</div>
                       </td>
                       @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
@@ -202,13 +231,12 @@
                         </td>
                       @endif
                       <td class="px-6 py-4 whitespace-nowrap">
-                        @php $status = $contribution->status; @endphp
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                  {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
-                                  {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
-                                  {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
-                                  {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}
-                                ">
+                        <span
+                          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                    {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                    {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                    {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                    {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
                           {{ ucfirst(str_replace('_', ' ', $status)) }}
                         </span>
                       </td>
@@ -226,6 +254,7 @@
                 </tbody>
               </table>
             </div>
+
           </div>
         </div>
 

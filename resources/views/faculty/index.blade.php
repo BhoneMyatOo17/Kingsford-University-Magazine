@@ -28,7 +28,7 @@
           <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Manage university faculties.</p>
         </div>
         <a href="{{ route('faculty.create') }}"
-          class="inline-flex items-center px-4 py-2 bg-[#dc2d3d] hover:text-white text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors">
+          class="inline-flex items-center px-4 py-2 bg-[#dc2d3d] text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
@@ -37,7 +37,9 @@
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div class="overflow-x-auto">
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
@@ -72,8 +74,7 @@
                   </td>
                   <td class="px-6 py-4">
                     <div class="text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                      {{ $faculty->description ?? '—' }}
-                    </div>
+                      {{ $faculty->description ?? '—' }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     @if($faculty->trashed())
@@ -87,7 +88,7 @@
                         class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400">Inactive</span>
                     @endif
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     @if($faculty->trashed())
                       <button type="button" data-restore-url="{{ route('faculty.restore', $faculty->id) }}"
                         data-restore-name="{{ $faculty->name }}"
@@ -107,6 +108,47 @@
               @endforelse
             </tbody>
           </table>
+        </div>
+
+        {{-- Mobile card list --}}
+        <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          @forelse($faculties as $faculty)
+            <div class="p-4 {{ $faculty->trashed() ? 'opacity-60' : '' }}">
+              <div class="flex items-start justify-between gap-3 mb-1">
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $faculty->name }}</p>
+                  <span
+                    class="inline-block mt-1 px-2 py-0.5 text-xs font-mono font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                    {{ $faculty->code }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                  @if($faculty->trashed())
+                    <span
+                      class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Deleted</span>
+                    <button type="button" data-restore-url="{{ route('faculty.restore', $faculty->id) }}"
+                      data-restore-name="{{ $faculty->name }}"
+                      class="text-sm text-green-600 dark:text-green-400 font-medium">Restore</button>
+                  @else
+                    @if($faculty->is_active)
+                      <span
+                        class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Active</span>
+                    @else
+                      <span
+                        class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400">Inactive</span>
+                    @endif
+                    <a href="{{ route('faculty.show', $faculty) }}"
+                      class="text-sm text-gray-500 dark:text-gray-400 font-medium">View</a>
+                  @endif
+                </div>
+              </div>
+              @if($faculty->description)
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{{ $faculty->description }}</p>
+              @endif
+            </div>
+          @empty
+            <div class="p-8 text-center text-gray-500 dark:text-gray-400">No faculties found.</div>
+          @endforelse
         </div>
 
         @if($faculties->hasPages())

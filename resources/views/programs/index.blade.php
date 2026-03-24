@@ -28,7 +28,7 @@
           <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Manage all university programs.</p>
         </div>
         <a href="{{ route('programs.create') }}"
-          class="inline-flex items-center px-4 py-2 bg-[#dc2d3d] hover:text-white text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors dark:text-white dark:hover:text-slate-200">
+          class="inline-flex items-center px-4 py-2 bg-[#dc2d3d] text-white text-sm font-medium rounded-lg hover:bg-[#b82532] transition-colors">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
@@ -59,7 +59,9 @@
       </div>
 
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div class="overflow-x-auto">
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full" id="programs-table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
@@ -85,6 +87,13 @@
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               @forelse($programs as $program)
+                @php
+                  $levelColors = [
+                    'undergraduate' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                    'postgraduate' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+                    'doctorate' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+                  ];
+                @endphp
                 <tr
                   class="hover:bg-gray-50 dark:hover:bg-gray-700/50 program-row {{ $program->trashed() ? 'opacity-60' : '' }}"
                   data-name="{{ strtolower($program->name) }}" data-faculty="{{ $program->faculty_id }}"
@@ -92,17 +101,10 @@
                   <td class="px-6 py-4">
                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $program->name }}</div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">{{ $program->faculty->code ?? '—' }}</div>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    {{ $program->faculty->code ?? '—' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    @php
-                      $levelColors = [
-                        'undergraduate' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                        'postgraduate' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-                        'doctorate' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-                      ];
-                    @endphp
                     <span
                       class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $levelColors[$program->level] ?? '' }}">
                       {{ $program->level_label }}
@@ -123,7 +125,7 @@
                         class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400">Inactive</span>
                     @endif
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     @if($program->trashed())
                       <button type="button" data-restore-url="{{ route('programs.restore', $program->id) }}"
                         data-restore-name="{{ $program->name }}"
@@ -138,11 +140,62 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No programs found.</td>
+                  <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">No programs found.</td>
                 </tr>
               @endforelse
             </tbody>
           </table>
+        </div>
+
+        {{-- Mobile card list --}}
+        <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          @forelse($programs as $program)
+            @php
+              $levelColors = [
+                'undergraduate' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                'postgraduate' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+                'doctorate' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+              ];
+            @endphp
+            <div class="p-4 program-row {{ $program->trashed() ? 'opacity-60' : '' }}"
+              data-name="{{ strtolower($program->name) }}" data-faculty="{{ $program->faculty_id }}"
+              data-level="{{ $program->level }}">
+              <div class="flex items-start justify-between gap-3 mb-1">
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $program->name }}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">{{ $program->faculty->code ?? '—' }}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  @if($program->trashed())
+                    <span
+                      class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Deleted</span>
+                    <button type="button" data-restore-url="{{ route('programs.restore', $program->id) }}"
+                      data-restore-name="{{ $program->name }}"
+                      class="text-sm text-green-600 dark:text-green-400 font-medium">Restore</button>
+                  @else
+                    <a href="{{ route('programs.show', $program) }}"
+                      class="text-sm text-gray-500 dark:text-gray-400 font-medium">View</a>
+                  @endif
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap mt-2">
+                <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $levelColors[$program->level] ?? '' }}">
+                  {{ $program->level_label }}
+                </span>
+                @if($program->is_active && !$program->trashed())
+                  <span
+                    class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Active</span>
+                @elseif(!$program->trashed())
+                  <span
+                    class="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400">Inactive</span>
+                @endif
+                <span
+                  class="text-xs text-gray-500 dark:text-gray-400">£{{ number_format($program->fees_per_semester, 0) }}/sem</span>
+              </div>
+            </div>
+          @empty
+            <div class="p-8 text-center text-gray-500 dark:text-gray-400">No programs found.</div>
+          @endforelse
         </div>
 
         @if($programs->hasPages())
@@ -173,7 +226,6 @@
       const q = search.value.toLowerCase();
       const faculty = filterFaculty.value;
       const level = filterLevel.value;
-
       rows.forEach(row => {
         const matchName = row.dataset.name.includes(q);
         const matchFaculty = !faculty || row.dataset.faculty === faculty;

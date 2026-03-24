@@ -86,14 +86,14 @@
           {{-- Card 2: Pending / Overdue --}}
           <div
             class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hover:shadow-xl transition-all flex flex-col justify-between
-          {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
+            {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'border border-[#dc2d3d]' : '' }}">
             <div class="flex items-center justify-between">
               <p class="text-xs text-gray-600 dark:text-gray-400">
                 {{ auth()->user()->hasRole('marketing_coordinator') ? 'Overdue Comments' : 'Pending Review' }}
               </p>
               <div
                 class="w-10 h-10 rounded-lg flex items-center justify-center
-              {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
+                {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'bg-red-100 dark:bg-red-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30' }}">
                 <svg
                   class="w-5 h-5 {{ auth()->user()->hasRole('marketing_coordinator') && $overdueContributions->isNotEmpty() ? 'text-[#dc2d3d]' : 'text-yellow-600 dark:text-yellow-400' }}"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,14 +177,15 @@
                     <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $contribution->title }}</p>
                     @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
                       <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {{ $contribution->student->user->name ?? '—' }}</p>
+                        {{ $contribution->student->user->name ?? '—' }}
+                      </p>
                     @endif
                     <span
                       class="mt-1 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full
-                {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
-                {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
-                {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
-                {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
+                  {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                  {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                  {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                  {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
                       {{ ucfirst(str_replace('_', ' ', $status)) }}
                     </span>
                   </div>
@@ -223,7 +224,8 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td class="px-6 py-4">
                         <div class="text-sm font-medium text-gray-900 dark:text-white truncate max-w-xs">
-                          {{ $contribution->title }}</div>
+                          {{ $contribution->title }}
+                        </div>
                       </td>
                       @if(auth()->user()->hasRole('marketing_coordinator') || auth()->user()->hasRole('admin') || auth()->user()->hasRole('marketing_manager'))
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
@@ -233,10 +235,10 @@
                       <td class="px-6 py-4 whitespace-nowrap">
                         <span
                           class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                    {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
-                    {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
-                    {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
-                    {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
+                      {{ $status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                      {{ $status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}
+                      {{ $status === 'under_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                      {{ $status === 'submitted' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : '' }}">
                           {{ ucfirst(str_replace('_', ' ', $status)) }}
                         </span>
                       </td>

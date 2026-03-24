@@ -70,18 +70,14 @@
         </div>
       </div>
 
-      {{-- Row 2: Contributors vs Contributions + Donut --}}
+      {{-- Charts --}}
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Contribution Distribution by Faculty</h3>
           <div class="flex items-center justify-center" style="height:280px">
             <canvas id="radarChart"></canvas>
           </div>
         </div>
-
-        {{-- Donut: Approval Rate --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Submission Status Breakdown</h3>
           <div class="flex items-center justify-center" style="height:280px">
@@ -90,20 +86,21 @@
         </div>
       </div>
 
-      {{-- Row 3: Full-width Stacked Horizontal Bar --}}
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Contributions per Faculty — Status
           Breakdown</h3>
         <canvas id="stackedBar" height="100"></canvas>
       </div>
 
-      {{-- Row 4: Full-width Table --}}
+      {{-- Faculty Breakdown --}}
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Faculty Breakdown — {{ $selectedYear?->name }}
           </h3>
         </div>
-        <div class="overflow-x-auto">
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
@@ -129,17 +126,17 @@
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
               @forelse($facultyStats->sortByDesc('total') as $row)
+                @php
+                  $dTotal = $row['total'] * 50;
+                  $dApproved = (int) round($dTotal * 0.83);
+                  $dRejected = (int) round($dTotal * 0.10);
+                  $dContrib = $row['contributors'] * 50;
+                @endphp
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                     {{ $row['name'] }}
                     <span class="ml-1 text-xs font-mono text-gray-400">{{ $row['code'] }}</span>
                   </td>
-                  @php
-                    $dTotal = $row['total'] * 50;
-                    $dApproved = (int) round($dTotal * 0.83);
-                    $dRejected = (int) round($dTotal * 0.10);
-                    $dContrib = $row['contributors'] * 50;
-                  @endphp
                   <td class="px-6 py-4 text-sm text-center text-indigo-600 dark:text-indigo-400 font-semibold">
                     {{ number_format($dContrib) }}
                   </td>
@@ -169,6 +166,53 @@
             </tbody>
           </table>
         </div>
+
+        {{-- Mobile card list --}}
+        <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          @forelse($facultyStats->sortByDesc('total') as $row)
+            @php
+              $dTotal = $row['total'] * 50;
+              $dApproved = (int) round($dTotal * 0.83);
+              $dRejected = (int) round($dTotal * 0.10);
+              $dContrib = $row['contributors'] * 50;
+            @endphp
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-2 mb-3">
+                <div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ $row['name'] }}</p>
+                  <span class="text-xs font-mono text-gray-400">{{ $row['code'] }}</span>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <div class="w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                    <div class="bg-[#dc2d3d] h-1.5 rounded-full" style="width: {{ $row['percentage'] }}%"></div>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $row['percentage'] }}%</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-center">
+                <div>
+                  <p class="text-xs text-gray-400 mb-0.5">Contributors</p>
+                  <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400">{{ number_format($dContrib) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 mb-0.5">Total</p>
+                  <p class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ number_format($dTotal) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 mb-0.5">Approved</p>
+                  <p class="text-sm font-bold text-green-600 dark:text-green-400">{{ number_format($dApproved) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 mb-0.5">Rejected</p>
+                  <p class="text-sm font-bold text-red-500">{{ number_format($dRejected) }}</p>
+                </div>
+              </div>
+            </div>
+          @empty
+            <div class="p-8 text-center text-gray-500 dark:text-gray-400">No contributions found for this academic year.
+            </div>
+          @endforelse
+        </div>
       </div>
 
     </main>
@@ -188,78 +232,36 @@
     const stats = @json($facultyStats->values());
     const labels = stats.map(f => f.name);
     const contributions = stats.map(f => f.total * 50);
-    const contributors = stats.map(f => f.contributors * 50);
     const approved = stats.map(f => Math.round(f.total * 50 * 0.83));
     const rejected = stats.map(f => Math.round(f.total * 50 * 0.10));
     const underReview = stats.map(f => Math.round(f.total * 50 * 0.05));
     const submitted = stats.map(f => Math.max(0, (f.total * 50) - Math.round(f.total * 50 * 0.83) - Math.round(f.total * 50 * 0.10) - Math.round(f.total * 50 * 0.05)));
 
-    // Radar: Contribution distribution by faculty
     new Chart(document.getElementById('radarChart'), {
       type: 'radar',
       data: {
         labels,
         datasets: [
-          {
-            label: 'Contributions',
-            data: contributions,
-            backgroundColor: 'rgba(99,102,241,0.2)',
-            borderColor: '#6366f1',
-            pointBackgroundColor: '#6366f1',
-            pointRadius: 4,
-          },
-          {
-            label: 'Approved',
-            data: approved,
-            backgroundColor: 'rgba(34,197,94,0.15)',
-            borderColor: '#22c55e',
-            pointBackgroundColor: '#22c55e',
-            pointRadius: 4,
-          },
+          { label: 'Contributions', data: contributions, backgroundColor: 'rgba(99,102,241,0.2)', borderColor: '#6366f1', pointBackgroundColor: '#6366f1', pointRadius: 4 },
+          { label: 'Approved', data: approved, backgroundColor: 'rgba(34,197,94,0.15)', borderColor: '#22c55e', pointBackgroundColor: '#22c55e', pointRadius: 4 },
         ]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: labelColor } }
-        },
-        scales: {
-          r: {
-            ticks: { color: labelColor, backdropColor: 'transparent' },
-            grid: { color: gridColor },
-            pointLabels: { color: labelColor, font: { size: 11 } },
-            beginAtZero: true,
-          }
-        }
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: labelColor } } },
+        scales: { r: { ticks: { color: labelColor, backdropColor: 'transparent' }, grid: { color: gridColor }, pointLabels: { color: labelColor, font: { size: 11 } }, beginAtZero: true } }
       }
     });
 
-    // Donut: Status breakdown
     new Chart(document.getElementById('donutChart'), {
       type: 'doughnut',
       data: {
         labels: ['Approved', 'Rejected', 'Under Review', 'Submitted'],
-        datasets: [{
-          data: [
-            {{ $totalApproved }},
-            {{ $totalRejected }},
-            {{ $facultyStats->sum('under_review') }},
-            {{ $facultyStats->sum('submitted') }}
-          ],
-          backgroundColor: ['#22c55e', '#ef4444', '#f59e0b', '#6366f1'],
-          borderWidth: 0,
-        }]
+        datasets: [{ data: [{{ $totalApproved }}, {{ $totalRejected }}, {{ $facultyStats->sum('under_review') }}, {{ $facultyStats->sum('submitted') }}], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b', '#6366f1'], borderWidth: 0 }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: labelColor } } }
-      }
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: labelColor } } } }
     });
 
-
-    // Full-width Stacked Horizontal Bar
     new Chart(document.getElementById('stackedBar'), {
       type: 'bar',
       data: {
@@ -272,11 +274,8 @@
         ]
       },
       options: {
-        indexAxis: 'y',
-        responsive: true,
-        plugins: {
-          legend: { labels: { color: labelColor } }
-        },
+        indexAxis: 'y', responsive: true,
+        plugins: { legend: { labels: { color: labelColor } } },
         scales: {
           x: { stacked: true, ticks: { color: labelColor }, grid: { color: gridColor }, beginAtZero: true },
           y: { stacked: true, ticks: { color: labelColor }, grid: { color: gridColor } }

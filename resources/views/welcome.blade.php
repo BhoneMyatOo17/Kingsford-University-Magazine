@@ -405,7 +405,7 @@
                                 <div class="text-sm text-gray-500 dark:text-gray-400">
                                     <span class="font-semibold">250+</span> Contributions
                                 </div>
-                                <a href="{{ route('magazine') }}"
+                                <a href="{{ route('magazine.index') }}"
                                     class="inline-flex items-center text-[#dc2d3d] font-semibold hover:underline">
                                     Read Magazine
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

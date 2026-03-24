@@ -96,6 +96,7 @@ class RegisteredUserController extends Controller
             event(new Registered($user));
         }
 
+        $user->skipLoginTracking = true;
         Auth::login($user);
 
         return $isTestAccount

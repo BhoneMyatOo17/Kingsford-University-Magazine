@@ -242,12 +242,14 @@ class ContributionController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // Coordinator / Manager / Admin: index
+    // Coordinator / Manager / Admin / Guest
     // -------------------------------------------------------------------------
     public function index(Request $request)
     {
         $user      = Auth::user();
         $isManager = $user->hasAnyRole(['marketing_manager', 'admin']);
+        $isGuest   = $user->hasRole('guest');
+        $search    = $request->input('search');
 
         $query = Contribution::with(['student.user', 'post.faculty', 'academicYear'])
             ->withCount('comments')
@@ -258,6 +260,11 @@ class ContributionController extends Controller
             $query->whereIn('post_id', Post::where('faculty_id', $facultyId)->select('id'));
         }
 
+        if ($isGuest) {
+            $query->whereIn('post_id', Post::where('faculty_id', $user->guest_faculty_id)->select('id'))
+                ->where('is_selected', true);
+        }
+
         if ($isManager) {
             $status = $request->input('status', 'approved');
             if ($status !== 'all') {
@@ -265,11 +272,20 @@ class ContributionController extends Controller
             }
         }
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('student.user', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('post.faculty', fn($q) => $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%"));
+            });
+        }
+
         $contributions = $query->paginate(15)->withQueryString();
+        $statusFilter  = $isManager ? $request->input('status', 'approved') : null;
 
-        $statusFilter = $isManager ? $request->input('status', 'approved') : null;
-
-        return view('contributions.index', compact('contributions', 'isManager', 'statusFilter'));
+        return view('contributions.index', compact('contributions', 'isManager', 'isGuest', 'statusFilter', 'search'));
     }
 
     // -------------------------------------------------------------------------
@@ -460,6 +476,14 @@ class ContributionController extends Controller
         if ($user->hasRole('marketing_coordinator')) {
             $facultyId = $user->staff->faculty_id;
             abort_unless($contribution->post->faculty_id === $facultyId, 403);
+            return;
+        }
+
+        if ($user->hasRole('guest')) {
+            abort_unless(
+                $contribution->post->faculty_id === $user->guest_faculty_id && $contribution->is_selected,
+                403
+            );
             return;
         }
 

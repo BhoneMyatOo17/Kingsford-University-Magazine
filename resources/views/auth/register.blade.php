@@ -287,11 +287,11 @@
     </div>
 
     <x-slot name="additionalLinks">
-        <p class="text-sm">
-            Already have an account?
-            <a href="{{ route('login') }}" class="text-[#dc2d3d] font-semibold">Login</a>
-        </p>
-    </x-slot>
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+        Already have an account?
+        <a href="{{ route('login') }}" class="text-[#dc2d3d] hover:text-[#b82532] font-semibold transition-colors">Login</a>
+    </p>
+</x-slot>
     @include('components.email-scripts')
     <style>
         select { appearance: none; -webkit-appearance: none; }

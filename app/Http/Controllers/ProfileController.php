@@ -23,24 +23,24 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        
+
         // Determine if user is student or staff
         if ($user->isStudent()) {
             // Get student data with faculty relationship
             $student = $user->student()->with('faculty')->first();
-            
+
             // Get student statistics
             $stats = [
                 'total_contributions' => $student ? $student->contributions()->count() : 0,
                 'approved' => $student ? $student->contributions()->where('status', 'approved')->count() : 0,
                 'published' => $student ? $student->contributions()->where('is_selected', true)->count() : 0,
             ];
-            
+
             return view('profile.show', compact('user', 'student', 'stats'));
         } else {
             // Get staff data (Marketing Coordinator, Marketing Manager, or Admin)
             $staff = $user->staff()->with('faculty')->first();
-            
+
             return view('profile.show', compact('user', 'staff'));
         }
     }
@@ -51,10 +51,10 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        
+
         // Get all active faculties for dropdown
         $faculties = Faculty::active()->orderBy('name')->get();
-        
+
         if ($user->isStudent()) {
             $student = $user->student()->with('faculty')->first();
             return view('profile.edit', compact('user', 'student', 'faculties'));
@@ -70,18 +70,18 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         // Validate basic user data
         $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required', 
-                'string', 
-                'email', 
-                'max:255', 
-                'ends_with:@ksf.it.com',
+            'email' => array_filter([
+                'required',
+                'string',
+                'email',
+                'max:255',
+                $user->hasRole('guest') ? null : 'ends_with:@ksf.it.com',
                 Rule::unique('users')->ignore($user->id)
-            ],
+            ]),
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 

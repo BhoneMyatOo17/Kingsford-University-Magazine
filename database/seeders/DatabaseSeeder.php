@@ -19,30 +19,34 @@ class DatabaseSeeder extends Seeder
         $this->createDefaultStudent();
         $this->createDefaultCoordinator();
         $this->createDefaultManager();
+
+        $this->call([
+            DemoDataSeeder::class,
+        ]);
     }
 
     private function createDefaultAdmin(): void
     {
         $admin = \App\Models\User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@ksf.it.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('Admin1!'),
-            'is_active' => true,
-            'password_changed_at' => now(),
+            'name'                 => 'Administrator',
+            'email'                => 'admin@ksf.it.com',
+            'password'             => \Illuminate\Support\Facades\Hash::make('Admin1!'),
+            'is_active'            => true,
+            'password_changed_at'  => now(),
             'must_change_password' => false,
-            'email_verified_at' => now(),
+            'email_verified_at'    => now(),
         ]);
 
         $admin->assignRole('admin');
 
         \App\Models\Staff::create([
-            'user_id' => $admin->id,
-            'staff_id' => 'ADM001',
-            'faculty_id' => null,
-            'department' => 'Administration',
-            'position' => 'System Administrator',
-            'hire_date' => now(),
-            'phone' => null,
+            'user_id'         => $admin->id,
+            'staff_id'        => 'ADM001',
+            'faculty_id'      => null,
+            'department'      => 'Administration',
+            'position'        => 'System Administrator',
+            'hire_date'       => now(),
+            'phone'           => null,
             'office_location' => 'Admin Building',
         ]);
 
@@ -54,26 +58,26 @@ class DatabaseSeeder extends Seeder
         $faculty = \App\Models\Faculty::where('code', 'CS')->first();
 
         $student = \App\Models\User::create([
-            'name' => 'Student User',
-            'email' => 'student@ksf.it.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('Student1!'),
-            'is_active' => true,
-            'password_changed_at' => now(),
+            'name'                 => 'Student User',
+            'email'                => 'student@ksf.it.com',
+            'password'             => \Illuminate\Support\Facades\Hash::make('Student1!'),
+            'is_active'            => true,
+            'password_changed_at'  => now(),
             'must_change_password' => false,
-            'email_verified_at' => now(),
+            'email_verified_at'    => now(),
         ]);
 
         $student->assignRole('student');
 
         \App\Models\Student::create([
-            'user_id' => $student->id,
-            'student_id' => 'STU001',
-            'faculty_id' => $faculty?->id,
-            'program' => 'B.Sc Computer Science',
+            'user_id'         => $student->id,
+            'student_id'      => 'STU001',
+            'faculty_id'      => $faculty?->id,
+            'program'         => 'B.Sc Computer Science',
             'enrollment_year' => now()->year,
-            'study_level' => 'undergraduate',
-            'phone' => null,
-            'address' => null,
+            'study_level'     => 'undergraduate',
+            'phone'           => null,
+            'address'         => null,
         ]);
 
         $this->command->info('Student created: student@ksf.it.com / Student1!');
@@ -84,25 +88,25 @@ class DatabaseSeeder extends Seeder
         $faculty = \App\Models\Faculty::where('code', 'CS')->first();
 
         $coordinator = \App\Models\User::create([
-            'name' => 'Marketing Coordinator',
-            'email' => 'coord@ksf.it.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('Coordinator1!'),
-            'is_active' => true,
-            'password_changed_at' => now(),
+            'name'                 => 'Marketing Coordinator',
+            'email'                => 'coord@ksf.it.com',
+            'password'             => \Illuminate\Support\Facades\Hash::make('Coordinator1!'),
+            'is_active'            => true,
+            'password_changed_at'  => now(),
             'must_change_password' => false,
-            'email_verified_at' => now(),
+            'email_verified_at'    => now(),
         ]);
 
         $coordinator->assignRole('marketing_coordinator');
 
         \App\Models\Staff::create([
-            'user_id' => $coordinator->id,
-            'staff_id' => 'COORD001',
-            'faculty_id' => $faculty?->id,
-            'department' => 'Computer Science',
-            'position' => 'Marketing Coordinator',
-            'hire_date' => now(),
-            'phone' => null,
+            'user_id'         => $coordinator->id,
+            'staff_id'        => 'COORD001',
+            'faculty_id'      => $faculty?->id,
+            'department'      => 'Computer Science',
+            'position'        => 'Marketing Coordinator',
+            'hire_date'       => now(),
+            'phone'           => null,
             'office_location' => null,
         ]);
 
@@ -112,25 +116,25 @@ class DatabaseSeeder extends Seeder
     private function createDefaultManager(): void
     {
         $manager = \App\Models\User::create([
-            'name' => 'Marketing Manager',
-            'email' => 'manager@ksf.it.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('Manager1!'),
-            'is_active' => true,
-            'password_changed_at' => now(),
+            'name'                 => 'Marketing Manager',
+            'email'                => 'manager@ksf.it.com',
+            'password'             => \Illuminate\Support\Facades\Hash::make('Manager1!'),
+            'is_active'            => true,
+            'password_changed_at'  => now(),
             'must_change_password' => false,
-            'email_verified_at' => now(),
+            'email_verified_at'    => now(),
         ]);
 
         $manager->assignRole('marketing_manager');
 
         \App\Models\Staff::create([
-            'user_id' => $manager->id,
-            'staff_id' => 'MGR001',
-            'faculty_id' => null,
-            'department' => 'Marketing',
-            'position' => 'Marketing Manager',
-            'hire_date' => now(),
-            'phone' => null,
+            'user_id'         => $manager->id,
+            'staff_id'        => 'MGR001',
+            'faculty_id'      => null,
+            'department'      => 'Marketing',
+            'position'        => 'Marketing Manager',
+            'hire_date'       => now(),
+            'phone'           => null,
             'office_location' => null,
         ]);
 

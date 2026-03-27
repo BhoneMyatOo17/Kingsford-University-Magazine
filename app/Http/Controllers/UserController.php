@@ -12,11 +12,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with(['roles', 'student.faculty', 'staff.faculty'])
+        $users = User::with(['roles', 'student.faculty', 'staff.faculty', 'guestFaculty'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('users.index', compact('users'));
+        $allUsers = User::with('roles')->get();
+
+        return view('users.index', compact('users', 'allUsers'));
     }
 
     public function create()
@@ -56,7 +58,6 @@ class UserController extends Controller
             'office_location' => 'nullable|string|max:255',
         ]);
 
-        // One coordinator per faculty check
         if ($validated['user_type'] === 'marketing_coordinator' && !empty($validated['faculty_id'])) {
             $existingCoordinator = \App\Models\Staff::whereHas('user', function ($q) {
                 $q->role('marketing_coordinator');
@@ -69,10 +70,8 @@ class UserController extends Controller
             }
         }
 
-        // Auto-generate temporary password
         $temporaryPassword = \Illuminate\Support\Str::random(10) . '!1';
 
-        // Create user
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -82,17 +81,14 @@ class UserController extends Controller
             'must_change_password' => true,
         ]);
 
-        // Handle profile picture
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
             $user->profile_picture = $path;
             $user->save();
         }
 
-        // Assign role
         $user->assignRole($validated['user_type']);
 
-        // Create student or staff record based on role
         if ($validated['user_type'] === 'student') {
             $user->student()->create([
                 'student_id' => $validated['student_id'] ? strtoupper($validated['student_id']) : null,
@@ -115,7 +111,6 @@ class UserController extends Controller
             ]);
         }
 
-        // Send temporary password email
         try {
             \Illuminate\Support\Facades\Mail::to($user->email)->send(
                 new \App\Mail\UserCreatedMail($user, $temporaryPassword)
@@ -165,9 +160,7 @@ class UserController extends Controller
             'office_location' => 'nullable|string|max:255',
         ]);
 
-        // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
-            // Delete old picture if exists
             if ($user->profile_picture) {
                 Storage::disk('public')->delete($user->profile_picture);
             }
@@ -176,12 +169,10 @@ class UserController extends Controller
             $user->profile_picture = $path;
         }
 
-        // Update user table
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->save();
 
-        // Update student or staff table
         if ($user->isStudent() && $user->student) {
             $user->student->update([
                 'student_id' => $validated['student_id'] ? strtoupper($validated['student_id']) : $user->student->student_id,

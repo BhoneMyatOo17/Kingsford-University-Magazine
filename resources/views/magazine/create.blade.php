@@ -81,8 +81,7 @@
           </div>
         @endif
 
-        <form action="{{ route('magazine.store') }}" method="POST" enctype="multipart/form-data"
-          onsubmit="document.getElementById('content-input').value = quill.root.innerHTML; showFetchLoader('Publishing magazine...');"
+        <form action="{{ route('magazine.store') }}" method="POST" enctype="multipart/form-data" id="magazine-form"
           class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 space-y-6">
           @csrf
 
@@ -122,7 +121,6 @@
               class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent">
           </div>
 
-          {{-- Cover image --}}
           <div>
             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               Cover Image <span class="text-gray-400 font-normal">(optional — jpg, png, webp, max 5MB)</span>
@@ -142,7 +140,6 @@
             </div>
           </div>
 
-          {{-- PDF upload --}}
           <div>
             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               PDF File <span class="text-gray-400 font-normal">(optional — max 50MB)</span>
@@ -161,11 +158,8 @@
             </div>
           </div>
 
-          {{-- Rich text content --}}
           <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Article Content <span class="text-gray-400 font-normal">(optional)</span>
-            </label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Article Content</label>
             <div id="quill-editor" style="min-height: 300px;">{{ old('content') }}</div>
             <input type="hidden" name="content" id="content-input">
           </div>
@@ -203,12 +197,20 @@
       }
     });
 
-    // Populate from old() if validation failed
     @if(old('content'))
       quill.root.innerHTML = {!! json_encode(old('content')) !!};
     @endif
 
-
+    document.getElementById('magazine-form').addEventListener('submit', function (e) {
+      const content = quill.getText().trim();
+      if (!content) {
+        e.preventDefault();
+        alert('Article content is required.');
+        return;
+      }
+      document.getElementById('content-input').value = quill.root.innerHTML;
+      showFetchLoader('Publishing magazine...');
+    });
   </script>
 </body>
 

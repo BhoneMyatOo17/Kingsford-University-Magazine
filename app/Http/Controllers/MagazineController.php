@@ -11,14 +11,10 @@ use Illuminate\Support\Str;
 
 class MagazineController extends Controller
 {
-    // -------------------------------------------------------------------------
-    // Public: list all magazines
-    // -------------------------------------------------------------------------
     public function index(Request $request)
     {
         $academicYears = AcademicYear::orderBy('name', 'desc')->get();
 
-        // Trash view
         if ($request->boolean('trash') && Auth::check() && Auth::user()->hasAnyRole(['marketing_manager', 'admin'])) {
             $magazines = Magazine::onlyTrashed()
                 ->with('academicYear')
@@ -29,7 +25,6 @@ class MagazineController extends Controller
             return view('magazine.index', compact('magazines', 'academicYears'));
         }
 
-        // Normal view
         $query = Magazine::with('academicYear')->orderBy('published_date', 'desc');
 
         if ($request->filled('year')) {
@@ -49,9 +44,6 @@ class MagazineController extends Controller
         return view('magazine.index', compact('magazines', 'academicYears'));
     }
 
-    // -------------------------------------------------------------------------
-    // Public: show a single magazine
-    // -------------------------------------------------------------------------
     public function show(Magazine $magazine)
     {
         $magazine->increment('view_count');
@@ -68,9 +60,6 @@ class MagazineController extends Controller
         return view('magazine.show', compact('magazine', 'coverUrl', 'pdfUrl'));
     }
 
-    // -------------------------------------------------------------------------
-    // Manager/Admin: create form
-    // -------------------------------------------------------------------------
     public function create()
     {
         abort_unless(Auth::user()->hasAnyRole(['marketing_manager', 'admin']), 403);
@@ -80,9 +69,6 @@ class MagazineController extends Controller
         return view('magazine.create', compact('academicYears'));
     }
 
-    // -------------------------------------------------------------------------
-    // Manager/Admin: store
-    // -------------------------------------------------------------------------
     public function store(Request $request)
     {
         abort_unless(Auth::user()->hasAnyRole(['marketing_manager', 'admin']), 403);
@@ -94,6 +80,7 @@ class MagazineController extends Controller
             'published_date'   => 'required|date',
             'cover_image'      => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
             'pdf_file'         => 'nullable|file|mimes:pdf|max:51200',
+            'content'          => 'required|string',
         ]);
 
         $data = [
@@ -133,9 +120,6 @@ class MagazineController extends Controller
             ->with('success', 'Magazine published successfully.');
     }
 
-    // -------------------------------------------------------------------------
-    // Manager/Admin: edit form
-    // -------------------------------------------------------------------------
     public function edit(Magazine $magazine)
     {
         abort_unless(Auth::user()->hasAnyRole(['marketing_manager', 'admin']), 403);
@@ -153,9 +137,6 @@ class MagazineController extends Controller
         return view('magazine.edit', compact('magazine', 'academicYears', 'coverUrl', 'pdfUrl'));
     }
 
-    // -------------------------------------------------------------------------
-    // Manager/Admin: update
-    // -------------------------------------------------------------------------
     public function update(Request $request, Magazine $magazine)
     {
         abort_unless(Auth::user()->hasAnyRole(['marketing_manager', 'admin']), 403);
@@ -167,6 +148,7 @@ class MagazineController extends Controller
             'published_date'   => 'required|date',
             'cover_image'      => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
             'pdf_file'         => 'nullable|file|mimes:pdf|max:51200',
+            'content'          => 'required|string',
         ]);
 
         $data = [
@@ -178,7 +160,6 @@ class MagazineController extends Controller
         ];
 
         if ($request->hasFile('cover_image')) {
-            // Delete old cover
             if ($magazine->cover_image_path) {
                 Storage::disk($magazine->cover_image_disk)->delete($magazine->cover_image_path);
             }
@@ -193,7 +174,6 @@ class MagazineController extends Controller
         }
 
         if ($request->hasFile('pdf_file')) {
-            // Delete old PDF
             if ($magazine->pdf_path) {
                 Storage::disk($magazine->pdf_disk)->delete($magazine->pdf_path);
             }
@@ -213,9 +193,6 @@ class MagazineController extends Controller
             ->with('success', 'Magazine updated successfully.');
     }
 
-    // -------------------------------------------------------------------------
-    // Manager/Admin: destroy
-    // -------------------------------------------------------------------------
     public function destroy(Magazine $magazine)
     {
         abort_unless(Auth::user()->hasAnyRole(['marketing_manager', 'admin']), 403);

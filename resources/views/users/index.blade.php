@@ -39,7 +39,6 @@
         </div>
       @endif
 
-      <!-- Header -->
       <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">All Users</h2>
@@ -56,13 +55,12 @@
         @endif
       </div>
 
-      <!-- Stats Cards: 2x2 on mobile, then expand -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 lg:p-6">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Users</p>
-              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $users->count() }}</h3>
+              <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $allUsers->count() }}</h3>
             </div>
             <div
               class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
@@ -80,7 +78,7 @@
             <div>
               <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Students</p>
               <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                {{ $users->filter(fn($u) => $u->hasRole('student'))->count() }}
+                {{ $allUsers->filter(fn($u) => $u->hasRole('student'))->count() }}
               </h3>
             </div>
             <div
@@ -99,7 +97,7 @@
             <div>
               <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Coordinators</p>
               <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                {{ $users->filter(fn($u) => $u->hasRole('marketing_coordinator'))->count() }}
+                {{ $allUsers->filter(fn($u) => $u->hasRole('marketing_coordinator'))->count() }}
               </h3>
             </div>
             <div
@@ -119,7 +117,7 @@
               <div>
                 <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">Managers</p>
                 <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                  {{ $users->filter(fn($u) => $u->hasRole('marketing_manager'))->count() }}
+                  {{ $allUsers->filter(fn($u) => $u->hasRole('marketing_manager'))->count() }}
                 </h3>
               </div>
               <div
@@ -135,7 +133,6 @@
         @endif
       </div>
 
-      <!-- Users Table (md+) / Card List (mobile) -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
 
         @php
@@ -155,7 +152,6 @@
           ];
         @endphp
 
-        {{-- Desktop Table --}}
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full">
             <thead class="bg-gray-50 dark:bg-gray-700">
@@ -221,6 +217,8 @@
                       {{ $user->student->faculty->name }}
                     @elseif($user->staff && $user->staff->faculty)
                       {{ $user->staff->faculty->name }}
+                    @elseif($user->guestFaculty)
+                      {{ $user->guestFaculty->name }}
                     @else
                       <span class="text-gray-400 dark:text-gray-500">Unassigned</span>
                     @endif
@@ -261,12 +259,10 @@
           </table>
         </div>
 
-        {{-- Mobile Card List --}}
         <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
           @forelse($users as $user)
             @php $role = $user->roles->first(); @endphp
             <div class="p-4">
-              {{-- Row 1: Avatar + Name/Email + View --}}
               <div class="flex items-center justify-between gap-3 mb-2">
                 <div class="flex items-center gap-3 min-w-0">
                   @if($user->profile_picture)
@@ -289,7 +285,6 @@
                 @endif
               </div>
 
-              {{-- Row 2: Role + Status badges --}}
               <div class="flex items-center gap-2 mb-1">
                 <span
                   class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $roleColors[$role->name] ?? 'bg-gray-100 text-gray-800' }}">
@@ -304,13 +299,14 @@
                 @endif
               </div>
 
-              {{-- Row 3: Faculty --}}
               <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
                 <span>
                   @if($user->student && $user->student->faculty)
                     {{ $user->student->faculty->code }}
                   @elseif($user->staff && $user->staff->faculty)
                     {{ $user->staff->faculty->code }}
+                  @elseif($user->guestFaculty)
+                    {{ $user->guestFaculty->code }}
                   @else
                     Unassigned
                   @endif
@@ -329,6 +325,12 @@
             </div>
           @endforelse
         </div>
+
+        @if($users->hasPages())
+          <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            {{ $users->links() }}
+          </div>
+        @endif
 
       </div>
     </main>

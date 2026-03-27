@@ -1,4 +1,4 @@
-# Kingsford University Magazine Contribution Management
+# Kingsford University Magazine Contribution Management System
 
 <p align="center">
   <img src="screenshots/logo.png" alt="Kingsford University Logo" width="200"/>
@@ -65,14 +65,14 @@ The system replaces manual and fragmented processes with a centralised, role-bas
 - Coordinator and Manager accounts created by Admin with enforced first-login password change
 - Guest accounts for faculty-specific public viewing
 - Role-based access control across all system modules
-- Last login timestamp displayed on every sign-in
+- Last login timestamp displayed at every sign-in
 
 ### 📝 Contribution Submission
-- Students submit Word documents and images to faculty-scoped contribution posts
+- Students submit Word documents and images to faculty contribution posts
 - Terms & Conditions agreement required before submission
 - Email and in-app notifications sent to coordinators on new submissions
 - Coordinators comment, approve, or reject contributions
-- Overdue submissions (no comment after 14 days) trigger automatic notifications
+- Overdue submissions (no comment after 14 days) trigger alert notifications
 - Inappropriate content can be reported by students or coordinators for admin review
 
 ### 📖 Magazine Publication
@@ -81,23 +81,23 @@ The system replaces manual and fragmented processes with a centralised, role-bas
 - In-app notifications sent to all internal users on new publication
 
 ### 📊 Reports & Analytics
-- Contribution analytics filtered by academic year with charts and faculty breakdown table
-- Faculty reports with exception reports: contributions with no comment and overdue (14+ days)
-- User activity report showing activity scores and last login per user
+- Contribution analytics filtered by academic year with charts and tables
+- Faculty exception reports: contributions with no comment and overdue (14+ days)
+- User activity report showing user activity and last login
 - System usage analytics: page views, active users, browser usage
 
 ### 🔔 In-App Notifications
 - New contribution submitted
-- Contribution commented on or approved
+- Contribution commented or approved
 - Submission overdue for comment (14+ days)
 - New report submitted / resolved by admin
 - Guest account created
 - Magazine published
-- Contact request submitted / responded to
+- Contact request submitted / responded
 - Submission deadline approaching
 
 ### 🛡️ Security & Data Integrity
-- Soft deletion across all major modules — no data is permanently lost
+- Soft deletion across all major modules
 - Admin can view and restore deleted records
 - Referential integrity enforced at database level
 
@@ -120,7 +120,7 @@ The system replaces manual and fragmented processes with a centralised, role-bas
 | Email Testing (Development) | [Mailtrap](https://mailtrap.io/) |
 | Email Routing | [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/) |
 | Charts & Graphs | [Chart.js](https://www.chartjs.org/) |
-| Rich Text Editor | [Quill.js](https://quilljs.com/) |
+| Magazine Text Editor | [Quill.js](https://quilljs.com/) |
 
 ---
 

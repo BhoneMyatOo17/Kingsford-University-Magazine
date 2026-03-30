@@ -5,6 +5,13 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    @if(session('error'))
+        <div
+            class="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Account Lockout Banner with Countdown -->
     @if($errors->has('email') && str_contains($errors->first('email'), 'Account Locked'))
         <div id="lockout-banner"

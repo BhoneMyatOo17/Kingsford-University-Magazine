@@ -21,9 +21,6 @@ use Illuminate\Support\Str;
 
 class ContributionController extends Controller
 {
-    // -------------------------------------------------------------------------
-    // Student: create contribution form
-    // -------------------------------------------------------------------------
     public function create(Post $post)
     {
         abort_unless($post->isOpenForSubmission(), 403, 'Submissions are closed for this post.');
@@ -44,9 +41,6 @@ class ContributionController extends Controller
         return view('contributions.create', compact('post'));
     }
 
-    // -------------------------------------------------------------------------
-    // Student: store contribution
-    // -------------------------------------------------------------------------
     public function store(Request $request, Post $post)
     {
         abort_unless($post->isOpenForSubmission(), 403, 'Submissions are closed for this post.');
@@ -95,9 +89,6 @@ class ContributionController extends Controller
             ->with('success', 'Contribution submitted successfully.');
     }
 
-    // -------------------------------------------------------------------------
-    // Student / Coordinator / Manager: show contribution
-    // -------------------------------------------------------------------------
     public function show(Contribution $contribution)
     {
         $user = Auth::user();
@@ -145,9 +136,6 @@ class ContributionController extends Controller
         ));
     }
 
-    // -------------------------------------------------------------------------
-    // Student: edit contribution form
-    // -------------------------------------------------------------------------
     public function edit(Contribution $contribution)
     {
         $user = Auth::user();
@@ -160,9 +148,6 @@ class ContributionController extends Controller
         return view('contributions.edit', compact('contribution'));
     }
 
-    // -------------------------------------------------------------------------
-    // Student: update contribution
-    // -------------------------------------------------------------------------
     public function update(Request $request, Contribution $contribution)
     {
         $user = Auth::user();
@@ -204,6 +189,7 @@ class ContributionController extends Controller
             if ($remainingDocs + $newDocs > 2) {
                 abort(422, 'You can have a maximum of 2 documents per contribution.');
             }
+
             if ($remainingImages + $newImages > 5) {
                 abort(422, 'You can have a maximum of 5 images per contribution.');
             }
@@ -219,9 +205,6 @@ class ContributionController extends Controller
             ->with('success', 'Contribution updated.');
     }
 
-    // -------------------------------------------------------------------------
-    // Student: delete contribution
-    // -------------------------------------------------------------------------
     public function destroy(Contribution $contribution)
     {
         $user = Auth::user();
@@ -241,15 +224,32 @@ class ContributionController extends Controller
             ->with('success', 'Contribution deleted.');
     }
 
-    // -------------------------------------------------------------------------
-    // Coordinator / Manager / Admin / Guest
-    // -------------------------------------------------------------------------
     public function index(Request $request)
     {
         $user      = Auth::user();
         $isManager = $user->hasAnyRole(['marketing_manager', 'admin']);
         $isGuest   = $user->hasRole('guest');
+        $isStudent = $user->hasRole('student');
         $search    = $request->input('search');
+
+        if ($isStudent) {
+            $query = Contribution::with(['post.faculty', 'academicYear'])
+                ->withCount('comments')
+                ->where('student_id', $user->student->id)
+                ->orderBy('created_at', 'desc');
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            $contributions = $query->paginate(15)->withQueryString();
+            $statusFilter  = null;
+
+            return view('contributions.index', compact('contributions', 'isManager', 'isGuest', 'isStudent', 'statusFilter', 'search'));
+        }
 
         $query = Contribution::with(['student.user', 'post.faculty', 'academicYear'])
             ->withCount('comments')
@@ -284,13 +284,11 @@ class ContributionController extends Controller
 
         $contributions = $query->paginate(15)->withQueryString();
         $statusFilter  = $isManager ? $request->input('status', 'approved') : null;
+        $isStudent     = false;
 
-        return view('contributions.index', compact('contributions', 'isManager', 'isGuest', 'statusFilter', 'search'));
+        return view('contributions.index', compact('contributions', 'isManager', 'isGuest', 'isStudent', 'statusFilter', 'search'));
     }
 
-    // -------------------------------------------------------------------------
-    // Coordinator: add comment
-    // -------------------------------------------------------------------------
     public function comment(Request $request, Contribution $contribution)
     {
         $user = Auth::user();
@@ -312,9 +310,6 @@ class ContributionController extends Controller
         return back()->with('success', 'Comment added.');
     }
 
-    // -------------------------------------------------------------------------
-    // Coordinator: toggle approval
-    // -------------------------------------------------------------------------
     public function toggleApproval(Contribution $contribution)
     {
         $user = Auth::user();
@@ -351,9 +346,6 @@ class ContributionController extends Controller
         return back()->with('success', 'Publication status updated.');
     }
 
-    // -------------------------------------------------------------------------
-    // Coordinator: reject contribution
-    // -------------------------------------------------------------------------
     public function reject(Contribution $contribution)
     {
         $user = Auth::user();
@@ -380,9 +372,6 @@ class ContributionController extends Controller
         return back()->with('success', 'Contribution has been rejected.');
     }
 
-    // -------------------------------------------------------------------------
-    // Report a contribution
-    // -------------------------------------------------------------------------
     public function report(Request $request, Contribution $contribution)
     {
         $request->validate(['reason' => 'required|string|max:1000']);
@@ -402,9 +391,6 @@ class ContributionController extends Controller
         return back()->with('success', 'Report submitted. An administrator will review it.');
     }
 
-    // -------------------------------------------------------------------------
-    // Manager / Admin: download selected contributions as ZIP
-    // -------------------------------------------------------------------------
     public function download(Request $request)
     {
         $user = Auth::user();
@@ -445,9 +431,6 @@ class ContributionController extends Controller
         return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
     }
 
-    // -------------------------------------------------------------------------
-    // Student: delete a single file (AJAX)
-    // -------------------------------------------------------------------------
     public function destroyFile(ContributionFile $file)
     {
         $user = Auth::user();
@@ -459,10 +442,6 @@ class ContributionController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-    // -------------------------------------------------------------------------
-    // Private helpers
-    // -------------------------------------------------------------------------
 
     private function authorizeView($user, Contribution $contribution): void
     {

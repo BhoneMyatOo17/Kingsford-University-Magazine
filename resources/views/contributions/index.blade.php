@@ -31,7 +31,9 @@
         <div>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Contributions</h2>
           <p class="text-gray-600 dark:text-gray-400 mt-1">
-            @if($isManager)
+            @if($isStudent)
+              Your submitted contributions
+            @elseif($isManager)
               Browse and download approved contributions
             @elseif($isGuest)
               Selected contributions from your faculty
@@ -41,7 +43,6 @@
           </p>
         </div>
 
-        {{-- Search bar --}}
         <form method="GET" action="{{ route('contributions.index') }}" class="flex items-center gap-2 w-full sm:w-auto">
           @if($isManager && request('status'))
             <input type="hidden" name="status" value="{{ request('status') }}">
@@ -52,8 +53,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
             </svg>
-            <input type="text" name="search" value="{{ $search ?? '' }}"
-              placeholder="Search by title, student, faculty..."
+            <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search contributions..."
               class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#dc2d3d] focus:border-transparent">
           </div>
           <button type="submit"
@@ -79,8 +79,111 @@
         };
       @endphp
 
-      {{-- ── MANAGER VIEW ── --}}
-      @if($isManager)
+      @if($isStudent)
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Title</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Faculty</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Submitted</th>
+                  <th
+                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Selected</th>
+                  <th
+                    class="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @forelse($contributions as $contribution)
+                  <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td class="px-6 py-4">
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $contribution->title }}</p>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="text-xs font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor($contribution->status) }}">
+                        {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {{ $contribution->created_at->format('d M Y') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      @if($contribution->is_selected)
+                        <span class="text-green-600 dark:text-green-400 font-semibold text-sm">✓ Yes</span>
+                      @else
+                        <span class="text-gray-300 dark:text-gray-600 text-sm">—</span>
+                      @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                      <a href="{{ route('contributions.show', $contribution) }}"
+                        class="text-[#dc2d3d] hover:text-[#b82532] text-sm font-medium transition-colors">View</a>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="px-6 py-12 text-center">
+                      <svg class="mx-auto w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">You haven't submitted any
+                        contributions yet.</p>
+                    </td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+
+          <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+            @forelse($contributions as $contribution)
+              <div class="p-4">
+                <div class="flex items-start justify-between gap-3 mb-1">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white flex-1">{{ $contribution->title }}</p>
+                  <a href="{{ route('contributions.show', $contribution) }}"
+                    class="text-sm text-[#dc2d3d] hover:text-[#b82532] font-medium shrink-0">View</a>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <span class="font-semibold text-[#dc2d3d]">{{ $contribution->post->faculty->code }}</span>
+                  · {{ $contribution->created_at->format('d M Y') }}
+                </p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $statusColor($contribution->status) }}">
+                    {{ ucfirst(str_replace('_', ' ', $contribution->status)) }}
+                  </span>
+                  @if($contribution->is_selected)
+                    <span class="text-xs font-semibold text-green-600 dark:text-green-400">✓ Selected</span>
+                  @endif
+                </div>
+              </div>
+            @empty
+              <div class="p-8 text-center text-gray-500 dark:text-gray-400">You haven't submitted any contributions yet.
+              </div>
+            @endforelse
+          </div>
+
+        </div>
+
+      @elseif($isManager)
         @php
           $downloadableIds = $contributions->filter(function ($c) {
             return $c->status === 'approved'
@@ -94,7 +197,6 @@
                           document.getElementById('download-count').textContent = val.length;
                         })">
 
-          {{-- Filter tabs + Download --}}
           <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex flex-wrap gap-2">
               @foreach(['approved' => 'Approved', 'all' => 'All', 'submitted' => 'Submitted', 'under_review' => 'Under Review', 'rejected' => 'Rejected'] as $val => $label)
@@ -104,7 +206,7 @@
                       @endphp
                       <a href="{{ route('contributions.index', ['status' => $val]) }}"
                         class="{{ $mobileHidden ? 'hidden sm:inline-flex' : 'inline-flex' }} px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                                                                {{ $active
+                              {{ $active
                 ? 'bg-[#dc2d3d] text-white shadow'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-[#dc2d3d] hover:text-[#dc2d3d]' }}">
                         {{ $label }}
@@ -130,7 +232,6 @@
 
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
 
-            {{-- Desktop table --}}
             <div class="hidden md:block overflow-x-auto">
               <table class="w-full">
                 <thead class="bg-gray-50 dark:bg-gray-700">
@@ -211,7 +312,6 @@
               </table>
             </div>
 
-            {{-- Mobile card list --}}
             <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
               @forelse($contributions as $contribution)
                 @php $canDownload = $contribution->status === 'approved' && $contribution->academicYear && $contribution->academicYear->final_closure_date->isPast(); @endphp
@@ -246,13 +346,11 @@
             </div>
 
           </div>
-        </div>{{-- end x-data --}}
+        </div>
 
-        {{-- ── GUEST VIEW ── --}}
       @elseif($isGuest)
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
 
-          {{-- Desktop table --}}
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
               <thead class="bg-gray-50 dark:bg-gray-700">
@@ -304,7 +402,6 @@
             </table>
           </div>
 
-          {{-- Mobile card list --}}
           <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($contributions as $contribution)
               <div class="p-4">
@@ -326,10 +423,8 @@
         </div>
 
       @else
-        {{-- ── COORDINATOR / ADMIN VIEW ── --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
 
-          {{-- Desktop table --}}
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
               <thead class="bg-gray-50 dark:bg-gray-700">
@@ -414,7 +509,6 @@
             </table>
           </div>
 
-          {{-- Mobile card list --}}
           <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($contributions as $contribution)
               @php

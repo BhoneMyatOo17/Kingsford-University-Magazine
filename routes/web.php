@@ -209,7 +209,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Coordinator + Manager: contribution index
-    Route::middleware(['role:marketing_coordinator|marketing_manager|admin|guest'])->group(function () {
+    Route::middleware(['role:marketing_coordinator|marketing_manager|admin|guest|student'])->group(function () {
         Route::get('/contributions', [ContributionController::class, 'index'])->name('contributions.index');
     });
 

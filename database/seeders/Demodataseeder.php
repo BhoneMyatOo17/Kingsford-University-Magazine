@@ -332,7 +332,7 @@ class DemoDataSeeder extends Seeder
       'SE'  => ['The Future of Agile Development', 'Microservices in Practice', 'DevOps Culture Shift', 'Test-Driven Design Patterns', 'Low-Code Platforms'],
       'CN'  => ['5G Network Architecture', 'Software Defined Networking', 'Network Automation with Python', 'Wi-Fi 7 Explained', 'Edge Computing Trends'],
       'CS'  => ['Algorithms in Everyday Life', 'Quantum Computing Basics', 'Functional Programming Revival', 'Open Source Contribution Guide', 'Compilers Demystified'],
-      'CYB' => ['Zero Trust Security Model', 'Phishing Attack Prevention', 'Ransomware Case Studies', 'Ethical Hacking Career Path', 'Security Operations Centre'],
+      'CYB' => ['Zero Trust Security Model', 'Phishing Attack Prevention', 'Ransomware Case Studies', 'Ethical Hacking Career Paths', 'Security Operations Centre'],
       'DSA' => ['Machine Learning in Healthcare', 'Data Ethics and Privacy', 'Neural Networks Explained', 'Big Data Pipeline Design', 'AI Bias and Fairness'],
       'BIT' => ['Digital Transformation Strategy', 'ERP System Implementation', 'IT Governance Frameworks', 'Business Process Automation', 'Cloud ROI Analysis'],
       'FT'  => ['Blockchain in Banking', 'DeFi and the Future of Finance', 'Cryptocurrency Regulation', 'AI-Driven Trading Systems', 'Open Banking APIs'],

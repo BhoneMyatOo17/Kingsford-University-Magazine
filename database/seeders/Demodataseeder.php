@@ -142,13 +142,27 @@ class DemoDataSeeder extends Seeder
   ];
 
   private array $usedNames = [];
-  private int $coordIndex = 0;
+  private int $coordIndex  = 0;
+
+  private function generateId(string $prefix, callable $existsCheck): string
+  {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    do {
+      $suffix = '';
+      for ($i = 0; $i < 4; $i++) {
+        $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+      }
+      $id = $prefix . $suffix;
+    } while ($existsCheck($id));
+
+    return $id;
+  }
 
   private function fakeName(): string
   {
     $attempts = 0;
     do {
-      $name = $this->firstNames[array_rand($this->firstNames)] . ' ' . $this->lastNames[array_rand($this->lastNames)];
+      $name     = $this->firstNames[array_rand($this->firstNames)] . ' ' . $this->lastNames[array_rand($this->lastNames)];
       $attempts++;
     } while (in_array($name, $this->usedNames) && $attempts < 100);
 
@@ -176,20 +190,6 @@ class DemoDataSeeder extends Seeder
       $i++;
     }
     return $email;
-  }
-
-  private function nameToStudentId(string $name, string $facultyCode, int $year): string
-  {
-    $parts = explode(' ', $name);
-    $initials = strtoupper(substr($parts[0], 0, 1) . substr($parts[1] ?? 'X', 0, 1));
-    $base = strtoupper($facultyCode) . $year . $initials;
-    $id   = $base . rand(100, 999);
-    $i    = 1;
-    while (Student::where('student_id', $id)->exists()) {
-      $id = $base . rand(100, 999) . $i;
-      $i++;
-    }
-    return $id;
   }
 
   public function run(): void
@@ -308,9 +308,11 @@ class DemoDataSeeder extends Seeder
 
       $user->assignRole('marketing_coordinator');
 
+      $staffId = $this->generateId('STF', fn($id) => Staff::where('staff_id', $id)->exists());
+
       Staff::create([
         'user_id'    => $user->id,
-        'staff_id'   => 'COORD-' . strtoupper($faculty->code),
+        'staff_id'   => $staffId,
         'faculty_id' => $faculty->id,
         'department' => $faculty->name,
         'position'   => 'Marketing Coordinator',
@@ -364,7 +366,7 @@ class DemoDataSeeder extends Seeder
         for ($i = 1; $i <= $count; $i++) {
           $name      = $this->fakeName();
           $email     = $this->nameToEmail($name);
-          $studentId = $this->nameToStudentId($name, $faculty->code, $year);
+          $studentId = $this->generateId('KSF', fn($id) => Student::where('student_id', $id)->exists());
 
           $studentUser = User::create([
             'name'                 => $name,

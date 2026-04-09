@@ -19,10 +19,26 @@ class DatabaseSeeder extends Seeder
         $this->createDefaultStudent();
         $this->createDefaultCoordinator();
         $this->createDefaultManager();
+        $this->createDefaultGuests();
 
         $this->call([
+            MemberSeeder::class,
             DemoDataSeeder::class,
         ]);
+    }
+
+    private function generateId(string $prefix, callable $existsCheck): string
+    {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        do {
+            $suffix = '';
+            for ($i = 0; $i < 4; $i++) {
+                $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            $id = $prefix . $suffix;
+        } while ($existsCheck($id));
+
+        return $id;
     }
 
     private function createDefaultAdmin(): void
@@ -39,9 +55,11 @@ class DatabaseSeeder extends Seeder
 
         $admin->assignRole('admin');
 
+        $staffId = $this->generateId('STF', fn($id) => \App\Models\Staff::where('staff_id', $id)->exists());
+
         \App\Models\Staff::create([
             'user_id'         => $admin->id,
-            'staff_id'        => 'ADM001',
+            'staff_id'        => $staffId,
             'faculty_id'      => null,
             'department'      => 'Administration',
             'position'        => 'System Administrator',
@@ -69,9 +87,11 @@ class DatabaseSeeder extends Seeder
 
         $student->assignRole('student');
 
+        $studentId = $this->generateId('KSF', fn($id) => \App\Models\Student::where('student_id', $id)->exists());
+
         \App\Models\Student::create([
             'user_id'         => $student->id,
-            'student_id'      => 'STU001',
+            'student_id'      => $studentId,
             'faculty_id'      => $faculty?->id,
             'program'         => 'B.Sc Computer Science',
             'enrollment_year' => now()->year,
@@ -99,9 +119,11 @@ class DatabaseSeeder extends Seeder
 
         $coordinator->assignRole('marketing_coordinator');
 
+        $staffId = $this->generateId('STF', fn($id) => \App\Models\Staff::where('staff_id', $id)->exists());
+
         \App\Models\Staff::create([
             'user_id'         => $coordinator->id,
-            'staff_id'        => 'COORD001',
+            'staff_id'        => $staffId,
             'faculty_id'      => $faculty?->id,
             'department'      => 'Computer Science',
             'position'        => 'Marketing Coordinator',
@@ -127,9 +149,11 @@ class DatabaseSeeder extends Seeder
 
         $manager->assignRole('marketing_manager');
 
+        $staffId = $this->generateId('STF', fn($id) => \App\Models\Staff::where('staff_id', $id)->exists());
+
         \App\Models\Staff::create([
             'user_id'         => $manager->id,
-            'staff_id'        => 'MGR001',
+            'staff_id'        => $staffId,
             'faculty_id'      => null,
             'department'      => 'Marketing',
             'position'        => 'Marketing Manager',
@@ -139,5 +163,54 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info('Manager created: manager@ksf.it.com / Manager1!');
+    }
+
+    private function createDefaultGuests(): void
+    {
+        $csFaculty  = \App\Models\Faculty::where('code', 'CS')->first();
+        $dsaFaculty = \App\Models\Faculty::where('code', 'DSA')->first();
+
+        $guests = [
+            [
+                'name'       => 'Guest User',
+                'email'      => 'guest@ksf.it.com',
+                'password'   => 'Guest1!',
+                'faculty_id' => $csFaculty?->id,
+            ],
+            [
+                'name'       => 'Guest User 2',
+                'email'      => 'guest2@ksf.it.com',
+                'password'   => 'Guest2!',
+                'faculty_id' => $dsaFaculty?->id,
+            ],
+        ];
+
+        foreach ($guests as $guestData) {
+            $guest = \App\Models\User::create([
+                'name'                 => $guestData['name'],
+                'email'                => $guestData['email'],
+                'password'             => \Illuminate\Support\Facades\Hash::make($guestData['password']),
+                'is_active'            => true,
+                'password_changed_at'  => now(),
+                'must_change_password' => false,
+                'email_verified_at'    => now(),
+            ]);
+
+            $guest->assignRole('guest');
+
+            $this->command->info("Guest created: {$guestData['email']} / {$guestData['password']}");
+        }
+
+        $test = \App\Models\User::create([
+            'name'                 => 'Test Register',
+            'email'                => 'test@ksf.it.com',
+            'password'             => \Illuminate\Support\Facades\Hash::make('Test1234!'),
+            'is_active'            => true,
+            'password_changed_at'  => now(),
+            'must_change_password' => false,
+            'email_verified_at'    => now(),
+        ]);
+
+        $this->command->info('Test user created: test@ksf.it.com / Test1234!');
     }
 }

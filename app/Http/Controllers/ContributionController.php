@@ -407,26 +407,37 @@ class ContributionController extends Controller
         abort_if($contributions->isEmpty(), 404, 'No approved contributions found for the selected IDs.');
 
         $zipName = 'contributions_' . now()->format('Y_m_d_His') . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipName);
+        $tempDir = storage_path('app/temp');
+        $zipPath = $tempDir . '/' . $zipName;
 
-        if (!file_exists(storage_path('app/temp'))) {
-            mkdir(storage_path('app/temp'), 0755, true);
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
         }
 
         $zip = new \ZipArchive();
-        abort_unless($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true, 500, 'Could not create ZIP file.');
+        abort_unless(
+            $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true,
+            500,
+            'Could not create ZIP file.'
+        );
 
         foreach ($contributions as $contribution) {
             $folderName = Str::slug($contribution->title) . '_' . $contribution->id;
             foreach ($contribution->files as $file) {
-                $contents = Storage::disk($file->disk)->get($file->file_path);
-                if ($contents) {
-                    $zip->addFromString($folderName . '/' . $file->original_name, $contents);
+                try {
+                    $contents = Storage::disk($file->disk)->get($file->file_path);
+                    if ($contents !== null && $contents !== false) {
+                        $zip->addFromString($folderName . '/' . $file->original_name, $contents);
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning("ZIP download: could not fetch file ID {$file->id}: " . $e->getMessage());
                 }
             }
         }
 
         $zip->close();
+
+        abort_unless(file_exists($zipPath) && filesize($zipPath) > 0, 500, 'ZIP file could not be created.');
 
         return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
     }

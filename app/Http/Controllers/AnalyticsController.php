@@ -133,16 +133,25 @@ class AnalyticsController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isGuest() && $user->guest_faculty_id !== $faculty->id) {
-            return redirect()->route('analytics.faculty.show', $user->guest_faculty_id);
+        if ($user->isGuest()) {
+            if (!$user->guest_faculty_id) {
+                abort(403);
+            }
+            if ($user->guest_faculty_id !== $faculty->id) {
+                $guestFaculty = Faculty::find($user->guest_faculty_id);
+                if (!$guestFaculty) {
+                    abort(403);
+                }
+                return redirect()->route('analytics.faculty.show', $guestFaculty);
+            }
         }
 
         $contributions = Contribution::whereHas('student', fn($q) => $q->where('faculty_id', $faculty->id))->get();
 
         $stats = [
-            'student_count'      => $faculty->students()->count(),
-            'contribution_count' => $contributions->count(),
-            'approved_count'     => $contributions->where('status', 'approved')->count(),
+            'student_count'       => $faculty->students()->count(),
+            'contribution_count'  => $contributions->count(),
+            'approved_count'      => $contributions->where('status', 'approved')->count(),
             'latest_contribution' => $contributions->sortByDesc('created_at')->first()?->created_at,
         ];
 

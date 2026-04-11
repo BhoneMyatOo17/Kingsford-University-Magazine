@@ -52,14 +52,16 @@
     {{-- GUEST --}}
     {{-- ================================ --}}
     @if(auth()->user()->isGuest())
-      <a href="{{ route('analytics.faculty.show', auth()->user()->guest_faculty_id) }}"
-        class="sidebar-link {{ request()->routeIs('analytics.faculty.show') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-        <span class="font-medium">Faculty Report</span>
-      </a>
+      @if(auth()->user()->guest_faculty_id)
+        <a href="{{ route('analytics.faculty.show', auth()->user()->guest_faculty_id) }}"
+          class="sidebar-link {{ request()->routeIs('analytics.faculty.show') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span class="font-medium">Faculty Report</span>
+        </a>
+      @endif
       <a href="{{ route('contributions.index') }}"
         class="sidebar-link {{ request()->routeIs('contributions.*') ? 'active bg-[#dc2d3d] text-white' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
